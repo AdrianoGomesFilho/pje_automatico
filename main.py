@@ -19,7 +19,12 @@ input_element = driver.find_element(By.CLASS_NAME, "gLFyf")
 input_element.clear()
 input_element.send_keys("astrea" + Keys.ENTER)
 
+WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Astrea"))
+)
 
+link = driver.find_element(By.PARTIAL_LINK_TEXT, "Astrea")
+link.click()
 
 time.sleep(10)
 
