@@ -18,8 +18,12 @@ def monitor_clipboard():
         last_paste = paste
         time.sleep(1)
 
-# Initialize WebDriver
-driver = webdriver.Chrome()
+# Specify the path to your Chrome user data directory
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument(r"--user-data-dir=C:\Users\fish\AppData\Local\Google\Chrome\User Data\Adriano")
+
+# Initialize WebDriver with Chrome options
+driver = webdriver.Chrome(options=chrome_options)
 
 try:
     # Monitor clipboard for specific data pattern
@@ -27,28 +31,24 @@ try:
     print(f"Detected data: {data}")
 
     # Open a new tab and navigate to the target URL
-    driver.execute_script("window.open('https://pje.trt6.jus.br/', '_blank');")
+    driver.execute_script("window.open('https://pje.trt6.jus.br/consultaprocessual', '_blank');")
 
     # Switch to the new tab
-    driver.switch_to.window(driver.window_handles[1])
+    driver.switch_to.window(driver.window_handles[-1])
 
-    # Wait for the login button to be clickable and click it
-    WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
-    ).click()
+    # Wait for the input field to be present
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "nrProcessoField")))
 
-    # Wait for the input field to be present and fill it with the detected data
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "inputNumeroProcesso"))
-    ).send_keys(data)
+    # Enter the detected data into the input field
+    input_field = driver.find_element(By.CLASS_NAME, "mat-input-element")
+    input_field.send_keys(data)
 
-    # Click the button with the class name "mat-button-wrapper"
-    WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CLASS_NAME, "mat-button-wrapper"))
-    ).click()
-
-    # Perform additional steps if needed
+    # Wait for the search button to be clickable and then click it
+    search_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, "btnPesquisar"))
+    )
+    search_button.click()
 
 finally:
-    # Do not close the WebDriver, so the browser remains open
-    pass
+    time.sleep(200)  # Wait for a few seconds to observe the results
+    driver.quit()  # Ensure the WebDriver is properly closed
