@@ -62,12 +62,13 @@ try:
             
             # Wait for the element by name "Consulta Processos de Terceiros" to be present and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Consulta Processos de Terceiros"))).click()
-
-            # Wait for the "nrProcessoField" input field to be present
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mat-form-field-infix")))
             
-            # Insert the data from the clipboard into the "nrProcessoField"
-            driver.find_element(By.CLASS_NAME, "mat-form-field-infix").send_keys(paste)
+            # Wait for the "nrProcessoField" input field to be present and focus on it
+            nr_processo_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "nrProcessoField")))
+            driver.execute_script("arguments[0].focus();", nr_processo_field)
+            
+            # Paste the clipboard content into the focused input field
+            driver.execute_script("arguments[0].value = arguments[1];", nr_processo_field, paste)
             
             # Click the "btnPesquisar" button
             driver.find_element(By.ID, "btnPesquisar").click()
