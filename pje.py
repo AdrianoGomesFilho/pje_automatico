@@ -45,15 +45,19 @@ try:
             # Switch to the new tab
             driver.switch_to.window(driver.window_handles[-1])
 
-            # Wait for the "modo-operacao" button to be clickable and click it
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "modo-operacao"))).click()
+            # Wait for the "modo-operacao" element to be present
+            modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
             
-            try:
-                # Wait for the "j_id112:btnUtilizarPjeOffice" button to be clickable and click it
-                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id111:btnUtilizarPjeOffice"))).click()
-            except TimeoutException:
-                # If the first ID is not present, select the alternative ID
-                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id112:btnUtilizarPjeOffice"))).click()
+            # Check the text of the "modo-operacao" element
+            if "Modo de assinatura: Shodō" in modo_operacao_element.text:
+                modo_operacao_element.click()
+                
+                try:
+                    # Wait for the "j_id112:btnUtilizarPjeOffice" button to be clickable and click it
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id111:btnUtilizarPjeOffice"))).click()
+                except TimeoutException:
+                    # If the first ID is not present, select the alternative ID
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id112:btnUtilizarPjeOffice"))).click()
 
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
