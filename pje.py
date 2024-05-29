@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
@@ -18,7 +19,7 @@ last_clipboard_content = ""
 try:
     while True:
         # Monitor clipboard for specific data pattern
-        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.\d{1,2}\.\d{2}\.\d{4}')
+        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
         paste = pyperclip.paste()
 
         # Check if the clipboard content is new and matches the pattern
@@ -35,7 +36,7 @@ try:
             trt_number = trt_number.lstrip('0')
             
             # Construct the URL dynamically
-            url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual"
+            url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
             
             # Open a new tab and navigate to the target URL
             driver.execute_script(f"window.open('{url}', '_blank');")
@@ -43,22 +44,37 @@ try:
             # Switch to the new tab
             driver.switch_to.window(driver.window_handles[-1])
 
-            # Wait for the input field to be present
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "nrProcessoField")))
+            # Wait for the "btn-link" button to be clickable and click it
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "modo-operacao"))).click()
+            
+            try:
+                # Wait for the "j_id112:btnUtilizarPjeOffice" button to be clickable and click it
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id111:btnUtilizarPjeOffice"))).click()
+            except TimeoutException:
+                # If the first ID is not present, select the alternative ID
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id112:btnUtilizarPjeOffice"))).click()
 
-            # Enter the detected data into the input field
-            input_field = driver.find_element(By.CLASS_NAME, "mat-input-element")
-            input_field.send_keys(paste)
+            # Wait for the "loginAplicacaoButton" button to be clickable and click it
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+            
+            # Wait for 5 seconds to handle the popup
+            time.sleep(5)
+            
+            # Wait for the element by name "Consulta Processos de Terceiros" to be present and click it
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Consulta Processos de Terceiros"))).click()
 
-            # Wait for the search button to be clickable and then click it
-            search_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "btnPesquisar"))
-            )
-            search_button.click()
-
+            # Wait for the "nrProcessoField" input field to be present
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mat-form-field-infix")))
+            
+            # Insert the data from the clipboard into the "nrProcessoField"
+            driver.find_element(By.CLASS_NAME, "mat-form-field-infix").send_keys(paste)
+            
+            # Click the "btnPesquisar" button
+            driver.find_element(By.ID, "btnPesquisar").click()
+            
             time.sleep(5)  # Wait for a few seconds before checking the clipboard again
 
         time.sleep(1)  # Wait before checking the clipboard again
 
-finally:
-    driver.quit()  # Ensure the WebDriver is properly closed
+except Exception as e:
+    print(f"An error occurred: {e}")
