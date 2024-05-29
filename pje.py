@@ -9,6 +9,7 @@ from selenium.common.exceptions import TimeoutException
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
 
 # Initialize WebDriver with Chrome options
 driver = webdriver.Chrome(options=chrome_options)
@@ -35,16 +36,16 @@ try:
             # Remove leading zero if present
             trt_number = trt_number.lstrip('0')
             
-            # Construct the URL dynamically
-            url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+            # Construct the base URL dynamically
+            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
             
-            # Open a new tab and navigate to the target URL
-            driver.execute_script(f"window.open('{url}', '_blank');")
+            # Open a new tab and navigate to the base URL
+            driver.execute_script(f"window.open('{base_url}', '_blank');")
 
             # Switch to the new tab
             driver.switch_to.window(driver.window_handles[-1])
 
-            # Wait for the "btn-link" button to be clickable and click it
+            # Wait for the "modo-operacao" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "modo-operacao"))).click()
             
             try:
@@ -57,23 +58,27 @@ try:
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
             
-            # Wait for 5 seconds to handle the popup
-            time.sleep(5)
+            # Wait up to 8 seconds for the page to load after handling the pop-up, but proceed as soon as the element is found
+            WebDriverWait(driver, 8).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))  # Replace "desired_element_id_after_login" with the actual element ID you expect to be loaded after login
             
-            # Wait for the element by name "Consulta Processos de Terceiros" to be present and click it
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Consulta Processos de Terceiros"))).click()
-            
-            # Wait for the "nrProcessoField" input field to be present and focus on it
-            nr_processo_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "nrProcessoField")))
-            driver.execute_script("arguments[0].focus();", nr_processo_field)
-            
-            # Paste the clipboard content into the focused input field
-            driver.execute_script("arguments[0].value = arguments[1];", nr_processo_field, paste)
-            
-            # Click the "btnPesquisar" button
-            driver.find_element(By.ID, "btnPesquisar").click()
-            
-            time.sleep(5)  # Wait for a few seconds before checking the clipboard again
+            # Construct the final URL with the specific data pattern appended
+            final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
+
+            # Store the handle of the current tab before opening the new tab
+            current_tab_handle = driver.current_window_handle
+
+            # Open a new tab and navigate to the final URL
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+            # Switch to the new tab
+            driver.switch_to.window(driver.window_handles[-1])
+
+            # Close the previous tab
+            driver.switch_to.window(current_tab_handle)
+            driver.close()
+
+            # Switch back to the new tab
+            driver.switch_to.window(driver.window_handles[-1])
 
         time.sleep(1)  # Wait before checking the clipboard again
 
