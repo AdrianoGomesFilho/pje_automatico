@@ -18,7 +18,7 @@ last_clipboard_content = ""
 try:
     while True:
         # Monitor clipboard for specific data pattern
-        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.\5\.\d{2}\.\d{4}')
+        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
         paste = pyperclip.paste()
 
         # Check if the clipboard content is new and matches the pattern
@@ -75,8 +75,8 @@ try:
                 username_field = driver.find_element(By.NAME, "username")
                 password_field = driver.find_element(By.NAME, "password")
                 
-                username_field.send_keys("adriano.assis@sgaadv.com.br")
-                password_field.send_keys("Estreia@2023")
+                username_field.send_keys("xxx")
+                password_field.send_keys("xxxx")
                 
                 # Submit the login form
                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
