@@ -18,7 +18,7 @@ last_clipboard_content = ""
 try:
     while True:
         # Monitor clipboard for specific data pattern
-        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.\d{1,2}\.\d{2}\.\d{4}')
+        pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
         paste = pyperclip.paste()
 
 
