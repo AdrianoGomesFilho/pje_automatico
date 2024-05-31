@@ -5,9 +5,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
 
 # Initialize WebDriver with Chrome options
 driver = webdriver.Chrome(options=chrome_options)
@@ -34,70 +36,55 @@ try:
             # Remove leading zero if present
             trt_number = trt_number.lstrip('0')
             
-            # Construct the TRT URL dynamically
-            trt_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual"
+            # Construct the base URL dynamically
+            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
             
-            # Construct the Astrea URL dynamically
-            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
-            
-            # Open both TRT and Astrea tabs
-            driver.execute_script(f"window.open('{trt_url}', '_blank');")
-            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-            
-            # Switch to the TRT tab and perform actions
-            driver.switch_to.window(driver.window_handles[-2])
-            
-            # Wait for the input field to be present
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "nrProcessoField")))
+            # Open a new tab and navigate to the base URL
+            driver.execute_script(f"window.open('{base_url}', '_blank');")
 
-            # Enter the detected data into the input field
-            input_field = driver.find_element(By.CLASS_NAME, "mat-input-element")
-            input_field.send_keys(paste)
-
-            # Wait for the search button to be clickable and then click it
-            search_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "btnPesquisar"))
-            )
-            search_button.click()
-
-            # Wait for the page to load after clicking the search button
-            time.sleep(10)
-            
-            # Switch to the Astrea tab and perform actions
+            # Switch to the new tab
             driver.switch_to.window(driver.window_handles[-1])
+
+            # Wait for the "modo-operacao" element to be present
+            modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
             
-            # Check if the login page is displayed by looking for the login element
-            try:
-                login_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "css-awdf6x-InputWrap"))
-                )
-                # Fill in the login credentials
-                username_field = driver.find_element(By.NAME, "username")
-                password_field = driver.find_element(By.NAME, "password")
+            # Check the text of the "modo-operacao" element
+            if "Modo de assinatura: Shodō" in modo_operacao_element.text:
+                modo_operacao_element.click()
                 
-                username_field.send_keys("xxx")
-                password_field.send_keys("xxxx")
-                
-                # Submit the login form
-                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                login_button.click()
-                
-                print("Logged in successfully.")
-            except Exception as e:
-                print("Login page not detected or error during login:", e)
-                
-            # Wait for the target button to be clickable and then click it
-            try:
-                button_element = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.CLASS_NAME, "css-dkul14-ButtonComponent"))
-                )
-                button_element.click()
-                print("Button clicked successfully.")
-            except Exception as e:
-                print("Button not found or error during clicking:", e)
+                try:
+                    # Wait for the "j_id112:btnUtilizarPjeOffice" button to be clickable and click it
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id111:btnUtilizarPjeOffice"))).click()
+                except TimeoutException:
+                    # If the first ID is not present, select the alternative ID
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id112:btnUtilizarPjeOffice"))).click()
 
-            time.sleep(10)  # Wait for a few seconds before checking the clipboard again
-        time.sleep(1)  # Wait for a few seconds before checking the clipboard again
+            # Wait for the "loginAplicacaoButton" button to be clickable and click it
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+            
+            # Wait up to 8 seconds for the page to load after handling the pop-up, but proceed as soon as the element is found
+            WebDriverWait(driver, 8).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))  # Replace "desired_element_id_after_login" with the actual element ID you expect to be loaded after login
+            
+            # Construct the final URL with the specific data pattern appended
+            final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
-finally:
-    driver.quit()  # Ensure the WebDriver is properly closed
+            # Store the handle of the current tab before opening the new tab
+            current_tab_handle = driver.current_window_handle
+
+            # Open a new tab and navigate to the final URL
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+            # Switch to the new tab
+            driver.switch_to.window(driver.window_handles[-1])
+
+            # Close the previous tab
+            driver.switch_to.window(current_tab_handle)
+            driver.close()
+
+            # Switch back to the new tab
+            driver.switch_to.window(driver.window_handles[-1])
+
+        time.sleep(1)  # Wait before checking the clipboard again
+
+except Exception as e:
+    print(f"An error occurred: {e}")
