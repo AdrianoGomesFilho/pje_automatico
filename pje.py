@@ -91,8 +91,8 @@ try:
                 username_field = driver.find_element(By.NAME, "username")
                 password_field = driver.find_element(By.NAME, "password")
                 
-                username_field.send_keys("adriano.assis@sgaadv.com.br")
-                password_field.send_keys("Astronomico@2024")
+                username_field.send_keys("xxxxxxx")
+                password_field.send_keys("xxxxxxx")
                 
                 # Submit the login form
                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
