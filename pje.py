@@ -68,21 +68,46 @@ try:
             # Construct the final URL with the specific data pattern appended
             final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
-            # Store the handle of the current tab before opening the new tab
-            current_tab_handle = driver.current_window_handle
+            # Construct the Astrea URL dynamically
+            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
 
-            # Open a new tab and navigate to the final URL
+            # Store the handle of the TRT URL tab
+            trt_tab_handle = driver.current_window_handle
+
+            # Open the Astrea URL and final URL in new tabs
+            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
             driver.execute_script(f"window.open('{final_url}', '_blank');")
 
-            # Switch to the new tab
-            driver.switch_to.window(driver.window_handles[-1])
+            # Switch to the Astrea URL tab
+            astrea_tab_handle = driver.window_handles[-2]
+            driver.switch_to.window(astrea_tab_handle)
+            
+            # Login to Astrea
+            try:
+                login_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "css-awdf6x-InputWrap"))
+                )
+                # Credentials
+                username_field = driver.find_element(By.NAME, "username")
+                password_field = driver.find_element(By.NAME, "password")
+                
+                username_field.send_keys("adriano.assis@sgaadv.com.br")
+                password_field.send_keys("Astronomico@2024")
+                
+                # Submit the login form
+                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                login_button.click()
+                
+                print("Logged in successfully.")
+            except Exception as e:
+                print("Login page not detected or error during login:", e)
 
-            # Close the previous tab
-            driver.switch_to.window(current_tab_handle)
+            # Switch to the final URL tab
+            driver.switch_to.window(driver.window_handles[-1])
+            
+            # Switch back to the TRT URL tab and close it
+            driver.switch_to.window(trt_tab_handle)
             driver.close()
-
-            # Switch back to the new tab
-            driver.switch_to.window(driver.window_handles[-1])
 
         time.sleep(1)  # Wait before checking the clipboard again
 
