@@ -80,6 +80,12 @@ try:
             # Construct the final URL with the specific data pattern appended
             final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
+            # Open the final URL in a new tab
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+
+            #########################ASTREA######################################
+            
             # Construct the Astrea URL dynamically
             astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
 
@@ -113,11 +119,6 @@ try:
             except Exception as e:
                 print("Login page not detected or error during login:", e)
 
-            # Open the final URL in a new tab
-            driver.execute_script(f"window.open('{final_url}', '_blank');")
-
-            # Switch back to the Astrea URL tab
-            driver.switch_to.window(astrea_tab_handle)
 
         time.sleep(1)  # Wait before checking the clipboard again
 
