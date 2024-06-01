@@ -6,6 +6,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from dotenv import load_dotenv
+import os
+
+# Specify the path to your external .env file
+dotenv_path = '/path/to/your/external/.env'
+load_dotenv(dotenv_path)
+
+
+# Get credentials from environment variables
+ASTREA_USERNAME = os.getenv('ASTREA_USERNAME')
+ASTREA_PASSWORD = os.getenv('ASTREA_PASSWORD')
+
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
