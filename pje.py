@@ -6,16 +6,20 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+
 
 # Specify the path to your external .env file
 load_dotenv()
+print("Loaded .env file")
 
 
 # Get credentials from environment variables
-username = os.getenv("USERNAME")
-password = os.getenv("PASSWORD")
+usuarioastrea = os.getenv("USERNAMEASTREA")
+senhaastrea = os.getenv("PASSWORDASTREA")
+print(f"Username: {usuarioastrea}")
+print(f"Password: {senhaastrea}")
 
 
 # Specify the path to your Chrome user data directory
@@ -102,8 +106,8 @@ try:
                 username_field = driver.find_element(By.NAME, "username")
                 password_field = driver.find_element(By.NAME, "password")
                 
-                username_field.send_keys("xxxxxxx")
-                password_field.send_keys("xxxxxxx")
+                username_field.send_keys(usuarioastrea)
+                password_field.send_keys(senhaastrea)
                 
                 # Submit the login form
                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
