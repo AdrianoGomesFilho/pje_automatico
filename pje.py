@@ -83,6 +83,12 @@ try:
             # Open the final URL in a new tab
             driver.execute_script(f"window.open('{final_url}', '_blank');")
 
+             # Close the base_url tab
+            driver.close()
+
+            # Switch back to the original tab
+            driver.switch_to.window(driver.window_handles[0])
+
 
             #########################ASTREA######################################
             
