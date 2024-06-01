@@ -10,13 +10,12 @@ from dotenv import load_dotenv
 import os
 
 # Specify the path to your external .env file
-dotenv_path = '/path/to/your/external/.env'
-load_dotenv(dotenv_path)
+load_dotenv()
 
 
 # Get credentials from environment variables
-ASTREA_USERNAME = os.getenv('ASTREA_USERNAME')
-ASTREA_PASSWORD = os.getenv('ASTREA_PASSWORD')
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
 
 
 # Specify the path to your Chrome user data directory
