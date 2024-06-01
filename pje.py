@@ -9,18 +9,15 @@ from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
 
-
 # Specify the path to your external .env file
 load_dotenv()
 print("Loaded .env file")
-
 
 # Get credentials from environment variables
 usuario = os.getenv("USERNAMEASTREA")
 senha = os.getenv("PASSWORDASTREA")
 print(f"Username: {usuario}")
 print(f"Password: {senha}")
-
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
@@ -119,9 +116,8 @@ try:
             # Open the final URL in a new tab
             driver.execute_script(f"window.open('{final_url}', '_blank');")
 
-            # Close the Astrea URL tab
+            # Switch back to the Astrea URL tab
             driver.switch_to.window(astrea_tab_handle)
-            driver.close()
 
         time.sleep(1)  # Wait before checking the clipboard again
 
