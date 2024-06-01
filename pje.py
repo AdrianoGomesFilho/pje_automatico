@@ -86,22 +86,21 @@ try:
             # Construct the Astrea URL dynamically
             astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
 
-            # Store the handle of the TRT URL tab
-            trt_tab_handle = driver.current_window_handle
+            # Store the handle of the Astrea URL tab
+            astrea_tab_handle = driver.current_window_handle
 
-            # Open the Astrea URL and final URL in new tabs
+            # Open the Astrea URL in a new tab
             driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-            driver.execute_script(f"window.open('{final_url}', '_blank');")
 
             # Switch to the Astrea URL tab
-            astrea_tab_handle = driver.window_handles[-2]
-            driver.switch_to.window(astrea_tab_handle)
-            
+            driver.switch_to.window(driver.window_handles[-1])
+
             # Login to Astrea
             try:
                 login_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "css-awdf6x-InputWrap"))
+                    EC.presence_of_element_located((By.NAME, "username"))
                 )
+                
                 # Credentials
                 username_field = driver.find_element(By.NAME, "username")
                 password_field = driver.find_element(By.NAME, "password")
@@ -113,15 +112,15 @@ try:
                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
                 login_button.click()
                 
-                print("Logged in successfully.")
+                print("Logged in to Astrea successfully.")
             except Exception as e:
                 print("Login page not detected or error during login:", e)
 
-            # Switch to the final URL tab
-            driver.switch_to.window(driver.window_handles[-1])
-            
-            # Switch back to the TRT URL tab and close it
-            driver.switch_to.window(trt_tab_handle)
+            # Open the final URL in a new tab
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+            # Close the Astrea URL tab
+            driver.switch_to.window(astrea_tab_handle)
             driver.close()
 
         time.sleep(1)  # Wait before checking the clipboard again
