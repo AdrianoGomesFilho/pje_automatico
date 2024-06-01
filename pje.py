@@ -16,10 +16,10 @@ print("Loaded .env file")
 
 
 # Get credentials from environment variables
-usuarioastrea = os.getenv("USERNAMEASTREA")
-senhaastrea = os.getenv("PASSWORDASTREA")
-print(f"Username: {usuarioastrea}")
-print(f"Password: {senhaastrea}")
+usuario = os.getenv("USERNAMEASTREA")
+senha = os.getenv("PASSWORDASTREA")
+print(f"Username: {usuario}")
+print(f"Password: {senha}")
 
 
 # Specify the path to your Chrome user data directory
@@ -106,8 +106,8 @@ try:
                 username_field = driver.find_element(By.NAME, "username")
                 password_field = driver.find_element(By.NAME, "password")
                 
-                username_field.send_keys(usuarioastrea)
-                password_field.send_keys(senhaastrea)
+                username_field.send_keys(usuario)
+                password_field.send_keys(senha)
                 
                 # Submit the login form
                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
