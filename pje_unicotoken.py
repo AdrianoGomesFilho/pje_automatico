@@ -37,7 +37,7 @@ try:
 
         # Check if the clipboard content is new and matches the pattern
         if paste != last_clipboard_content and pattern.match(paste):
-            print(f"Detected data: {paste}")
+            print(f"Processo identificado: {paste}")
             
             # Update the last clipboard content
             last_clipboard_content = paste
@@ -76,21 +76,50 @@ try:
 
             ###### PJE TOKEN UNICO ##############################################
 
-           # Wait for the "mat-form-field" element to be present
-            mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "mat-form-field")))
+            # Lidando com o quadro de avisos
+            quadro_de_avisos = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "aviso-nao-lido")))
 
-            # Fill the "mat-form-field" with the paste data
-            mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
+            if quadro_de_avisos:
+                # If "Quadro de avisos" is present, click the "Meu Painel" button
+                meu_painel_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Meu Painel")))
+                meu_painel_button.click()
 
-            # Wait for the button with mattooltip="Detalhes do Processo" to be clickable and click it
-            detalhes_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
-            detalhes_button.click()
+                # Wait for the "mat-form-field" element to be present
+                mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
+                
+                # Fill the "mat-form-field" with the paste data
+                mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
 
-            # Close the base_url tab
-            driver.close()
+                try:
+                    detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+                    detalhes_button.click()
+                except TimeoutException:
+                    print("O processo não tem o token habilitado")
 
-            # Switch back to the original tab
-            driver.switch_to.window(driver.window_handles[0])
+                # Close the base_url tab
+                driver.close()
+
+                # Switch back to the original tab
+                driver.switch_to.window(driver.window_handles[0])
+            else:
+                # Wait for the "mat-form-field" element to be present
+                mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
+
+                # Fill the "mat-form-field" with the paste data
+                mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
+
+                # Wait for the button with mattooltip="Detalhes do Processo" to be clickable and click it
+                try:
+                    detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+                    detalhes_button.click()
+                except TimeoutException:
+                    print("O processo não tem o token habilitado")
+
+                # Close the base_url tab
+                driver.close()
+
+                # Switch back to the original tab
+                driver.switch_to.window(driver.window_handles[0])
 
             #########################ASTREA######################################
             

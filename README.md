@@ -1,6 +1,8 @@
 # OBJETIVO DO PROJETO
 Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais.
 
+# SE VOCÊ USA UM ÚNICO TOKEN
+
 # O QUE O ELE FAZ?
 
 Exemplo: recebo intimação do processo 0000776-xx.2019.5.6.0009, desejo ver o conteúdo no PJE. Ao copiar o número do processo script abre (automaticamente) uma aba específica do tribunal (neste caso, o TRT 6) no Chrome (ou outro navegador). Ele procede com o login via certificado e abre a consulta de terceiros em nova aba. O unico passo manual é completar o Captcha (tal procedimento poderá ser futuramente implementado).  Ao mesmo tempo o script abre o Astrea (sistema da Aurum, semelhante a outros sistemas como o ADVBOX) já pesquisando o número no campo de pesquisa, possibilitando o usuário saber a última providência adotada naquele processo, via sistema interno. 
@@ -30,6 +32,11 @@ Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedr
 # PRÓXIMOS PASSOS
 - Possibilitar a cópia com um único clique - (ex: quando clicar no numero, já copiar, iniciando o script)
 - Criar grupos de abas (cada número do processo vai criar uma aba de PJE e uma do Astrea) organizar melhor!
+- Reconhecer alguma aba do trt aberta
+- Resolver captcha automaticamente
+- Atualizar repositorio e implementar mudanças remotamente
+
 
 # SOBRE O DEV
-Sou advogado, e quando me deparo com um problema que pode ser resolvido (ou amenizado) tento realizar um projeto. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
+Para cada problema tento achar uma solução. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
+Atualmente atuo como advogado na @sgaadv e implemento meus projetos lá

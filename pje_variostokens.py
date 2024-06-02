@@ -37,7 +37,7 @@ try:
 
         # Check if the clipboard content is new and matches the pattern
         if paste != last_clipboard_content and pattern.match(paste):
-            print(f"Detected data: {paste}")
+            print(f"Processo identificado: {paste}")
             
             # Update the last clipboard content
             last_clipboard_content = paste
