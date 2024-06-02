@@ -89,37 +89,26 @@ try:
                 
                 # Fill the "mat-form-field" with the paste data
                 mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
-
-                try:
-                    detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+                detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+                
+                if detalhes_button:
                     detalhes_button.click()
-                except TimeoutException:
-                    print("O processo não tem o token habilitado")
+                    driver.close()
 
-                # Close the base_url tab
-                driver.close()
+                    # Switch back to the original tab
+                    driver.switch_to.window(driver.window_handles[0])
+                else:
+                    # Construct the final URL with the specific data pattern appended
+                    final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
-                # Switch back to the original tab
-                driver.switch_to.window(driver.window_handles[0])
-            else:
-                # Wait for the "mat-form-field" element to be present
-                mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
+                    # Open the final URL in a new tab
+                    driver.execute_script(f"window.open('{final_url}', '_blank');")
 
-                # Fill the "mat-form-field" with the paste data
-                mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
+                    # Close the base_url tab
+                    driver.close()
 
-                # Wait for the button with mattooltip="Detalhes do Processo" to be clickable and click it
-                try:
-                    detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
-                    detalhes_button.click()
-                except TimeoutException:
-                    print("O processo não tem o token habilitado")
-
-                # Close the base_url tab
-                driver.close()
-
-                # Switch back to the original tab
-                driver.switch_to.window(driver.window_handles[0])
+                    # Switch back to the original tab
+                    driver.switch_to.window(driver.window_handles[0])
 
             #########################ASTREA######################################
             
