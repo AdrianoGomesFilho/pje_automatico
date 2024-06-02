@@ -1,5 +1,6 @@
 import time
 import re
+from threading import Thread
 import pyperclip
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -75,7 +76,6 @@ try:
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
 
             ###### PJE TOKEN UNICO ##############################################
-
            
             meu_painel_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Meu Painel")))
             meu_painel_button.click()
@@ -86,10 +86,12 @@ try:
             input_numero_processo.send_keys(paste)
 
             try:
-                detalhes_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+                detalhes_button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
 
                 if detalhes_button:
                     detalhes_button.click()
+                    new_title = paste.replace("'", "\\'")
+                    driver.execute_script(f"document.title = '{new_title}';")
                     driver.close()
                     driver.switch_to.window(driver.window_handles[0])
             except TimeoutException:
@@ -105,7 +107,6 @@ try:
 
                 # Switch back to the original tab
                 driver.switch_to.window(driver.window_handles[0])
-
                
             #########################ASTREA######################################
             
@@ -147,3 +148,4 @@ try:
 
 except Exception as e:
     print(f"An error occurred: {e}")
+
