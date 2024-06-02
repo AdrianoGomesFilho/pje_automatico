@@ -81,7 +81,7 @@ try:
             input_element.send_keys(paste)
 
             # Wait for the "mat-tooltip-trigger" element to be present
-            tooltip_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mat-tooltip-trigger")))
+            tooltip_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
             
             # Click the "mat-tooltip-trigger" element
             tooltip_element.click()
