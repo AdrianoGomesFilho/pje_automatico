@@ -74,7 +74,7 @@ try:
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
 
-            ###### PJE TOKEN UNICO ######
+            ###### PJE TOKEN UNICO ##############################################
 
            # Wait for the "mat-form-field" element to be present
             mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "mat-form-field")))
@@ -86,6 +86,11 @@ try:
             detalhes_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
             detalhes_button.click()
 
+            # Close the base_url tab
+            driver.close()
+
+            # Switch back to the original tab
+            driver.switch_to.window(driver.window_handles[0])
 
             #########################ASTREA######################################
             
