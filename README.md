@@ -5,7 +5,7 @@ Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo a
 
 Exemplo: recebo intimação do processo 0000776-xx.2019.5.6.0009, desejo ver o conteúdo no PJE. Ao copiar o número do processo script abre (automaticamente) uma aba específica do tribunal (neste caso, o TRT 6) no Chrome (ou outro navegador). Ele procede com o login via certificado e abre a consulta de terceiros em nova aba. O unico passo manual é completar o Captcha (tal procedimento poderá ser futuramente implementado).  Ao mesmo tempo o script abre o Astrea (sistema da Aurum, semelhante a outros sistemas como o ADVBOX) já pesquisando o número no campo de pesquisa, possibilitando o usuário saber a última providência adotada naquele processo, via sistema interno. 
 
-Atualmente o script é voltado para uso interno do escritório @sgaadv (Instagram) para a equipe trabalhista. Todas as automações realizadas podem ser modificadas de acordo com a necessidade de cada usuário.
+Atualmente o script é voltado para uso interno do escritório @sgaadv (Instagram) para a equipe trabalhista que utilizar diversos tokens e diversos tribunais de vários estados. Todas as automações realizadas podem ser modificadas de acordo com a necessidade de cada usuário.
 
 **Porque a consulta de terceiros?** - No escritório em que foi implementado (@sgaadv) utilizamos diversos tokens (4), cada processo posssui somente um advogado habilitado e suas especifidades. Tal situação obrigaria a equipe a trocar a todo momento o token. Para driblar isso a consulta de terceiros entra em ação.
 
