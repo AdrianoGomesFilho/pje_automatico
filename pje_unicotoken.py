@@ -85,13 +85,15 @@ try:
             input_numero_processo.clear()  # Clear any pre-existing text
             input_numero_processo.send_keys(paste)
 
-            detalhes_button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
-                
-            if detalhes_button:
-                detalhes_button.click()
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-            else:
+            try:
+                detalhes_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
+
+                if detalhes_button:
+                    detalhes_button.click()
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+            except TimeoutException:
+                # Element not found within the wait time, so execute the else block
                 # Construct the final URL with the specific data pattern appended
                 final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
