@@ -74,6 +74,18 @@ try:
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
 
+             # Wait for the "inputNumeroProcesso" element to be present
+            input_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "inputNumeroProcesso")))
+            
+            # Fill the "inputNumeroProcesso" element with the clipboard data
+            input_element.send_keys(paste)
+
+            # Wait for the "mat-tooltip-trigger" element to be present
+            tooltip_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mat-tooltip-trigger")))
+            
+            # Click the "mat-tooltip-trigger" element
+            tooltip_element.click()
+
             #########################ASTREA######################################
             
             # Construct the Astrea URL dynamically
