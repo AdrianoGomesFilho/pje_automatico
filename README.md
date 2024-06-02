@@ -1,5 +1,5 @@
 # OBJETIVO DO PROJETO
-Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais e diminuindo drasticamente o tempo usado.
+Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais.
 
 # O QUE ELE FAZ?
 O usuário, ao copiar o trecho do número do processo (do e-mail, do site do sistema que usa no escritório, ou seja, de qualquer lugar do computador) o script reconhece o padrão de qual tribunal é o processo. Atualmente o script é voltado para uso interno do escritório @sgaadv (Instagram) para a equipe trabalhista.
