@@ -11,23 +11,25 @@ Atualmente o script é voltado para uso interno do escritório @sgaadv (Instagra
 
 **Se é consulta de terceiros, para que certificado?** - A consulta de terceiros (assinada) possibilita ver todo o conteúdo, diferente da consulta pública (sem certificado). Neste caso o advogado vai ter acesso a todo o conteúdo.
 
+**Não desejo usar a consulta de terceiros, como posso usar o projeto?** - Com algumas configurações é possível dispensar a consulta por terceiros. Alguns advogados preferem a consulta padrão. Pretendo criar uma versão específica para tais casos.
+
 # LINGUAGEM USADA
 Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedriver
 
 # COMO PODEREI USÁ-LO?
-PYTHON - instalação
-PIP
-    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    py get-pip.py
-    Inclusão no path o script (variáveis do ambiente, do Windows):
-    C:\Users\SEU_USER\AppData\Local\Programas\Python\Python312\Scripts
-Selenium - pip install selenium (cmd do windows)
-Pyperclip - pip install pyperclip (cmd do windows)
-Dotenv - pip install python-dotenv (cmd do windows)
-
-# SOBRE O DEV
-Sou advogado, e quando me deparo com um problema que pode ser resolvido (ou amenizado) tento realizar um projeto. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
+🟢PYTHON - instalação
+🟢PIP
+    ▪️curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    ▪️py get-pip.py
+    ▪️Inclusão no path o script (variáveis do ambiente, do Windows):
+    ▪️C:\Users\SEU_USER\AppData\Local\Programas\Python\Python312\Scripts
+🟢Selenium - pip install selenium (cmd do windows)
+🟢Pyperclip - pip install pyperclip (cmd do windows)
+🟢Dotenv - pip install python-dotenv (cmd do windows)
 
 # PRÓXIMOS PASSOS
 - Possibilitar a cópia com um único clique - (ex: quando clicar no numero, já copiar, iniciando o script)
 - Criar grupos de abas (cada número do processo vai criar uma aba de PJE e uma do Astrea) organizar melhor!
+
+# SOBRE O DEV
+Sou advogado, e quando me deparo com um problema que pode ser resolvido (ou amenizado) tento realizar um projeto. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
