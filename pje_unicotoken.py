@@ -73,18 +73,21 @@ try:
 
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
-
-             # Wait for the "inputNumeroProcesso" element to be present
-            input_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "inputNumeroProcesso")))
             
-            # Fill the "inputNumeroProcesso" element with the clipboard data
-            input_element.send_keys(paste)
-
-            # Wait for the "mat-tooltip-trigger" element to be present
-            tooltip_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
+            # Wait up to 8 seconds for the page to load after handling the pop-up, but proceed as soon as the element is found
+            WebDriverWait(driver, 8).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))  # Replace "desired_element_id_after_login" with the actual element ID you expect to be loaded after login
             
-            # Click the "mat-tooltip-trigger" element
-            tooltip_element.click()
+            # Construct the final URL with the specific data pattern appended
+            final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
+
+            # Open the final URL in a new tab
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+             # Close the base_url tab
+            driver.close()
+
+            # Switch back to the original tab
+            driver.switch_to.window(driver.window_handles[0])
 
             #########################ASTREA######################################
             
