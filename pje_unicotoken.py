@@ -76,40 +76,35 @@ try:
 
             ###### PJE TOKEN UNICO ##############################################
 
-            # Lidando com o quadro de avisos
-            quadro_de_avisos = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "aviso-nao-lido")))
+           
+            meu_painel_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Meu Painel")))
+            meu_painel_button.click()
 
-            if quadro_de_avisos:
-                # If "Quadro de avisos" is present, click the "Meu Painel" button
-                meu_painel_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, "Meu Painel")))
-                meu_painel_button.click()
+            input_numero_processo = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "inputNumeroProcesso")))
 
-                # Wait for the "mat-form-field" element to be present
-                mat_form_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "filtro-processo")))
+            input_numero_processo.clear()  # Clear any pre-existing text
+            input_numero_processo.send_keys(paste)
+
+            detalhes_button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
                 
-                # Fill the "mat-form-field" with the paste data
-                mat_form_field.find_element(By.TAG_NAME, 'input').send_keys(paste)
-                detalhes_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[mattooltip='Detalhes do Processo']")))
-                
-                if detalhes_button:
-                    detalhes_button.click()
-                    driver.close()
+            if detalhes_button:
+                detalhes_button.click()
+                driver.close()
+                driver.switch_to.window(driver.window_handles[0])
+            else:
+                # Construct the final URL with the specific data pattern appended
+                final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
-                    # Switch back to the original tab
-                    driver.switch_to.window(driver.window_handles[0])
-                else:
-                    # Construct the final URL with the specific data pattern appended
-                    final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
+                # Open the final URL in a new tab
+                driver.execute_script(f"window.open('{final_url}', '_blank');")
 
-                    # Open the final URL in a new tab
-                    driver.execute_script(f"window.open('{final_url}', '_blank');")
+                # Close the base_url tab
+                driver.close()
 
-                    # Close the base_url tab
-                    driver.close()
+                # Switch back to the original tab
+                driver.switch_to.window(driver.window_handles[0])
 
-                    # Switch back to the original tab
-                    driver.switch_to.window(driver.window_handles[0])
-
+               
             #########################ASTREA######################################
             
             # Construct the Astrea URL dynamically
