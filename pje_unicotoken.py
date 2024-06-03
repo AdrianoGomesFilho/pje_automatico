@@ -11,14 +11,14 @@ import os
 from dotenv import load_dotenv
 
 # Specify the path to your external .env file
-load_dotenv()
+load_dotenv('credenciais.env')
 print("Loaded .env file")
 
 # Get credentials from environment variables
 usuario = os.getenv("USERNAMEASTREA")
 senha = os.getenv("PASSWORDASTREA")
 print(f"Username: {usuario}")
-print(f"Password: {senha}")
+print(f"Password: xxxxxxxxxxxx")
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
