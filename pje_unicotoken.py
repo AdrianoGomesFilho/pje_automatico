@@ -66,11 +66,17 @@ try:
                 modo_operacao_element.click()
                 
                 try:
-                    # Wait for the "j_id112:btnUtilizarPjeOffice" button to be clickable and click it
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id111:btnUtilizarPjeOffice"))).click()
-                except TimeoutException:
-                    # If the first ID is not present, select the alternative ID
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "j_id112:btnUtilizarPjeOffice"))).click()
+                    # Find all elements that match the partial ID
+                    buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
+
+                    if not buttons:
+                        raise TimeoutException("No elements with ID containing 'UtilizarPjeOffice' found.")
+
+                    # Click the first found button
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, buttons[0].get_attribute('id')))).click()
+
+                except TimeoutException as e:
+                    print(f"TimeoutException: {e}")
 
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
