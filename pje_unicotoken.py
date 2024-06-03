@@ -61,10 +61,9 @@ try:
             # Wait for the "modo-operacao" element to be present
             modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
             
-            # Check the text of the "modo-operacao" element
             if "Modo de assinatura: Shodō" in modo_operacao_element.text:
                 modo_operacao_element.click()
-                
+
                 try:
                     # Find all elements that match the partial ID
                     buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
@@ -72,8 +71,13 @@ try:
                     if not buttons:
                         raise TimeoutException("No elements with ID containing 'UtilizarPjeOffice' found.")
 
-                    # Click the first found button
-                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, buttons[0].get_attribute('id')))).click()
+                    # Scroll to the element and make sure it's in view
+                    button_id = buttons[0].get_attribute('id')
+                    button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
+                    driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
+
+                    # Wait for the element to be clickable
+                    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
 
                 except TimeoutException as e:
                     print(f"TimeoutException: {e}")
