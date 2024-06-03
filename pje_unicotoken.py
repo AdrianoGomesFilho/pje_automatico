@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
 
-# Specify the path to your external .env file
+# Specify the path to your external .env file like this load_dotenv('credenciais.env')
 load_dotenv('credenciais.env')
 print("Loaded .env file")
 
