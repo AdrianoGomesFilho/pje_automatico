@@ -69,6 +69,7 @@ try:
 
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
             
             final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
