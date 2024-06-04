@@ -22,10 +22,9 @@ Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedr
 🟢Dotenv - pip install python-dotenv (cmd do windows)
 
 # PRÓXIMOS PASSOS
-- Possibilitar a cópia com um único clique - (ex: quando clicar no numero, já copiar, iniciando o script)
-- Alterar o título da aba
+- Permitir que feche abas sem parar o script
 - Resolver captcha automaticamente
-- Atualizar repositorio e implementar mudanças remotamente nos computadores usuários
+- Atualizar repositorio e implementar mudanças remotamente nos computadores dos usuários
 
 # SOBRE O DEV
 Para cada problema tento achar uma solução. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
