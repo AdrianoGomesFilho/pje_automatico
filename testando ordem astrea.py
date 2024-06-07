@@ -49,6 +49,33 @@ try:
             # Remove leading zero if present
             trt_number = trt_number.lstrip('0')
             
+            #Construct the Astrea URL dynamically
+            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+
+            # Open the Astrea URL in a new tab
+            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
+            
+            # Login to Astrea
+            try:
+                login_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.NAME, "username"))
+                )
+                
+                # Credentials
+                username_field = driver.find_element(By.NAME, "username")
+                password_field = driver.find_element(By.NAME, "password")
+                
+                username_field.send_keys(usuario)
+                password_field.send_keys(senha)
+                
+                # Submit the login form
+                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                login_button.click()
+                
+                print("Logged in to Astrea successfully.")
+            except Exception as e:
+                print("Login page not detected or error during login:", e)
+            
             # Construct the base URL dynamically
             base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
             
@@ -85,41 +112,6 @@ try:
             # Switch back to the original tab
             driver.switch_to.window(driver.window_handles[0])
             
-            #########################ASTREA######################################
-            
-            # Construct the Astrea URL dynamically
-            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
-
-            # Store the handle of the Astrea URL tab
-            astrea_tab_handle = driver.current_window_handle
-
-            # Open the Astrea URL in a new tab
-            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-
-            # Switch to the Astrea URL tab
-            driver.switch_to.window(driver.window_handles[-1])
-
-            # Login to Astrea
-            try:
-                login_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.NAME, "username"))
-                )
-                
-                # Credentials
-                username_field = driver.find_element(By.NAME, "username")
-                password_field = driver.find_element(By.NAME, "password")
-                
-                username_field.send_keys(usuario)
-                password_field.send_keys(senha)
-                
-                # Submit the login form
-                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                login_button.click()
-                
-                print("Logged in to Astrea successfully.")
-            except Exception as e:
-                print("Login page not detected or error during login:", e)
-
 
         time.sleep(1)  # Wait before checking the clipboard again
 
