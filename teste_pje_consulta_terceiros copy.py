@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
 
-# Specify the path to your external .env file like this load_dotenv('credenciais.env')
+# Load credentials from .env file
 load_dotenv('credenciais.env')
 print("Loaded .env file")
 
@@ -30,6 +30,16 @@ driver = webdriver.Chrome(options=chrome_options)
 # Store the last clipboard content
 last_clipboard_content = ""
 
+def find_or_open_tab(driver, base_url):
+    for handle in driver.window_handles:
+        driver.switch_to.window(handle)
+        if base_url in driver.current_url:
+            return handle
+    # If the tab is not found, open a new one
+    driver.execute_script(f"window.open('{base_url}', '_blank');")
+    new_handle = driver.window_handles[-1]
+    return new_handle
+
 try:
     while True:
         # Monitor clipboard for specific data pattern
@@ -39,25 +49,55 @@ try:
         # Check if the clipboard content is new and matches the pattern
         if paste != last_clipboard_content and pattern.match(paste):
             print(f"Processo identificado: {paste}")
-            
+
             # Update the last clipboard content
             last_clipboard_content = paste
+
+            # Extract the TRT number (15th and 16th characters)
+            trt_number = paste[18:20]
+
+            # Remove leading zero if present
+            trt_number = trt_number.lstrip('0')
+
+            # Construct the base URL dynamically
+            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+            
+            # Find or open the tab for base_url
+            base_url_handle = find_or_open_tab(driver, base_url)
+            driver.switch_to.window(base_url_handle)
+
+            # Wait for the "modo-operacao" element to be present
+            modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
+            modo_operacao_element.click()
+            buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
+            button_id = buttons[0].get_attribute('id')
+            button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
+            driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
+            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
+
+            # Wait for the "loginAplicacaoButton" button to be clickable and click it
+            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+            
+            # Wait for login to complete before proceeding
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
+            print(f"Login realizado (token)")
+
+            final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
+            
+            # Find or open the tab for final_url
+            final_url_handle = find_or_open_tab(driver, final_url)
+            driver.switch_to.window(final_url_handle)
             
             #########################ASTREA######################################
             
             # Construct the Astrea URL dynamically
             astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
 
-            # Store the handle of the Astrea URL tab
-            astrea_tab_handle = driver.current_window_handle
+            # Find or open the tab for astrea_url
+            astrea_handle = find_or_open_tab(driver, astrea_url)
+            driver.switch_to.window(astrea_handle)
 
-            # Open the Astrea URL in a new tab
-            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-
-            # Switch to the Astrea URL tab
-            driver.switch_to.window(driver.window_handles[-1])
-
-            # Login to Astrea
+            # Login to Astrea if necessary
             try:
                 login_element = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.NAME, "username"))
@@ -77,54 +117,9 @@ try:
                 print("Logged in to Astrea successfully.")
             except Exception as e:
                 print("Login page not detected or error during login:", e)
-            
-            # Extract the TRT number (15th and 16th characters)
-            trt_number = paste[18:20]
-            
-            # Remove leading zero if present
-            trt_number = trt_number.lstrip('0')
-            
-            # Construct the base URL dynamically
-            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
-            
-            # Open a new tab and navigate to the base URL
-            driver.execute_script(f"window.open('{base_url}', '_blank');")
-
-            # Switch to the new tab
-            driver.switch_to.window(driver.window_handles[-1])
-
-            # Wait for the "modo-operacao" element to be present
-            modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
-            modo_operacao_element.click()
-            buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
-            button_id = buttons[0].get_attribute('id')
-            button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
-            driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
-
-            # Wait for the "loginAplicacaoButton" button to be clickable and click it
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
-            
-            #Espera a assinatura realmente ser realizada, antes de abrir consulta de terceiros
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
-            print(f"Login realizado (token)")
-            
-            final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
-
-            # Open the final URL in a new tab
-            driver.execute_script(f"window.open('{final_url}', '_blank');")
-
-            # Close the base_url tab
-            driver.close()
-
-            # Switch back to the original tab
-            driver.switch_to.window(driver.window_handles[0])
-            
-            
 
 
         time.sleep(1)  # Wait before checking the clipboard again
 
 except Exception as e:
     print(f"An error occurred: {e}")
-
