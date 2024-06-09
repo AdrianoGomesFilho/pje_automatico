@@ -96,16 +96,12 @@ def monitor_clipboard(driver):
                 open_new_tab(driver, final_url)
 
                 # Close the base_url tab and return to the Astrea tab
-                driver.switch_to.window(driver.window_handles[-2])
                 driver.close()
-                driver.switch_to.window(driver.window_handles[1])
-
             time.sleep(1)
 
         except Exception as e:
             print(f"An error occurred: {e}")
             # Continue running the script without quitting the browser
-            driver.switch_to.window(driver.window_handles[0])
             driver.get("about:blank")
 
 if __name__ == "__main__":
