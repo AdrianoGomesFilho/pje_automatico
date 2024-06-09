@@ -84,9 +84,15 @@ try:
 
             final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
             
-            # Find or open the tab for final_url
-            final_url_handle = find_or_open_tab(driver, final_url)
-            driver.switch_to.window(final_url_handle)
+            # Open the final URL in a new tab
+            driver.execute_script(f"window.open('{final_url}', '_blank');")
+
+            # Close the base_url tab
+            driver.close()
+
+            # Switch back to the original tab
+            driver.switch_to.window(driver.window_handles[0])
+
             
             #########################ASTREA######################################
             
