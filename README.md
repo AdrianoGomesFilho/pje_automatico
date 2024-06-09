@@ -22,7 +22,6 @@ Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedr
 🟢Dotenv - pip install python-dotenv (cmd do windows)
 
 # PRÓXIMOS PASSOS
-- Permitir que feche abas sem parar o script
 - Resolver captcha automaticamente
 - Atualizar repositorio e implementar mudanças remotamente nos computadores dos usuários
 
