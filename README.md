@@ -21,10 +21,6 @@ Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedr
 🟢Pyperclip - pip install pyperclip (cmd do windows)
 🟢Dotenv - pip install python-dotenv (cmd do windows)
 
-# PRÓXIMOS PASSOS
-- Resolver captcha automaticamente
-- Atualizar repositorio e implementar mudanças remotamente nos computadores dos usuários
-
 # SOBRE O DEV
 Para cada problema tento achar uma solução. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
 Atualmente atuo como advogado na @sgaadv e implemento meus projetos lá
