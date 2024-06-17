@@ -23,6 +23,7 @@ print(f"Password: xxxxxxxxxxxx")
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
+chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
 
 # Initialize WebDriver with Chrome options
 driver = webdriver.Chrome(options=chrome_options)
