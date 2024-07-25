@@ -14,6 +14,11 @@ import os
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
 chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
+
+# Set position and size (example: position at (100, 100) and size to 1920x1080)
+chrome_options.add_argument("window-position=100,100")
+chrome_options.add_argument("window-size=1920,1080")
+
 # Initialize WebDriver with Chrome options
 driver = webdriver.Chrome(options=chrome_options)
 
