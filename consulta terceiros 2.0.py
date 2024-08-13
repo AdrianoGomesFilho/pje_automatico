@@ -74,13 +74,13 @@ try:
             button_id = buttons[0].get_attribute('id')
             button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
             driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
-            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
+            WebDriverWait(driver, 300).until(EC.element_to_be_clickable((By.ID, button_id))).click()
 
             # Wait for the "loginAplicacaoButton" button to be clickable and click it
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+            WebDriverWait(driver, 300).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
             
             # Wait for login to complete before proceeding
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
+            WebDriverWait(driver, 300).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
             print(f"Login realizado (token)")
 
             final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
