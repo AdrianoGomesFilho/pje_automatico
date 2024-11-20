@@ -1,6 +1,8 @@
 # OBJETIVO DO PROJETO
 Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais.
 
+Vídeo de apresentação do projeto no Instagram [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
+
 # O QUE ELE FAZ?
 
 Existem 3 tipos de automação
@@ -28,8 +30,3 @@ Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedr
 🟢Pyperclip - pip install pyperclip (cmd do windows)
 🟢Dotenv - pip install python-dotenv (cmd do windows)
 
-# SOBRE O DEV
-Para cada problema tento achar uma solução. Procuro sempre aprender pela internet (YouTube, ChatGpt, sites). Codando e testando!
-Atualmente atuo como advogado na @sgaadv e implemento meus projetos lá
-
-Instagram: @adrianogomes.adv
