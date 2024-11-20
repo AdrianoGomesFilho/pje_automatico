@@ -1,4 +1,4 @@
-# OBJETIVO DO PROJETO
+# OBJETIVO DO PROJETO (Automação de publicações)
 Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais.
 
 Vídeo de apresentação do projeto no Instagram [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
