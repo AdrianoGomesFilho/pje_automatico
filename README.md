@@ -10,11 +10,9 @@ Existem 3 tipos de automação
 2 - Consulta de terceiros sem astrea (consulta terceiros 2.0 sem astrea.py)
 3 - Somente astrea (astrea only.py)
 
-Motivo: cada automação atende uma necessidade do advogado. Pessoalmente entendo que o "somente astrea" atende melhor no momento, pois muitas intimações já possuem o teor do que se trata, bastando lançar no sistema (Astrea) o que for necessário (mais rápida e menos passível de erros). Entretanto, para quem gosta de abrir simultaneamente o PJE e o sistema (Astrea), para ter segurança de ler o processo, a "consulta terceiros 2.0" atende bem, apesar da automação ser mais "lenta" e passível de erros.
+Obs: o Astrea é um sistema de gerenciamento de processos desenvolvido pela Aurum, acessado via navegador.
 
-Exemplo: recebo uma intimação do processo 0000776-xx.2019.5.6.0009, desejo ver o conteúdo no PJE. Ao copiar o número do processo script abre (automaticamente) uma aba específica do tribunal (neste caso, o TRT 6), O código faz o login via certificado e abre o processo, tal como o procedimento manual. O script realiza automaticamente a pesquisa por processos de terceiros. Neste caso o unico passo manual é selecionar o grau (instância) e completar o Captcha.
-Ao mesmo tempo o script abre o seu sistema de gestão (Astrea, ADVBOX etc) e já faz a pesquisa do número do processo.
-Todas as automações realizadas podem ser modificadas de acordo com a necessidade de cada usuário.
+Motivo: cada automação atende uma necessidade do advogado. A mais completa é a primeira (consulta de terceiros com Astrea), a automação abre o PJE (no respectivo site do tribunal), assina com o token via PJE Office, abre a tela de consulta de terceiros, simultaneamente abre o Astrea (com login) no campo de pesquisa com o número do processo. A consulta de terceiros é mais viável em casos de escritórios que usam diversos tokens (o nosso caso). Atualmente o projeto suporta ações trabalhistas (que atende as necessidades da equipe que atuo) mas pode se adaptado para qualquer área.
 
 # LINGUAGEM USADA
 Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedriver
