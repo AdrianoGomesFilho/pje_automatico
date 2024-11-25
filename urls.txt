@@ -1,0 +1,136 @@
+{
+    "Justiça Eleitoral": {
+        "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1"
+    },
+    "Justiça Federal": {
+        "TRF 1ª Região": {
+            "1º grau": "https://pje1g.trf1.jus.br/pje-web/login.seam",
+            "2º grau": "https://pje2g.trf1.jus.br/pje-web/login.seam"
+        },
+        "TRF 2ª Região": {
+            "1º grau": "https://pje1g.trf2.jus.br/pje-web/login.seam",
+            "2º grau": "https://pje2g.trf2.jus.br/pje-web/login.seam"
+        },
+        "TRF 3ª Região": {
+            "1º grau": "https://pje1g.trf3.jus.br/pje/login.seam",
+            "2º grau": "https://pje2g.trf3.jus.br/pje/login.seam"
+        },
+        "TRF 4ª Região": {
+            "1º grau": "https://pje1g.trf4.jus.br/pje-web/login.seam",
+            "2º grau": "https://pje2g.trf4.jus.br/pje-web/login.seam"
+        },
+        "TRF 5ª Região": {
+            "1º grau": "https://pje1g.trf5.jus.br/pje",
+            "2º grau": "https://pje2g.trf5.jus.br/pje"
+        }
+    },
+    "Justiça do Trabalho": {
+        "TRT 1ª Região": "https://pje.trt1.jus.br/primeirograu/login.seam",
+        "TRT 2ª Região": "https://pje.trt2.jus.br/primeirograu/login.seam",
+        "TRT 3ª Região": "https://pje.trt3.jus.br/primeirograu/login.seam",
+        "TRT 4ª Região": "https://pje.trt4.jus.br/primeirograu/login.seam",
+        "TRT 5ª Região": "https://pje.trt5.jus.br/primeirograu/login.seam",
+        "TRT 6ª Região": "https://pje.trt6.jus.br/primeirograu/login.seam",
+        "TRT 7ª Região": "https://pje.trt7.jus.br/primeirograu/login.seam",
+        "TRT 8ª Região": "https://pje.trt8.jus.br/primeirograu/login.seam",
+        "TRT 9ª Região": "https://pje.trt9.jus.br/primeirograu/login.seam",
+        "TRT 10ª Região": "https://pje.trt10.jus.br/primeirograu/login.seam",
+        "TRT 11ª Região": "https://pje.trt11.jus.br/primeirograu/login.seam",
+        "TRT 12ª Região": "https://pje.trt12.jus.br/primeirograu/login.seam",
+        "TRT 13ª Região": "https://pje.trt13.jus.br/primeirograu/login.seam",
+        "TRT 14ª Região": "https://pje.trt14.jus.br/primeirograu/login.seam",
+        "TRT 15ª Região": "https://pje.trt15.jus.br/primeirograu/login.seam",
+        "TRT 16ª Região": "https://pje.trt16.jus.br/primeirograu/login.seam",
+        "TRT 17ª Região": "https://pje.trt17.jus.br/primeirograu/login.seam",
+        "TRT 18ª Região": "https://pje.trt18.jus.br/primeirograu/login.seam",
+        "TRT 19ª Região": "https://pje.trt19.jus.br/primeirograu/login.seam",
+        "TRT 20ª Região": "https://pje.trt20.jus.br/primeirograu/login.seam",
+        "TRT 21ª Região": "https://pje.trt21.jus.br/primeirograu/login.seam",
+        "TRT 22ª Região": "https://pje.trt22.jus.br/primeirograu/login.seam",
+        "TRT 23ª Região": "https://pje.trt23.jus.br/primeirograu/login.seam",
+        "TRT 24ª Região": "https://pje.trt24.jus.br/primeirograu/login.seam"
+    },
+    "Justiça Comum": {
+        "AC": {
+            "TJAC": "https://pje.tjac.jus.br/pje/login.seam"
+        },
+        "AL": {
+            "TJAL": "https://pje.tjal.jus.br/pje/login.seam"
+        },
+        "AP": {
+            "TJAP": "https://pje.tjap.jus.br/pje/login.seam"
+        },
+        "AM": {
+            "TJAM": "https://pje.tjam.jus.br/pje/login.seam"
+        },
+        "BA": {
+            "TJBA": "https://pje.tjba.jus.br/pje/login.seam"
+        },
+        "CE": {
+            "TJCE": "https://pje.tjce.jus.br/pje/login.seam"
+        },
+        "DF": {
+            "TJDFT": "https://pje.tjdft.jus.br/pje/login.seam"
+        },
+        "ES": {
+            "TJES": "https://pje.tjes.jus.br/pje/login.seam"
+        },
+        "GO": {
+            "TJGO": "https://pje.tjgo.jus.br/pje/login.seam"
+        },
+        "MA": {
+            "TJMA": "https://pje.tjma.jus.br/pje/login.seam"
+        },
+        "MT": {
+            "TJMT": "https://pje.tjmt.jus.br/pje/login.seam"
+        },
+        "MS": {
+            "TJMS": "https://pje.tjms.jus.br/pje/login.seam"
+        },
+        "MG": {
+            "TJMG": "https://pje.tjmg.jus.br/pje/login.seam"
+        },
+        "PA": {
+            "TJPA": "https://pje.tjpa.jus.br/pje/login.seam"
+        },
+        "PB": {
+            "TJPB": "https://pje.tjpb.jus.br/pje/login.seam"
+        },
+        "PR": {
+            "TJPR": "https://pje.tjpr.jus.br/pje/login.seam"
+        },
+        "PE": {
+            "TJPE": "https://pje.tjpe.jus.br/pje/login.seam"
+        },
+        "PI": {
+            "TJPI": "https://pje.tjpi.jus.br/pje/login.seam"
+        },
+        "RJ": {
+            "TJRJ": "https://pje.tjrj.jus.br/pje/login.seam"
+        },
+        "RN": {
+            "TJRN": "https://pje.tjrn.jus.br/pje/login.seam"
+        },
+        "RS": {
+            "TJRS": "https://pje.tjrs.jus.br/pje/login.seam"
+        },
+        "RO": {
+            "TJRO": "https://pje.tjro.jus.br/pje/login.seam"
+        },
+        "RR": {
+            "TJRR": "https://pje.tjrr.jus.br/pje/login.seam"
+        },
+        "SC": {
+            "TJSC": "https://pje.tjsc.jus.br/pje/login.seam"
+        },
+        "SP": {
+            "TJSP": "https://pje.tjsp.jus.br/pje/login.seam"
+        },
+        "SE": {
+            "TJSE": "https://pje.tjse.jus.br/pje/login.seam"
+        },
+        "TO": {
+            "TJTO": "https://pje.tjto.jus.br/pje/login.seam"
+        }
+    }
+}
