@@ -1,27 +1,19 @@
-{
-    "Justiça Eleitoral": {
-        "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1"
-    },
+{ 
     "Justiça Federal": {
         "TRF 1ª Região": {
-            "1º grau": "https://pje1g.trf1.jus.br/pje-web/login.seam",
-            "2º grau": "https://pje2g.trf1.jus.br/pje-web/login.seam"
+            "https://www.trf1.jus.br/trf1/home/"    
         },
         "TRF 2ª Região": {
-            "1º grau": "https://pje1g.trf2.jus.br/pje-web/login.seam",
-            "2º grau": "https://pje2g.trf2.jus.br/pje-web/login.seam"
+            "https://portaleproc.trf2.jus.br/"
         },
         "TRF 3ª Região": {
-            "1º grau": "https://pje1g.trf3.jus.br/pje/login.seam",
-            "2º grau": "https://pje2g.trf3.jus.br/pje/login.seam"
+            "https://www.trf3.jus.br/pje/acesso-ao-sistema"
         },
         "TRF 4ª Região": {
-            "1º grau": "https://pje1g.trf4.jus.br/pje-web/login.seam",
-            "2º grau": "https://pje2g.trf4.jus.br/pje-web/login.seam"
+            "https://www.trf4.jus.br/trf4/controlador.php?acao=pagina_menu_listar&id_pai=264"
         },
         "TRF 5ª Região": {
-            "1º grau": "https://pje1g.trf5.jus.br/pje",
-            "2º grau": "https://pje2g.trf5.jus.br/pje"
+            "https://www.trf5.jus.br/index.php/pje?action=acesso-pje"
         }
     },
     "Justiça do Trabalho": {
@@ -52,43 +44,43 @@
     },
     "Justiça Comum": {
         "AC": {
-            "TJAC": "https://pje.tjac.jus.br/pje/login.seam"
+            "TJAC": "https://esaj.tjac.jus.br/cpopg/open.do"
         },
         "AL": {
-            "TJAL": "https://pje.tjal.jus.br/pje/login.seam"
+            "TJAL": "https://www2.tjal.jus.br/esaj/portal.do?servico=190090"
         },
         "AP": {
-            "TJAP": "https://pje.tjap.jus.br/pje/login.seam"
+            "TJAP": "https://www.tjap.jus.br/portal/"
         },
         "AM": {
-            "TJAM": "https://pje.tjam.jus.br/pje/login.seam"
+            "TJAM": "https://www.tjam.jus.br/index.php/consulta-processual-tjam"
         },
         "BA": {
-            "TJBA": "https://pje.tjba.jus.br/pje/login.seam"
+            "TJBA": "https://www.tjba.jus.br/portal/pje/"
         },
         "CE": {
-            "TJCE": "https://pje.tjce.jus.br/pje/login.seam"
+            "TJCE": "https://consultaprocesso.tjce.jus.br/scpu-web/pages/administracao/consultaProcessual.jsf?pesquisaparte"
         },
         "DF": {
-            "TJDFT": "https://pje.tjdft.jus.br/pje/login.seam"
+            "TJDFT": "https://www.tjdft.jus.br/pje"
         },
         "ES": {
-            "TJES": "https://pje.tjes.jus.br/pje/login.seam"
+            "TJES": "https://www.tjes.jus.br/consultas/processos/"
         },
         "GO": {
-            "TJGO": "https://pje.tjgo.jus.br/pje/login.seam"
+            "TJGO": "https://projudi.tjgo.jus.br/"
         },
         "MA": {
-            "TJMA": "https://pje.tjma.jus.br/pje/login.seam"
+            "TJMA": "https://www.tjma.jus.br/hotsite/pje"
         },
         "MT": {
-            "TJMT": "https://pje.tjmt.jus.br/pje/login.seam"
+            "TJMT": "https://portalpje.tjmt.jus.br/"
         },
         "MS": {
-            "TJMS": "https://pje.tjms.jus.br/pje/login.seam"
+            "TJMS": "https://esaj.tjms.jus.br/esaj/portal.do?servico=740000"
         },
         "MG": {
-            "TJMG": "https://pje.tjmg.jus.br/pje/login.seam"
+            "TJMG": "https://www.tjmg.jus.br/portal-tjmg/processos/eproc/eproc.htm"
         },
         "PA": {
             "TJPA": "https://pje.tjpa.jus.br/pje/login.seam"
