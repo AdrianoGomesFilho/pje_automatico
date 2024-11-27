@@ -1,0 +1,231 @@
+
+{
+    "AC": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 14ª Região", "Apelido": "TRT 14 - 1º grau", "Link": "https://pje.trt14.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 14ª Região", "Apelido": "TRT 14 - 2º grau", "Link": "https://pje.trt14.jus.br/segundograu/login.seam" }
+    ],
+    "AL": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfal.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - JEF", "Apelido": "TRF 5ª Região - JEF", "Link": "https://pje1g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - TR", "Apelido": "TRF 5ª Região - TR", "Link": "https://pje2g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional do Trabalho da 19ª Região", "Apelido": "TRT 19 - 1º grau", "Link": "http://pje.trt19.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 19ª Região", "Apelido": "TRT 19 - 2º grau", "Link": "http://pje.trt19.jus.br/segundograu/login.seam" }
+                
+    ],
+    "AM": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 11ª Região", "Apelido": "TRT 11 - 1º grau", "Link": "https://pje.trt11.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 11ª Região", "Apelido": "TRT 11 - 2º grau", "Link": "https://pje.trt11.jus.br/segundograu/login.seam" }
+    ],
+    "AP": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 8ª Região", "Apelido": "TRT 8 - 1º grau", "Link": "https://pje.trt8.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 8ª Região", "Apelido": "TRT 8 - 2º grau", "Link": "https://pje.trt8.jus.br/segundograu/login.seam" }
+    ],
+    "BA": [
+        { "Nome": "Tribunal de Justiça do Estado da Bahia", "Apelido": "TJBA - 1º grau", "Link": "https://pje.tjba.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado da Bahia", "Apelido": "TJBA - 2º grau", "Link": "https://pje2g.tjba.jus.br/pje-web/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 5ª Região", "Apelido": "TRT 5 - 1º grau", "Link": "https://pje.trt5.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 5ª Região", "Apelido": "TRT 5 - 2º grau", "Link": "https://pje.trt5.jus.br/segundograu/login.seam" }
+    ],
+    "CE": [
+        { "Nome": "Tribunal de Justiça do Estado do Ceará", "Apelido": "TJCE - 1º grau", "Link": "https://pje.tjce.jus.br/pje1grau/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado do Ceará", "Apelido": "TJCE - 2º grau", "Link": "https://pje.tjce.jus.br/pje2grau/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - JEF", "Apelido": "TRF 5ª Região - JEF", "Link": "https://pje1g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - TR", "Apelido": "TRF 5ª Região - TR", "Link": "https://pje2g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfce.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 7ª Região", "Apelido": "TRT 7 - 1º grau", "Link": "https://pje.trt7.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 7ª Região", "Apelido": "TRT 7 - 2º grau", "Link": "https://pje.trt7.jus.br/segundograu/login.seam" }
+    ],
+    "DF": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Superior do Trabalho", "Apelido": "TST", "Link": "https://pje.tst.jus.br/tst/login.seam" },
+        { "Nome": "Conselho Nacional de Justiça", "Apelido": "CNJ", "Link": "https://www.cnj.jus.br/pjecnj/login.seam" },
+        { "Nome": "Conselho da Justiça Federal", "Apelido": "CJF (TNU)", "Link": "https://www2.cjf.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Distrito Federal e dos Territórios - 1º grau", "Apelido": "TJDFT - 1º grau", "Link": "https://pje.tjdft.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Distrito Federal e dos Territórios - 2º grau", "Apelido": "TJDFT - 2º grau", "Link": "https://pje2i.tjdft.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 10ª Região", "Apelido": "TRT 10 - 1º grau", "Link": "https://pje.trt10.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 10ª Região", "Apelido": "TRT 10 - 2º grau", "Link": "https://pje.trt10.jus.br/segundograu/login.seam" }        
+    ],
+    "ES": [
+        { "Nome": "Tribunal de Justiça do Espírito Santo - 1º grau", "Apelido": "TJES - 1º grau", "Link": "https://sistemas.tjes.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Espírito Santo - Turma Recursal", "Apelido": "TJES - Turma Recursal", "Link": "https://sistemas.tjes.jus.br/pje2g/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 17ª Região", "Apelido": "TRT 17 - 1º grau", "Link": "https://pje.trtes.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 17ª Região", "Apelido": "TRT 17 - 2º grau", "Link": "https://pje.trtes.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+        
+        
+    ],
+    "GO": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 18ª Região", "Apelido": "TRT 18 - 1º grau", "Link": "https://pje.trt18.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 18ª Região", "Apelido": "TRT 18 - 2º grau", "Link": "https://pje.trt18.jus.br/segundograu/login.seam" }
+    ],
+    "MA": [
+        { "Nome": "Tribunal de Justiça do Estado do Maranhão", "Apelido": "TJMA - 1º grau", "Link": "https://pje.tjma.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado do Maranhão", "Apelido": "TJMA - 2º grau", "Link": "https://pje2.tjma.jus.br/pje2g/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 16ª Região", "Apelido": "TRT 16 - 1º grau", "Link": "http://pje.trt16.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 16ª Região", "Apelido": "TRT 16 - 2º grau", "Link": "http://pje.trt16.jus.br/segundograu/login.seam" }
+        
+    ],
+    "MG": [
+        { "Nome": "Tribunal de Justiça do Estado de Minas Gerais", "Apelido": "TJMG - 1º grau", "Link": "http://pje.tjmg.jus.br/pje/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 3ª Região", "Apelido": "TRT 3 - 1º grau", "Link": "https://pje.trt3.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 3ª Região", "Apelido": "TRT 3 - 2º grau", "Link": "https://pje.trt3.jus.br/segundograu/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado de Minas Gerais - Recursal", "Apelido": "TJMG - Recursal", "Link": "https://pjerecursal.tjmg.jus.br/pje/login.seam" }
+    ],
+    "MS": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 3ª Região - 1º grau", "Apelido": "TRF 3ª Região - 1º grau", "Link": "https://pje1g.trf3.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 3ª Região - 2º grau", "Apelido": "TRF 3ª Região - 2º grau", "Link": "https://pje2g.trf3.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 24ª Região", "Apelido": "TRT 24 - 1º grau", "Link": "https://pje.trt24.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 24ª Região", "Apelido": "TRT 24 - 2º grau", "Link": "https://pje.trt24.jus.br/segundograu/login.seam" }
+    ],
+    "MT": [
+        { "Nome": "Tribunal de Justiça do Estado de Mato Grosso", "Apelido": "TJMT - 1º grau", "Link": "https://pje.tjmt.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado de Mato Grosso", "Apelido": "TJMT - 2º grau", "Link": "https://pje2.tjmt.jus.br/pje2/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região - 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região - 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 23ª Região", "Apelido": "TRT 23 - 1º grau", "Link": "https://pje.trt23.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 23ª Região", "Apelido": "TRT 23 - 2º grau", "Link": "https://pje.trt23.jus.br/segundograu/login.seam" }
+    ],
+    "PA": [
+        { "Nome": "Tribunal de Justiça do Estado do Pará", "Apelido": "TJPA - 1º grau", "Link": "http://pje.tjpa.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado do Pará", "Apelido": "TJPA - 2º grau", "Link": "http://pje.tjpa.jus.br/pje-2g/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 8ª Região", "Apelido": "TRT 8 - 1º grau", "Link": "https://pje.trt8.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 8ª Região", "Apelido": "TRT 8 - 2º grau", "Link": "https://pje.trt8.jus.br/segundograu/login.seam" }
+    ],
+    "PB": [
+        { "Nome": "TJPB - Corregedoria", "Apelido": "TJPB - Corregedoria", "Link": "https://pje.tjpb.jus.br/pje-corregedoria/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado da Paraíba", "Apelido": "TJPB - 1º grau", "Link": "https://pje.tjpb.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado da Paraíba", "Apelido": "TJPB - 2º grau", "Link": "https://pje.tjpb.jus.br/pje2g/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfpb.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 13ª Região", "Apelido": "TRT 13 - 1º grau", "Link": "https://pje.trt13.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 13ª Região", "Apelido": "TRT 13 - 2º grau", "Link": "https://pje.trt13.jus.br/segundograu/login.seam" }
+    ],
+    "PE": [
+        { "Nome": "TJPE - Corregedoria", "Apelido": "TJPE - Corregedoria", "Link": "https://pje.tjpe.jus.br/cgj/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado de Pernambuco", "Apelido": "TJPE - 1º grau", "Link": "https://pje.tjpe.jus.br/1g/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado de Pernambuco", "Apelido": "TJPE - 2º grau", "Link": "https://pje.tjpe.jus.br/2g/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfpe.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - JEF", "Apelido": "TRF 5ª Região - JEF", "Link": "https://pje1g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - TR", "Apelido": "TRF 5ª Região - TR", "Link": "https://pje2g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional do Trabalho da 6ª Região", "Apelido": "TRT 6 - 1º grau", "Link": "https://pje.trt6.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 6ª Região", "Apelido": "TRT 6 - 2º grau", "Link": "https://pje.trt6.jus.br/segundograu/login.seam" }
+    ],
+    "PI": [
+        { "Nome": "Tribunal de Justiça do Estado do Piauí", "Apelido": "TJPI-1º grau", "Link": "https://tjpi.pje.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado do Piauí", "Apelido": "TJPI-2º grau", "Link": "https://tjpi.pje.jus.br/pje2g/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 22ª Região", "Apelido": "TRT 22 - 1º grau", "Link": "https://pje.trt22.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 22ª Região", "Apelido": "TRT 22 - 2º grau", "Link": "https://pje.trt22.jus.br/segundograu/login.seam" }
+    ],
+    "PR": [
+        { "Nome": "Tribunal Regional do Trabalho da 9ª Região", "Apelido": "TRT 9 - 1º grau", "Link": "https://pje.trt9.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 9ª Região", "Apelido": "TRT 9 - 2º grau", "Link": "https://pje.trt9.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+    ],
+    "RJ": [
+        { "Nome": "Tribunal de Justiça do Estado do Rio de Janeiro", "Apelido": "TJRJ - 1º grau", "Link": "https://tjrj.pje.jus.br/1g/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 1ª Região", "Apelido": "TRT 1 - 1º grau", "Link": "https://pje.trt1.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 1ª Região", "Apelido": "TRT 1 - 2º grau", "Link": "https://pje.trt1.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+    ],
+    "RN": [
+        { "Nome": "Tribunal de Justiça do Estado do Rio Grande do Norte", "Apelido": "TJRN - 1º grau", "Link": "https://pje.tjrn.jus.br/pje1grau/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado do Rio Grande do Norte", "Apelido": "TJRN - 2º grau", "Link": "https://pje.tjrn.jus.br/pje2grau/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfrn.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - JEF", "Apelido": "TRF 5ª Região - JEF", "Link": "https://pje1g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - TR", "Apelido": "TRF 5ª Região - TR", "Link": "https://pje2g.trf5.jus.br/pje" },
+        { "Nome": "Tribunal Regional do Trabalho da 21ª Região", "Apelido": "TRT 21 - 1º grau", "Link": "https://pje.trt21.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 21ª Região", "Apelido": "TRT 21 - 2º grau", "Link": "https://pje.trt21.jus.br/segundograu/login.seam" }
+    ],
+    "RO": [
+        { "Nome": "Tribunal de Justiça do Estado de Rondônia", "Apelido": "TJRO - 1º grau", "Link": "https://pje.tjro.jus.br/pg/login.seam" },
+        { "Nome": "Tribunal de Justiça do Estado de Rondônia", "Apelido": "TJRO - 2º grau", "Link": "https://pje.tjro.jus.br/sg/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 14ª Região", "Apelido": "TRT 14 - 1º grau", "Link": "https://pje.trt14.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 14ª Região", "Apelido": "TRT 14 - 2º grau", "Link": "https://pje.trt14.jus.br/segundograu/login.seam" }
+    ],
+    "RR": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 11ª Região", "Apelido": "TRT 11 - 1º grau", "Link": "https://pje.trt11.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 11ª Região", "Apelido": "TRT 11 - 2º grau", "Link": "https://pje.trt11.jus.br/segundograu/login.seam" }
+    ],
+    "RS": [
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional do Trabalho da 4ª Região", "Apelido": "TRT 4 - 1º grau", "Link": "https://pje.trt4.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 4ª Região", "Apelido": "TRT 4 - 2º grau", "Link": "https://pje.trt4.jus.br/segundograu/login.seam" }
+
+    ],
+    "SC": [
+        { "Nome": "Tribunal Regional do Trabalho da 12ª Região", "Apelido": "TRT 12 - 1º grau", "Link": "https://pje.trt12.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 12ª Região", "Apelido": "TRT 12 - 2º grau", "Link": "https://pje.trt12.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+    ],
+    "SE": [
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 1º grau", "Apelido": "TRF 5ª Região - 1º grau", "Link": "https://pje.jfse.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 5ª Região - 2º grau", "Apelido": "TRF 5ª Região - 2º grau", "Link": "https://pje.trf5.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 20ª Região", "Apelido": "TRT 20 - 1º grau", "Link": "https://pje.trt20.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 20ª Região", "Apelido": "TRT 20 - 2º grau", "Link": "https://pje.trt20.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+    ],
+    "SP": [
+        { "Nome": "Tribunal de Justiça Militar do Estado de São Paulo - 1º grau", "Apelido": "TJ Militar SP - 1º Grau", "Link": "https://pje.tjmsp.jus.br/pje-web/" },
+        { "Nome": "Tribunal de Justiça Militar do Estado de São Paulo - 2º grau", "Apelido": "TJ Militar SP - 2º Grau", "Link": "https://pje2grau.tjmsp.jus.br/pje-web/" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" },
+        { "Nome": "Tribunal Regional Federal da 3ª Região - 1º grau", "Apelido": "TRF 3ª Região - 1º grau", "Link": "https://pje1g.trf3.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 3ª Região - 2º grau", "Apelido": "TRF 3ª Região - 2º grau", "Link": "https://pje2g.trf3.jus.br/pje/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 2ª Região", "Apelido": "TRT 2 - 1º grau", "Link": "https://pje.trtsp.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 2ª Região", "Apelido": "TRT 2 - 2º grau", "Link": "https://pje.trtsp.jus.br/segundograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 15ª Região", "Apelido": "TRT 15 - 1º grau", "Link": "https://pje.trt15.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 15ª Região", "Apelido": "TRT 15 - 2º grau", "Link": "https://pje.trt15.jus.br/segundograu/login.seam" }
+    ],
+    "TO": [
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 1º grau", "Apelido": "TRF 1ª Região - 1º grau", "Link": "https://pje1g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional Federal da 1ª Região- 2º grau", "Apelido": "TRF 1ª Região - 2º grau", "Link": "https://pje2g.trf1.jus.br/pje-web/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 10ª Região", "Apelido": "TRT 10 - 1º grau", "Link": "https://pje.trt10.jus.br/primeirograu/login.seam" },
+        { "Nome": "Tribunal Regional do Trabalho da 10ª Região", "Apelido": "TRT 10 - 2º grau", "Link": "https://pje.trt10.jus.br/segundograu/login.seam" },
+        { "Nome": "Justiça Eleitoral", "Apelido": "Justiça Eleitoral", "Link": "http://www.tse.jus.br/servicos-judiciais/processos/processo-judicial-eletronico/processo-judicial-eletronico-1" }
+    ]
+}
