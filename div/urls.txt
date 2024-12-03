@@ -1,5 +1,5 @@
 { 
-    "Justiça Federal": {
+    "4": {
         "TRF 1ª Região": {
             "https://www.trf1.jus.br/trf1/home/"    
         },
@@ -15,34 +15,8 @@
         "TRF 5ª Região": {
             "https://www.trf5.jus.br/index.php/pje?action=acesso-pje"
         }
-    },
-    "Justiça do Trabalho": {
-        "TRT 1ª Região": "https://pje.trt1.jus.br/primeirograu/login.seam",
-        "TRT 2ª Região": "https://pje.trt2.jus.br/primeirograu/login.seam",
-        "TRT 3ª Região": "https://pje.trt3.jus.br/primeirograu/login.seam",
-        "TRT 4ª Região": "https://pje.trt4.jus.br/primeirograu/login.seam",
-        "TRT 5ª Região": "https://pje.trt5.jus.br/primeirograu/login.seam",
-        "TRT 6ª Região": "https://pje.trt6.jus.br/primeirograu/login.seam",
-        "TRT 7ª Região": "https://pje.trt7.jus.br/primeirograu/login.seam",
-        "TRT 8ª Região": "https://pje.trt8.jus.br/primeirograu/login.seam",
-        "TRT 9ª Região": "https://pje.trt9.jus.br/primeirograu/login.seam",
-        "TRT 10ª Região": "https://pje.trt10.jus.br/primeirograu/login.seam",
-        "TRT 11ª Região": "https://pje.trt11.jus.br/primeirograu/login.seam",
-        "TRT 12ª Região": "https://pje.trt12.jus.br/primeirograu/login.seam",
-        "TRT 13ª Região": "https://pje.trt13.jus.br/primeirograu/login.seam",
-        "TRT 14ª Região": "https://pje.trt14.jus.br/primeirograu/login.seam",
-        "TRT 15ª Região": "https://pje.trt15.jus.br/primeirograu/login.seam",
-        "TRT 16ª Região": "https://pje.trt16.jus.br/primeirograu/login.seam",
-        "TRT 17ª Região": "https://pje.trt17.jus.br/primeirograu/login.seam",
-        "TRT 18ª Região": "https://pje.trt18.jus.br/primeirograu/login.seam",
-        "TRT 19ª Região": "https://pje.trt19.jus.br/primeirograu/login.seam",
-        "TRT 20ª Região": "https://pje.trt20.jus.br/primeirograu/login.seam",
-        "TRT 21ª Região": "https://pje.trt21.jus.br/primeirograu/login.seam",
-        "TRT 22ª Região": "https://pje.trt22.jus.br/primeirograu/login.seam",
-        "TRT 23ª Região": "https://pje.trt23.jus.br/primeirograu/login.seam",
-        "TRT 24ª Região": "https://pje.trt24.jus.br/primeirograu/login.seam"
-    },
-    "Justiça Comum": {
+    }
+    "8": {
         "AC": {
             "TJAC": "https://esaj.tjac.jus.br/cpopg/open.do"
         },
