@@ -157,16 +157,19 @@ try:
             numeroTst = paste_parts[0]
             digitoTst, anoTst, orgaoTst, tribunalTst, varaTst = paste_parts[1].split('.')
 
-            # Fill the form fields with the paste value
-            driver.find_element(By.ID, "consultaTstNumUnica:numeroTst").send_keys(numeroTst)
-            driver.find_element(By.ID, "consultaTstNumUnica:digitoTst").send_keys(digitoTst)
-            driver.find_element(By.ID, "consultaTstNumUnica:anoTst").send_keys(anoTst)
-            driver.find_element(By.ID, "consultaTstNumUnica:orgaoTst").send_keys(orgaoTst)
-            driver.find_element(By.ID, "consultaTstNumUnica:tribunalTst").send_keys(tribunalTst)
-            driver.find_element(By.ID, "consultaTstNumUnica:varaTst").send_keys(varaTst)
+            try:
+                # Fill the form fields with the paste value
+                driver.find_element(By.ID, "consultaTstNumUnica:numeroTst").send_keys(numeroTst)
+                driver.find_element(By.ID, "consultaTstNumUnica:digitoTst").send_keys(digitoTst)
+                driver.find_element(By.ID, "consultaTstNumUnica:anoTst").send_keys(anoTst)
+                driver.find_element(By.ID, "consultaTstNumUnica:orgaoTst").send_keys(orgaoTst)
+                driver.find_element(By.ID, "consultaTstNumUnica:tribunalTst").send_keys(tribunalTst)
+                driver.find_element(By.ID, "consultaTstNumUnica:varaTst").send_keys(varaTst)
 
-            # Click the first "Consultar" button
-            driver.find_elements(By.NAME, "btnConsulta")[0].click()
+                # Click the first "Consultar" button
+                driver.find_elements(By.NAME, "btnConsulta")[0].click()
+            except Exception as e:
+                print(f"An error occurred while filling the form or clicking the button: {e}")
 
             # Trigger the button function
             driver.click
