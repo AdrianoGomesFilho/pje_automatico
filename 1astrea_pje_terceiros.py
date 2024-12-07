@@ -36,6 +36,8 @@ def find_or_open_tab(driver, base_url, data_url=None):
         driver.switch_to.window(handle)
         if base_url in driver.current_url or (data_url and data_url in driver.current_url):
             return handle
+    # Switch to the last tab before opening a new one
+    driver.switch_to.window(driver.window_handles[-1])
     driver.execute_script(f"window.open('{base_url}', '_blank');")
     new_handle = driver.window_handles[-1]
     return new_handle
@@ -55,6 +57,7 @@ try:
 
             # Perform Astrea login and other actions
             astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
             driver.execute_script(f"window.open('{astrea_url}', '_blank');")
             astrea_handle = driver.window_handles[-1]
             driver.switch_to.window(astrea_handle)
@@ -114,6 +117,7 @@ try:
             final_url = f"https://pje.tst.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
             # Open the final URL in a new tab and close the base URL tab
+            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
             driver.execute_script(f"window.open('{final_url}', '_blank');")
             driver.close()
             driver.switch_to.window(driver.window_handles[-1])
