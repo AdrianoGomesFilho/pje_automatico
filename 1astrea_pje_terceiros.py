@@ -36,7 +36,6 @@ def find_or_open_tab(driver, base_url, data_url=None):
         driver.switch_to.window(handle)
         if base_url in driver.current_url or (data_url and data_url in driver.current_url):
             return handle
-    # If the tab is not found, open a new one
     driver.execute_script(f"window.open('{base_url}', '_blank');")
     new_handle = driver.window_handles[-1]
     return new_handle
@@ -60,25 +59,32 @@ try:
             astrea_handle = driver.window_handles[-1]
             driver.switch_to.window(astrea_handle)
 
-            try:
-                login_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.NAME, "username"))
-                )
+            logged_in = False
 
-                # Credentials
-                username_field = driver.find_element(By.NAME, "username")
-                password_field = driver.find_element(By.NAME, "password")
+            if not logged_in:
+                try:
+                    # Check if the login element is present
+                    login_element = WebDriverWait(driver, 2).until(
+                        EC.presence_of_element_located((By.NAME, "username"))
+                    )
 
-                username_field.send_keys(usuario)
-                password_field.send_keys(senha)
+                    # Credentials
+                    username_field = driver.find_element(By.NAME, "username")
+                    password_field = driver.find_element(By.NAME, "password")
 
-                # Submit the login form
-                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                login_button.click()
+                    username_field.send_keys(usuario)
+                    password_field.send_keys(senha)
 
-                print("Logged in to Astrea successfully.")
-            except Exception as e:
-                print("Login page not detected or error during login:", e)
+                    # Submit the login form
+                    login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                    login_button.click()
+
+                    print("Logged in to Astrea successfully.")
+                    logged_in = True
+                except:
+                    print("Already logged in to Astrea or login page not detected.")
+            else:
+                print("Skipping login as already logged in.")
 
             #########################PJE######################################
 
