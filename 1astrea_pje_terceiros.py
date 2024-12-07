@@ -34,7 +34,7 @@ last_clipboard_content = ""
 def find_or_open_tab(driver, base_url, data_url=None):
     for handle in driver.window_handles:
         driver.switch_to.window(handle)
-        if base_url in driver.current_url or (data_url and data_url in driver.current_url):
+        if (base_url in driver.current_url or (data_url and data_url in driver.current_url)):
             return handle
     # Switch to the last tab before opening a new one
     driver.switch_to.window(driver.window_handles[-1])
@@ -121,6 +121,55 @@ try:
             driver.execute_script(f"window.open('{final_url}', '_blank');")
             driver.close()
             driver.switch_to.window(driver.window_handles[-1])
+
+            # Wait for the "painel-escolha-processo" element to be present
+            painel_element = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, "painel-escolha-processo"))
+            )
+
+            # Append a new button with the text "TST" to the last position
+            driver.execute_script("""
+                var painel = document.getElementById('painel-escolha-processo');
+                var newButton = document.createElement('button');
+                newButton.className = 'selecao-processo';
+                newButton.setAttribute('role', 'link');
+                newButton.setAttribute('type', 'button');
+                newButton.innerHTML = 'TST (sistema antigo)';
+                newButton.style.backgroundColor = '#06992b';
+                newButton.style.color = 'white';
+                newButton.style.border = 'none';
+                newButton.style.padding = '10px 20px';
+                newButton.style.margin = '5px';
+                newButton.style.borderRadius = '5px';
+                newButton.style.cursor = 'pointer';
+                newButton.onclick = function() {
+                    window.open('https://consultaprocessual.tst.jus.br/consultaProcessual/', '_blank');
+                };
+                painel.insertBefore(newButton, painel.lastElementChild);
+            """)
+            # Wait for the new tab to open
+            time.sleep(2)
+            driver.switch_to.window(driver.window_handles[-1])
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "consultaTstNumUnica:numeroTst")))
+
+            # Split the paste value into the respective fields
+            paste_parts = paste.split('-')
+            numeroTst = paste_parts[0]
+            digitoTst, anoTst, orgaoTst, tribunalTst, varaTst = paste_parts[1].split('.')
+
+            # Fill the form fields with the paste value
+            driver.find_element(By.ID, "consultaTstNumUnica:numeroTst").send_keys(numeroTst)
+            driver.find_element(By.ID, "consultaTstNumUnica:digitoTst").send_keys(digitoTst)
+            driver.find_element(By.ID, "consultaTstNumUnica:anoTst").send_keys(anoTst)
+            driver.find_element(By.ID, "consultaTstNumUnica:orgaoTst").send_keys(orgaoTst)
+            driver.find_element(By.ID, "consultaTstNumUnica:tribunalTst").send_keys(tribunalTst)
+            driver.find_element(By.ID, "consultaTstNumUnica:varaTst").send_keys(varaTst)
+
+            # Click the first "Consultar" button
+            driver.find_elements(By.NAME, "btnConsulta")[0].click()
+
+            # Trigger the button function
+            driver.click
 
         time.sleep(1)  # Wait before checking the clipboard again
 
