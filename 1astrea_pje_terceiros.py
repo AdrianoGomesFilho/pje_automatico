@@ -142,21 +142,21 @@ try:
                 iframe_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
                 
                 
-                # Add the iframe to the page
+                # Add the title and iframe to the end of the body element
                 driver.execute_script("""
+                    var titleDiv = document.createElement('div');
+                    titleDiv.innerHTML = '<h2>Pré visualizador TST (sistema antigo)</h2>';
+                    titleDiv.style.marginTop = '550px';
+                    document.body.appendChild(titleDiv);
+
                     var iframe = document.createElement('iframe');
                     iframe.src = arguments[0];
                     iframe.width = '100%';
-                    iframe.height = '250px';
+                    iframe.height = '800px';
                     iframe.style.border = 'none';
-                    iframe.style.marginTop = '20px';
+                    iframe.style.marginTop = '5px';
                     iframe.style.position = 'relative';  // Ensure the iframe is positioned relative to its container
-                    var voltarButton = document.getElementById('btn-voltar');
-                    if (voltarButton) {
-                        voltarButton.parentNode.insertBefore(iframe, voltarButton.nextSibling);
-                    } else {
-                        document.body.appendChild(iframe);
-                    }
+                    document.body.appendChild(iframe);
                 """, iframe_url)
 
         except Exception as e:
