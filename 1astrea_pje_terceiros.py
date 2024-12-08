@@ -128,49 +128,36 @@ try:
                     EC.presence_of_element_located((By.ID, "painel-escolha-processo"))
                 )
 
-                # Append a new button with the text "TST" to the last position
-                driver.execute_script("""
-                    var painel = document.getElementById('painel-escolha-processo');
-                    var newButton = document.createElement('button');
-                    newButton.className = 'selecao-processo';
-                    newButton.setAttribute('role', 'link');
-                    newButton.setAttribute('type', 'button');
-                    newButton.innerHTML = 'TST (sistema antigo)';
-                    newButton.style.backgroundColor = '#06992b';
-                    newButton.style.color = 'white';
-                    newButton.style.border = 'none';
-                    newButton.style.padding = '10px 20px';
-                    newButton.style.margin = '5px';
-                    newButton.style.borderRadius = '5px';
-                    newButton.style.cursor = 'pointer';
-                    newButton.onclick = function() {
-                        window.open('https://consultaprocessual.tst.jus.br/consultaProcessual/', '_blank');
-                    };
-                    painel.insertBefore(newButton, painel.lastElementChild);
-                """)
-                # Wait for the new tab to open
-                time.sleep(2)
-                driver.switch_to.window(driver.window_handles[-1])
-                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "consultaTstNumUnica:numeroTst")))
-
                 # Split the paste value into the respective fields
                 paste_parts = paste.split('-')
                 numeroTst = paste_parts[0]
-                digitoTst, anoTst, orgaoTst, tribunalTst, varaTst = paste_parts[1].split('.')
+                remaining_parts = paste_parts[1].split('.')
+                digitoTst = remaining_parts[0]
+                anoTst = remaining_parts[1]
+                orgaoTst = remaining_parts[2]
+                tribunalTst = remaining_parts[3]
+                varaTst = remaining_parts[4]
 
-                try:
-                    # Fill the form fields with the paste value
-                    driver.find_element(By.ID, "consultaTstNumUnica:numeroTst").send_keys(numeroTst)
-                    driver.find_element(By.ID, "consultaTstNumUnica:digitoTst").send_keys(digitoTst)
-                    driver.find_element(By.ID, "consultaTstNumUnica:anoTst").send_keys(anoTst)
-                    driver.find_element(By.ID, "consultaTstNumUnica:orgaoTst").send_keys(orgaoTst)
-                    driver.find_element(By.ID, "consultaTstNumUnica:tribunalTst").send_keys(tribunalTst)
-                    driver.find_element(By.ID, "consultaTstNumUnica:varaTst").send_keys(varaTst)
-
-                    # Click the first "Consultar" button
-                    driver.find_elements(By.NAME, "btnConsulta")[0].click()
-                except Exception as e:
-                    print(f"An error occurred while filling the form or clicking the button: {e}")
+                # Construct the iframe URL
+                iframe_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
+                
+                
+                # Add the iframe to the page
+                driver.execute_script("""
+                    var iframe = document.createElement('iframe');
+                    iframe.src = arguments[0];
+                    iframe.width = '100%';
+                    iframe.height = '250px';
+                    iframe.style.border = 'none';
+                    iframe.style.marginTop = '20px';
+                    iframe.style.position = 'relative';  // Ensure the iframe is positioned relative to its container
+                    var voltarButton = document.getElementById('btn-voltar');
+                    if (voltarButton) {
+                        voltarButton.parentNode.insertBefore(iframe, voltarButton.nextSibling);
+                    } else {
+                        document.body.appendChild(iframe);
+                    }
+                """, iframe_url)
 
         except Exception as e:
             print(f"An error occurred in the main loop: {e}")
