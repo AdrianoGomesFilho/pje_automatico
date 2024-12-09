@@ -92,8 +92,14 @@ try:
 
                 #########################PJE######################################
 
+                # Extract the TRT number (15th and 16th characters)
+                trt_number = paste[18:20]
+
+                # Remove leading zero if present
+                trt_number = trt_number.lstrip('0')
+
                 # Construct the base URL dynamically
-                base_url = f"https://pje.tst.jus.br/tst/login.seam"
+                base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
 
                 # Find or open the tab for base_url
                 base_url_handle = find_or_open_tab(driver, base_url)
@@ -115,7 +121,7 @@ try:
                 WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "nome-usuario")))
                 print(f"Login realizado (token)")
 
-                final_url = f"https://pje.tst.jus.br/consultaprocessual/detalhe-processo/{paste}"
+                final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
                 # Open the final URL in a new tab and close the base URL tab
                 driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
@@ -146,7 +152,7 @@ try:
                 driver.execute_script("""
                     var titleDiv = document.createElement('div');
                     titleDiv.innerHTML = '<h2>Pré visualizador TST (sistema antigo)</h2>';
-                    titleDiv.style.marginTop = '550px';
+                    titleDiv.style.marginTop = '700px';
                     document.body.appendChild(titleDiv);
 
                     var iframe = document.createElement('iframe');
