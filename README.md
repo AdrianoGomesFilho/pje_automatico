@@ -6,9 +6,11 @@ Vídeo de apresentação do projeto no Instagram [@adrianogomes.adv](https://ins
 # O QUE ELE FAZ?
 
 Existem 3 tipos de automação
-1 - Consulta de terceiros com astrea (consulta terceiros 2.0)
-2 - Consulta de terceiros sem astrea (consulta terceiros 2.0 sem astrea.py)
-3 - Somente astrea (astrea only.py)
+1 - Consulta de terceiros com astrea
+2 - Consulta via token unico com astrea
+3 - Somente astrea
+4 - Somente PJE de terceiros
+5 - Somente PJE (token unico) sem astrea
 
 Obs: o Astrea é um sistema de gerenciamento de processos desenvolvido pela Aurum, acessado via navegador.
 
