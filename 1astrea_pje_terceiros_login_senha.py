@@ -20,6 +20,13 @@ senha = os.getenv("PASSWORDASTREA")
 print(f"Username: {usuario}")
 print(f"Password: xxxxxxxxxxxx")
 
+# Load PJE credentials from another .env file
+load_dotenv('credenciais_pje.env')
+usuario_pje = os.getenv("USERNAMEPJE")
+senha_pje = os.getenv("PASSWORDPJE")
+print(f"PJE Username: {usuario_pje}")
+print(f"PJE Password: xxxxxxxxxxxx")
+
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
@@ -107,8 +114,13 @@ try:
 
                 # Wait for the "modo-operacao" element to be present
                 modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
-                
-                
+
+                # Fill the input id=username with credentials (USERNAMEPJE)
+                driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                # Fill the input id=password with credentials (PASSWORDPJE)
+                driver.find_element(By.ID, "password").send_keys(senha_pje)
+                # Press the button id=btnEntrar
+                driver.find_element(By.ID, "btnEntrar").click()
 
                 final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
 
