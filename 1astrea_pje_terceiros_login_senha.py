@@ -9,6 +9,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
+import pytesseract
+from PIL import Image
+import base64
+from io import BytesIO
 
 # Load credentials from .env file
 load_dotenv('credenciais.env')
@@ -51,6 +55,12 @@ def find_or_open_tab(driver, base_url, data_url=None):
     new_handle = driver.window_handles[-1]
     return new_handle
 
+def solve_captcha(image_base64):
+    image_data = base64.b64decode(image_base64)
+    image = Image.open(BytesIO(image_data))
+    captcha_text = pytesseract.image_to_string(image, config='--psm 6')
+    return captcha_text.strip()
+
 try:
     while True:
         try:
@@ -63,41 +73,41 @@ try:
                 print(f"Processo identificado: {paste}")
                 last_clipboard_content = paste  # Update the last clipboard content
 
-                #########################ASTREA######################################
+                # #########################ASTREA######################################
 
-                # Perform Astrea login and other actions
-                astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
-                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-                astrea_handle = driver.window_handles[-1]
-                driver.switch_to.window(astrea_handle)
+                # # Perform Astrea login and other actions
+                # astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+                # driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
+                # driver.execute_script(f"window.open('{astrea_url}', '_blank');")
+                # astrea_handle = driver.window_handles[-1]
+                # driver.switch_to.window(astrea_handle)
 
-                logged_in = False
+                # logged_in = False
 
-                if not logged_in:
-                    try:
-                        # Check if the login element is present
-                        login_element = WebDriverWait(driver, 2).until(
-                            EC.presence_of_element_located((By.NAME, "username"))
-                        )
+                # if not logged_in:
+                #     try:
+                #         # Check if the login element is present
+                #         login_element = WebDriverWait(driver, 2).until(
+                #             EC.presence_of_element_located((By.NAME, "username"))
+                #         )
 
-                        # Credentials
-                        username_field = driver.find_element(By.NAME, "username")
-                        password_field = driver.find_element(By.NAME, "password")
+                #         # Credentials
+                #         username_field = driver.find_element(By.NAME, "username")
+                #         password_field = driver.find_element(By.NAME, "password")
 
-                        username_field.send_keys(usuario)
-                        password_field.send_keys(senha)
+                #         username_field.send_keys(usuario)
+                #         password_field.send_keys(senha)
 
-                        # Submit the login form
-                        login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                        login_button.click()
+                #         # Submit the login form
+                #         login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                #         login_button.click()
 
-                        print("Logged in to Astrea successfully.")
-                        logged_in = True
-                    except:
-                        print("Already logged in to Astrea or login page not detected.")
-                else:
-                    print("Skipping login as already logged in.")
+                #         print("Logged in to Astrea successfully.")
+                #         logged_in = True
+                #     except:
+                #         print("Already logged in to Astrea or login page not detected.")
+                # else:
+                #     print("Skipping login as already logged in.")
 
                 #########################PJE######################################
 
@@ -136,6 +146,26 @@ try:
                 painel_element = WebDriverWait(driver, 20).until(
                     EC.presence_of_element_located((By.ID, "painel-escolha-processo"))
                 )
+
+                # Click the desired button (e.g., the first button)
+                buttons = driver.find_elements(By.CLASS_NAME, "selecao-processo")
+                if buttons:
+
+                    # Wait for a delay to allow the captcha to appear
+                    time.sleep(5)  # Adjust the delay as needed
+
+                    # Wait for the captcha to appear
+                    captcha_image = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "imagemCaptcha"))
+                    ).get_attribute("src").split(",")[1]
+
+                    # Solve captcha
+                    captcha_solution = solve_captcha(captcha_image)
+                    if captcha_solution:
+                        driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
+                        driver.find_element(By.ID, "btnEnviar").click()
+                    else:
+                        print("Failed to solve captcha")
 
                 # Split the paste value into the respective fields
                 paste_parts = paste.split('-')
