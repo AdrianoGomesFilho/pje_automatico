@@ -152,8 +152,8 @@ try:
                 # Add the title and iframe to the end of the body element
                 driver.execute_script("""
                     var titleDiv = document.createElement('div');
-                    titleDiv.innerHTML = '<h2>Pré visualizador TST (sistema antigo)</h2>';
-                    titleDiv.style.marginTop = '700px';
+                    titleDiv.innerHTML = '<h2>Consulta no TST (sistema antigo)</h2>';
+                    titleDiv.style.marginTop = '550px';
                     document.body.appendChild(titleDiv);
 
                     var iframe = document.createElement('iframe');
@@ -161,8 +161,9 @@ try:
                     iframe.width = '100%';
                     iframe.height = '800px';
                     iframe.style.border = '2px solid black';
-                    iframe.style.marginTop = '100px';
+                    iframe.style.marginTop = '20px';
                     document.body.appendChild(iframe);
+
                 """, iframe_url)
 
         except Exception as e:
