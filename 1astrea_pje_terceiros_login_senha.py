@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 load_dotenv('credenciais.env')
 print("Loaded .env file")
 
+#test
+
 # Get credentials from environment variables
 usuario = os.getenv("USERNAMEASTREA")
 senha = os.getenv("PASSWORDASTREA")
