@@ -41,6 +41,9 @@ chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
 # Initialize WebDriver with Chrome options
 driver = webdriver.Chrome(options=chrome_options)
 
+# Specify the path to the Tesseract executable
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 # Store the last clipboard content
 last_clipboard_content = ""
 
@@ -56,10 +59,15 @@ def find_or_open_tab(driver, base_url, data_url=None):
     return new_handle
 
 def solve_captcha(image_base64):
-    image_data = base64.b64decode(image_base64)
-    image = Image.open(BytesIO(image_data))
-    captcha_text = pytesseract.image_to_string(image, config='--psm 6')
-    return captcha_text.strip()
+    try:
+        image_data = base64.b64decode(image_base64)
+        image = Image.open(BytesIO(image_data))
+        captcha_text = pytesseract.image_to_string(image, config='--psm 6')
+        print(captcha_text)
+        return captcha_text.strip()
+    except Exception as e:
+        print(f"Error solving captcha: {e}")
+        return ""
 
 try:
     while True:
@@ -154,18 +162,20 @@ try:
                     # Wait for a delay to allow the captcha to appear
                     time.sleep(5)  # Adjust the delay as needed
 
-                    # Wait for the captcha to appear
-                    captcha_image = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.ID, "imagemCaptcha"))
-                    ).get_attribute("src").split(",")[1]
+                    # Check if the URL contains the captcha string
+                    if "captcha" in driver.current_url:
+                        # Wait for the captcha to appear
+                        captcha_image = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.ID, "imagemCaptcha"))
+                        ).get_attribute("src").split(",")[1]
 
-                    # Solve captcha
-                    captcha_solution = solve_captcha(captcha_image)
-                    if captcha_solution:
-                        driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
-                        driver.find_element(By.ID, "btnEnviar").click()
-                    else:
-                        print("Failed to solve captcha")
+                        # Solve captcha
+                        captcha_solution = solve_captcha(captcha_image)
+                        if captcha_solution:
+                            driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
+                            driver.find_element(By.ID, "btnEnviar").click()
+                        else:
+                            print("Failed to solve captcha")
 
                 # Split the paste value into the respective fields
                 paste_parts = paste.split('-')
