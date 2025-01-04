@@ -63,7 +63,8 @@ def solve_captcha(image_base64):
         image_data = base64.b64decode(image_base64)
         image = Image.open(BytesIO(image_data))
         captcha_text = pytesseract.image_to_string(image, config='--psm 6')
-        print(captcha_text)
+        captcha_text = captcha_text.replace(" ", "")  # Remove spaces from captcha text
+        print(f"Captcha text: {captcha_text}")
         return captcha_text.strip()
     except Exception as e:
         print(f"Error solving captcha: {e}")
@@ -162,20 +163,39 @@ try:
                     # Wait for a delay to allow the captcha to appear
                     time.sleep(5)  # Adjust the delay as needed
 
+                    # Debug: Print current URL
+                    print(f"Current URL: {driver.current_url}")
+
                     # Check if the URL contains the captcha string
                     if "captcha" in driver.current_url:
+                        print("Captcha detected in URL")
                         # Wait for the captcha to appear
                         captcha_image = WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.ID, "imagemCaptcha"))
                         ).get_attribute("src").split(",")[1]
 
-                        # Solve captcha
-                        captcha_solution = solve_captcha(captcha_image)
-                        if captcha_solution:
-                            driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
-                            driver.find_element(By.ID, "btnEnviar").click()
+
+                        # Retry mechanism for solving captcha
+                        for attempt in range(3):  # Retry up to 3 times
+                            print(f"Attempt {attempt + 1} to solve captcha")
+                            captcha_solution = solve_captcha(captcha_image)
+                            if captcha_solution:
+                                driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
+                                driver.find_element(By.ID, "btnEnviar").click()
+                                print(f"Captcha solution '{captcha_solution}' submitted")
+                                time.sleep(2)  # Wait for the page to process the captcha
+                                if not driver.find_elements(By.ID, "btnEnviar"):
+                                    print("Captcha solved and submitted")
+                                    break
+                                else:
+                                    print(f"Captcha not solved on attempt {attempt + 1}")
+                            else:
+                                print(f"Failed to solve captcha on attempt {attempt + 1}")
+                            time.sleep(2)  # Wait before retrying
                         else:
-                            print("Failed to solve captcha")
+                            print("Failed to solve captcha after 3 attempts")
+                    else:
+                        print("Captcha not detected in URL")
 
                 # Split the paste value into the respective fields
                 paste_parts = paste.split('-')
