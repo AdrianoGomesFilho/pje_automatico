@@ -60,10 +60,11 @@ def find_or_open_tab(driver, base_url, data_url=None):
 
 def solve_captcha(image_base64):
     try:
+        print("Solving captcha...")
         image_data = base64.b64decode(image_base64)
         image = Image.open(BytesIO(image_data))
         captcha_text = pytesseract.image_to_string(image, config='--psm 6')
-        captcha_text = captcha_text.replace(" ", "")  # Remove spaces from captcha text
+        captcha_text = re.sub(r'[^a-z0-9]', '', captcha_text.lower())  # Remove non-alphanumeric characters and convert to lowercase
         print(f"Captcha text: {captcha_text}")
         return captcha_text.strip()
     except Exception as e:
@@ -122,80 +123,117 @@ try:
 
                 # Extract the TRT number (15th and 16th characters)
                 trt_number = paste[18:20]
+                print(f"TRT number extracted: {trt_number}")
 
                 # Remove leading zero if present
                 trt_number = trt_number.lstrip('0')
+                print(f"TRT number after stripping leading zero: {trt_number}")
 
                 # Construct the base URL dynamically
                 base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+                print(f"Base URL constructed: {base_url}")
 
                 # Find or open the tab for base_url
                 base_url_handle = find_or_open_tab(driver, base_url)
                 driver.switch_to.window(base_url_handle)
+                print(f"Switched to base URL tab: {base_url_handle}")
 
                 # Wait for the "modo-operacao" element to be present
                 modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
+                print("Modo operacao element found")
 
                 # Fill the input id=username with credentials (USERNAMEPJE)
                 driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                print("Username filled")
                 # Fill the input id=password with credentials (PASSWORDPJE)
                 driver.find_element(By.ID, "password").send_keys(senha_pje)
+                print("Password filled")
                 # Press the button id=btnEntrar
                 driver.find_element(By.ID, "btnEntrar").click()
+                print("Login button clicked")
 
                 final_url = f"https://pje.trt{trt_number}.jus.br/consultaprocessual/detalhe-processo/{paste}"
+                print(f"Final URL constructed: {final_url}")
 
                 # Open the final URL in a new tab and close the base URL tab
                 driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
                 driver.execute_script(f"window.open('{final_url}', '_blank');")
                 driver.close()
                 driver.switch_to.window(driver.window_handles[-1])
+                print("Switched to final URL tab")
 
                 # Wait for the "painel-escolha-processo" element to be present
                 painel_element = WebDriverWait(driver, 20).until(
                     EC.presence_of_element_located((By.ID, "painel-escolha-processo"))
                 )
+                print("Painel escolha processo element found")
 
                 # Click the desired button (e.g., the first button)
                 buttons = driver.find_elements(By.CLASS_NAME, "selecao-processo")
                 if buttons:
+                    print("Process selection buttons found")
+                    print("Waiting for user to select a process...")
 
-                    # Wait for a delay to allow the captcha to appear
-                    time.sleep(5)  # Adjust the delay as needed
+                    # Wait for the user to select a process
+                    WebDriverWait(driver, 300).until(
+                        EC.staleness_of(buttons[0])
+                    )
+                    print("User has selected a process")
 
-                    # Debug: Print current URL
-                    print(f"Current URL: {driver.current_url}")
+                    # Wait for the URL to contain "captcha"
+                    WebDriverWait(driver, 300).until(
+                        EC.url_contains("captcha")
+                    )
+                    print("Captcha detected in URL")
 
-                    # Check if the URL contains the captcha string
-                    if "captcha" in driver.current_url:
-                        print("Captcha detected in URL")
-                        # Wait for the captcha to appear
-                        captcha_image = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.ID, "imagemCaptcha"))
-                        ).get_attribute("src").split(",")[1]
+                    # Wait for the captcha to appear
+                    captcha_image_element = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "imagemCaptcha"))
+                    )
+                    captcha_image_src = captcha_image_element.get_attribute("src")
+                    print(f"Captcha image src: {captcha_image_src}")
 
+                    try:
+                        captcha_image = captcha_image_src.split(",")[1]
+                        print("Captcha image found")
+                    except IndexError:
+                        print("Error: Captcha image src is not in the expected format")
+                        continue
 
-                        # Retry mechanism for solving captcha
-                        for attempt in range(3):  # Retry up to 3 times
-                            print(f"Attempt {attempt + 1} to solve captcha")
-                            captcha_solution = solve_captcha(captcha_image)
-                            if captcha_solution:
-                                driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
-                                driver.find_element(By.ID, "btnEnviar").click()
-                                print(f"Captcha solution '{captcha_solution}' submitted")
-                                time.sleep(2)  # Wait for the page to process the captcha
-                                if not driver.find_elements(By.ID, "btnEnviar"):
-                                    print("Captcha solved and submitted")
-                                    break
-                                else:
-                                    print(f"Captcha not solved on attempt {attempt + 1}")
+                    # Retry mechanism for solving captcha
+                    for attempt in range(3):  # Retry up to 3 times
+                        print(f"Attempt {attempt + 1} to solve captcha")
+                        captcha_solution = solve_captcha(captcha_image)
+                        if captcha_solution:
+                            driver.find_element(By.ID, "captchaInput").send_keys(captcha_solution)
+                            submit_button = driver.find_element(By.ID, "btnEnviar")
+                            submit_button.click()
+                            print("Submit button clicked")
+                            time.sleep(2)  # Wait for the page to process the captcha
+                            if not driver.find_elements(By.ID, "btnEnviar"):
+                                print("Captcha solved and submitted")
+                                break
                             else:
-                                print(f"Failed to solve captcha on attempt {attempt + 1}")
-                            time.sleep(2)  # Wait before retrying
+                                print(f"Captcha not solved on attempt {attempt + 1}")
+                                # Wait for the new captcha to appear
+                                captcha_image_element = WebDriverWait(driver, 10).until(
+                                    EC.presence_of_element_located((By.ID, "imagemCaptcha"))
+                                )
+                                captcha_image_src = captcha_image_element.get_attribute("src")
+                                print(f"New captcha image src: {captcha_image_src}")
+                                try:
+                                    captcha_image = captcha_image_src.split(",")[1]
+                                    print("New captcha image found")
+                                except IndexError:
+                                    print("Error: New captcha image src is not in the expected format")
+                                    continue
                         else:
-                            print("Failed to solve captcha after 3 attempts")
+                            print(f"Failed to solve captcha on attempt {attempt + 1}")
+                        time.sleep(2)  # Wait before retrying
                     else:
-                        print("Captcha not detected in URL")
+                        print("Failed to solve captcha after 3 attempts")
+                else:
+                    print("No process selection buttons found")
 
                 # Split the paste value into the respective fields
                 paste_parts = paste.split('-')
