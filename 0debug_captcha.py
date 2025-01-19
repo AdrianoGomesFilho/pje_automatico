@@ -8,11 +8,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import os
-from dotenv import load_dotenv
 import pytesseract
 from PIL import Image
 import base64
 from io import BytesIO
+
+# Set the TESSDATA_PREFIX environment variable
+os.environ['TESSDATA_PREFIX'] = r'C:\Program Files\Tesseract-OCR'
 
 # Specify the path to your Chrome user data directory
 chrome_options = webdriver.ChromeOptions()
@@ -23,10 +25,13 @@ chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
 driver = webdriver.Chrome(options=chrome_options)
 
 # Specify the path to the Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\tesseract_programa\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Specify the path to your custom Tesseract configuration file
-custom_config = r'--tessdata-dir "C:\Program Files\tesseract_programa\tessdata""'
+print(f"TESSDATA_PREFIX is set to: {os.environ.get('TESSDATA_PREFIX')}")
+print(f"Tesseract cmd is set to: {pytesseract.pytesseract.tesseract_cmd}")
+
+# Example with multiple languages
+custom_config = r'--tessdata-dir "C:\Program Files\Tesseract-OCR\tessdata" -l eng'
 
 def solve_captcha(image_base64):
     try:
@@ -42,7 +47,7 @@ def solve_captcha(image_base64):
         return ""
 
 # Debug section to open the specified URL and solve the captcha
-debug_url = "https://pje.trt5.jus.br/consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1"
+debug_url = ""
 driver.get(debug_url)
 print(f"Opened debug URL: {debug_url}")
 
@@ -60,7 +65,7 @@ try:
         print("Error: Captcha image src is not in the expected format")
 
     # Retry mechanism for solving captcha
-    for attempt in range (10):  # Retry up to 3 times
+    for attempt in range(10):  # Retry up to 10 times
         print(f"Attempt {attempt + 1} to solve captcha")
         captcha_solution = solve_captcha(captcha_image)
         if captcha_solution:
@@ -89,7 +94,7 @@ try:
             print(f"Failed to solve captcha on attempt {attempt + 1}")
         time.sleep(2)  # Wait before retrying
     else:
-        print("Failed to solve captcha after 3 attempts")
+        print("Failed to solve captcha after 10 attempts")
 except TimeoutException:
     print("Captcha image not found within the timeout period")
 
