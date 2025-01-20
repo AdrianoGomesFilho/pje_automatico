@@ -83,43 +83,43 @@ try:
                 print(f"Processo identificado: {paste}")
                 last_clipboard_content = paste  # Update the last clipboard content
 
-                # #########################ASTREA######################################
+                #########################ASTREA######################################
 
-                # # Perform Astrea login and other actions
-                # astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
-                # driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                # driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-                # astrea_handle = driver.window_handles[-1]
-                # driver.switch_to.window(astrea_handle)
+                # Perform Astrea login and other actions
+                astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
+                driver.execute_script(f"window.open('{astrea_url}', '_blank');")
+                astrea_handle = driver.window_handles[-1]
+                driver.switch_to.window(astrea_handle)
 
-                # logged_in = False
+                logged_in = False
 
-                # if not logged_in:
-                #     try:
-                #         # Check if the login element is present
-                #         login_element = WebDriverWait(driver, 2).until(
-                #             EC.presence_of_element_located((By.NAME, "username"))
-                #         )
+                if not logged_in:
+                    try:
+                        # Check if the login element is present
+                        login_element = WebDriverWait(driver, 2).until(
+                            EC.presence_of_element_located((By.NAME, "username"))
+                        )
 
-                #         # Credentials
-                #         username_field = driver.find_element(By.NAME, "username")
-                #         password_field = driver.find_element(By.NAME, "password")
+                        # Credentials
+                        username_field = driver.find_element(By.NAME, "username")
+                        password_field = driver.find_element(By.NAME, "password")
 
-                #         username_field.send_keys(usuario)
-                #         password_field.send_keys(senha)
+                        username_field.send_keys(usuario)
+                        password_field.send_keys(senha)
 
-                #         # Submit the login form
-                #         login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                #         login_button.click()
+                        # Submit the login form
+                        login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                        login_button.click()
 
-                #         print("Logged in to Astrea successfully.")
-                #         logged_in = True
-                #     except:
-                #         print("Already logged in to Astrea or login page not detected.")
-                # else:
-                #     print("Skipping login as already logged in.")
+                        print("Logged in to Astrea successfully.")
+                        logged_in = True
+                    except:
+                        print("Already logged in to Astrea or login page not detected.")
+                else:
+                    print("Skipping login as already logged in.")
 
-                #########################PJE######################################
+                ########################PJE######################################
 
                 # Extract the TRT number (15th and 16th characters)
                 trt_number = paste[18:20]
@@ -251,19 +251,19 @@ try:
                 
                 # Add the title and iframe to the end of the body element
                 driver.execute_script("""
-                    var titleDiv = document.createElement('div');
-                    titleDiv.innerHTML = '<h2>Consulta no TST (sistema antigo)</h2>';
-                    titleDiv.style.marginTop = '550px';
+                  var titleDiv = document.createElement('div');
+                    titleDiv.innerHTML = '<h2>Pré visualizador TST (sistema antigo)</h2>';
+                    titleDiv.style.marginTop = '700px';
                     document.body.appendChild(titleDiv);
 
                     var iframe = document.createElement('iframe');
                     iframe.src = arguments[0];
                     iframe.width = '100%';
                     iframe.height = '800px';
-                    iframe.style.border = '2px solid black';
-                    iframe.style.marginTop = '20px';
+                    iframe.style.border = 'none';
+                    iframe.style.marginTop = '100px';
+                    iframe.style.position = 'relative';  // Ensure the iframe is positioned relative to its container
                     document.body.appendChild(iframe);
-
                 """, iframe_url)
 
         except Exception as e:
