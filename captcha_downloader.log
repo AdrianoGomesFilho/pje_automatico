@@ -1,0 +1,14 @@
+2025-01-19 16:30:20,251 - DEBUG - Requesting URL: https://pje.trt5.jus.br/consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1
+2025-01-19 16:30:20,253 - DEBUG - Starting new HTTPS connection (1): pje.trt5.jus.br:443
+2025-01-19 16:30:20,326 - DEBUG - https://pje.trt5.jus.br:443 "GET /consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1 HTTP/11" 202 0
+2025-01-19 16:30:20,326 - DEBUG - Response status code: 202
+2025-01-19 16:30:20,326 - DEBUG - Response content: b''
+2025-01-19 16:30:22,327 - DEBUG - Encoding detection on empty bytes, assuming utf_8 intention.
+2025-01-19 16:30:22,328 - DEBUG - Captcha image tag: None
+2025-01-19 16:30:22,328 - ERROR - Captcha image not found
+2025-01-19 16:30:22,329 - DEBUG - HTML content saved to debug.html
+2025-01-19 16:30:23,331 - DEBUG - Requesting URL: https://pje.trt5.jus.br/consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1
+2025-01-19 16:30:23,331 - DEBUG - Starting new HTTPS connection (1): pje.trt5.jus.br:443
+2025-01-19 16:30:23,377 - DEBUG - https://pje.trt5.jus.br:443 "GET /consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1 HTTP/11" 202 0
+2025-01-19 16:30:23,377 - DEBUG - Response status code: 202
+2025-01-19 16:30:23,377 - DEBUG - Response content: b''
