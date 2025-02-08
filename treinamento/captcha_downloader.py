@@ -1,60 +1,61 @@
-import requests
-import time
-from bs4 import BeautifulSoup
 import os
-from urllib.parse import urljoin
+import time
+import base64
 import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
-url = "https://pje.trt5.jus.br/consultaprocessual/captcha/detalhe-processo/0000332-73.2021.5.05.0031/1"
-save_folder = "c:/Users/fish/script_pje/treinamento"
+url = "https://pje.trt1.jus.br/consultaprocessual/captcha/detalhe-processo/0100356-73.2020.5.01.0058/1"
+pasta_imagens = "C:/Users/fish/script_pje/treinamento"
 
-if not os.path.exists(save_folder):
-    os.makedirs(save_folder)
+if not os.path.exists(pasta_imagens):
+    os.makedirs(pasta_imagens)
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-}
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='captcha_downloader.log',
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
-base_url = "https://pje.trt5.jus.br"
+def download_captcha(driver):
+    logging.debug(f"Requisitando URL: {url}")
+    driver.get(url)
 
-logging.basicConfig(level=logging.DEBUG, filename='captcha_downloader.log', filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
+    try:
+        # Wait for the captcha image to be present
+        captcha_img = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.ID, "imagemCaptcha"))
+        )
+        img_src = captcha_img.get_attribute('src')
+        logging.debug(f"Captcha image src: {img_src}")
 
-def download_captcha():
-    logging.debug(f"Requesting URL: {url}")
-    response = requests.get(url, headers=headers)
-    logging.debug(f"Response status code: {response.status_code}")
-    logging.debug(f"Response content: {response.content}")
-    time.sleep(2)  # Add delay to allow the site to load properly
-    soup = BeautifulSoup(response.content, 'html.parser')
-    captcha_img = soup.find('img', {'id': 'imagemCaptcha'})
-    print(captcha_img)
-    logging.debug(f"Captcha image tag: {captcha_img}")
-    if captcha_img:
-        img_url = captcha_img['src']
-        if img_url.startswith('/'):
-            img_url = urljoin(url, img_url)
-        logging.debug(f"Captcha image URL: {img_url}")
-        print(img_url)
-        img_response = requests.get(img_url, headers=headers)
-        logging.debug(f"Image response status code: {img_response.status_code}")
-        logging.debug(f"Image response content: {img_response.content}")
-        if img_response.status_code == 200:
-            img_path = os.path.join(save_folder, 'captcha.png')
+        if img_src.startswith('data:image/png;base64,'):
+            img_data = img_src.split(',')[1]
+            img_data = base64.b64decode(img_data)
+            timestamp = int(time.time())
+            img_path = os.path.join(pasta_imagens, f'captcha_{timestamp}.png')
             with open(img_path, 'wb') as f:
-                f.write(img_response.content)
+                f.write(img_data)
             print(f"Captcha downloaded and saved to {img_path}")
             logging.info(f"Captcha downloaded and saved to {img_path}")
         else:
-            print("Failed to download captcha image")
-            logging.error("Failed to download captcha image")
-    else:
+            print("Captcha image source is not base64 encoded")
+            logging.error("Captcha image source is not base64 encoded")
+    except Exception as e:
         print("Captcha image not found")
         logging.error("Captcha image not found")
-        print(soup.prettify())  # Print the HTML content for debugging
-        with open("debug.html", "w", encoding="utf-8") as file:
-            file.write(soup.prettify())  # Save the HTML content to a file for further inspection
-        logging.debug("HTML content saved to debug.html")
+        logging.error(str(e))
 
-while True:
-    download_captcha()
-    time.sleep(1)
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+try:
+    while True:
+        download_captcha(driver)
+        time.sleep(1)
+finally:
+    driver.quit()
