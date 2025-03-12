@@ -1,6 +1,5 @@
 import time
 import re
-from threading import Thread
 import pyperclip
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,9 +11,7 @@ import json
 import tkinter as tk
 from tkinter import simpledialog, messagebox, ttk
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-import requests
 from bs4 import BeautifulSoup
-import requests
 
 
 # Function to prompt user for credentials using a GUI and save them to a file
