@@ -260,6 +260,8 @@ def run_script(credentials):
                         messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
                         continue  # Skip to the next iteration of the loop
 
+                    print(f"id_url: {id_url}")  # Print id_url
+
                     # Find or open the tab for base_url
                     base_url_handle = find_or_open_tab(driver, base_url)
                     driver.switch_to.window(base_url_handle)
@@ -294,6 +296,8 @@ def run_script(credentials):
                         else:
                             final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
 
+                        print(f"final_url: {final_url}")  # Print final_url
+
                         # Close the id_url tab
                         driver.close()
 
@@ -323,7 +327,9 @@ def run_script(credentials):
 
                             antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
 
-                            messagebox.showinfo("Aviso", "Processo sem cadastro nesta instância, abrindo o sistema do TST antigo em outra aba...")
+                            print(f"antigo_tst_url: {antigo_tst_url}")  # Print antigo_tst_url
+
+                            messagebox.showinfo("Aviso", "Processo sem cadastro no PJE TST, abrindo o sistema do TST antigo em outra aba...")
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
                         else:
                             raise e

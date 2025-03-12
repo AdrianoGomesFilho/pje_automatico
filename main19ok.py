@@ -196,29 +196,21 @@ def run_script(credentials):
             return False
 
     def fetch_process_id(driver, id_url):
-        max_retries = 3
-        for attempt in range(max_retries):
-            driver.execute_script(f"window.open('{id_url}', '_blank');")
+        driver.execute_script(f"window.open('{id_url}', '_blank');")
+        id_url_handle = driver.window_handles[-1]
+        driver.switch_to.window(id_url_handle)
+        
+        try:
+            # Wait for the page to load and fetch the process ID from the HTML
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            page_source = driver.page_source
+            soup = BeautifulSoup(page_source, 'html.parser')
+            process_id = soup.find('pre').text.strip()
+            process_id = json.loads(process_id)[0]['id']
+            return process_id
+        finally:
+            driver.close()
             driver.switch_to.window(driver.window_handles[-1])
-
-            try:
-                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "pre")))
-                json_text = driver.find_element(By.TAG_NAME, "pre").text
-                if not json_text:
-                    raise ValueError("Empty response received from id_url")
-                response_data = json.loads(json_text)
-                process_id = response_data[0]['id']
-                return process_id
-            except Exception as e:
-                print(f"Error fetching process ID (attempt {attempt + 1}): {e}")
-                if attempt < max_retries - 1:
-                    print("Retrying...")
-                    driver.refresh()
-                else:
-                    print(f"Failed to fetch process ID after {max_retries} attempts.")
-                    raise
-            finally:
-                driver.switch_to.window(driver.window_handles[-1])
 
     try:
         while True:
@@ -234,15 +226,13 @@ def run_script(credentials):
 
                     #########################ASTREA######################################
 
-                    if login_method in ["Astrea + PJE (Senha)", "Somente Astrea", "Astrea + PJE (Token)"]:
+                    if login_method in ["Astrea + PJE (Senha)", "Astrea", "Astrea + PJE (Token)"]:
                         # Perform Astrea login and other actions
                         astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
                         driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
                         driver.execute_script(f"window.open('{astrea_url}', '_blank');")
                         astrea_handle = driver.window_handles[-1]
                         driver.switch_to.window(astrea_handle)
-
-                        logged_in = False
 
                         try:
                             # Check if the login element is present
@@ -259,7 +249,6 @@ def run_script(credentials):
 
                             # Submit the login form
                             login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-
                             login_button.click()
 
                             WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, "au-header-app__logo")))
@@ -281,48 +270,86 @@ def run_script(credentials):
                     elif pje_level == "Segundo grau":
                         base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
                         id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                    else:
+                    elif pje_level == "TST":
                         base_url = "https://pje.tst.jus.br/tst/login.seam"
                         id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                    else:
+                        messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
+                        continue  # Skip to the next iteration of the loop
 
-                    # Check if already logged in for the specific TRT
-                    # Removed logged_in_trt check
+                    print(f"id_url: {id_url}")  # Print id_url
+
                     # Find or open the tab for base_url
                     base_url_handle = find_or_open_tab(driver, base_url)
                     driver.switch_to.window(base_url_handle)
 
-                    # Wait for the "modo-operacao" element to be present
-                    modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
+                    if not is_logged_in(driver):
+                        # Wait for the "modo-operacao" element to be present
+                        modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
 
-                    if login_method == "Astrea + PJE (Token)":
-                        modo_operacao_element.click()
-                        buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
-                        button_id = buttons[0].get_attribute('id')
-                        button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
-                        driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
-                        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
-                    else:
-                        # Fill the input id=username with credentials (USERNAMEPJE)
-                        driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                        # Fill the input id=password with credentials (PASSWORDPJE)
-                        driver.find_element(By.ID, "password").send_keys(senha_pje)
-                        # Press the button id=btnEntrar
-                        driver.find_element(By.ID, "btnEntrar").click()
+                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
+                            modo_operacao_element.click()
+                            buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
+                            button_id = buttons[0].get_attribute('id')
+                            button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
+                            driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
+                            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
+                            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
+                        else:
+                            # Fill the input id=username with credentials (USERNAMEPJE)
+                            driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                            # Fill the input id=password with credentials (PASSWORDPJE)
+                            driver.find_element(By.ID, "password").send_keys(senha_pje)
+                            # Press the button id=btnEntrar
+                            driver.find_element(By.ID, "btnEntrar").click()
 
-                    # Fetch the id from the id_url using the main driver
-                    process_id = fetch_process_id(driver, id_url)
+                    try:
+                        # Fetch the id from the id_url using the main driver
+                        process_id = fetch_process_id(driver, id_url)
 
-                    # Construct the final_url using the fetched id
-                    if pje_level == "TST":
-                        final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
-                    else:
-                        final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
+                        # Construct the final_url using the fetched id
+                        if pje_level == "TST":
+                            final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
+                        else:
+                            final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
 
-                    # Open the final_url in a new tab
-                    final_url_handle = find_or_open_tab(driver, final_url)
-                    driver.switch_to.window(final_url_handle)
+                        print(f"final_url: {final_url}")  # Print final_url
 
+                        # Close the id_url tab
+                        driver.close()
+
+                        # Switch to the last tab before opening the final_url
+                        driver.switch_to.window(driver.window_handles[-1])
+
+                        # Open the final_url in a new tab
+                        final_url_handle = find_or_open_tab(driver, final_url)
+                        driver.switch_to.window(final_url_handle)
+
+                        try:
+                            # Wait for the element with class 'cabecalho-centro' to be present
+                            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
+                        except TimeoutException:
+                            messagebox.showinfo("Aviso", "Processo não cadastrado no PJE. Abrindo o TST antigo.")
+                            driver.close()
+                    except Exception as e:
+                        if pje_level == "TST":
+                            paste_parts = paste.split('-')
+                            numeroTst = paste_parts[0]
+                            remaining_parts = paste_parts[1].split('.')
+                            digitoTst = remaining_parts[0]
+                            anoTst = remaining_parts[1]
+                            orgaoTst = remaining_parts[2]
+                            tribunalTst = remaining_parts[3]
+                            varaTst = remaining_parts[4]
+
+                            antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
+
+                            print(f"antigo_tst_url: {antigo_tst_url}")  # Print antigo_tst_url
+
+                            messagebox.showinfo("Aviso", "Processo sem cadastro no PJE TST, abrindo o sistema do TST antigo em outra aba...")
+                            driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
+                        else:
+                            raise e
             except Exception as e:
                 print(f"An error occurred in the main loop: {e}")
                 update_credentials(driver)
