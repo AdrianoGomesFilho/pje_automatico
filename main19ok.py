@@ -106,7 +106,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
 def prompt_for_pje_level():
     pje_level_window = tk.Tk()
-    pje_level_window.title("Escolha o nível do PJE")
+    pje_level_window.title("Deseja abrir o processo")
     pje_level_window.attributes('-topmost', True)
 
     screen_width = pje_level_window.winfo_screenwidth()
@@ -117,7 +117,7 @@ def prompt_for_pje_level():
     position_down = int(screen_height / 2 - window_height / 2)
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
-    tk.Label(pje_level_window, text="Escolha o nível do PJE:").pack(pady=10)
+    tk.Label(pje_level_window, text="Escolha o grau:").pack(pady=10)
     pje_level = tk.StringVar()
     pje_level_combobox = ttk.Combobox(pje_level_window, textvariable=pje_level, state='readonly', width=37)  # Increased width
     pje_level_combobox['values'] = ("Primeiro grau", "Segundo grau", "TST")
