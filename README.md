@@ -1,33 +1,22 @@
 # OBJETIVO DO PROJETO (Automação de publicações)
-Agilizar a leitura de processos (publicações) no sistema PJE, ao mesmo tempo abrindo a plataforma online usada no escritório (Astrea, ADVBOX etc), dispensando várias etapas manuais. Especialmente focado para escritórios que usam vários tokens e possui processos em vários TRTS.
-Obs: o projeto é voltado para o uso nos PJEs dos TRTs (trabalhistas).
+Automação que abre, automaticamente, a página respectiva do PJE e (se o usuário quiser) o sistema que utiliza no escritório.Voltado (no presente momento) para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens e possui processos em vários TRTS.
 
-Vídeo de apresentação do projeto no Instagram [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
+Vídeo de apresentação do projeto no Instagram (obs: o programa recebeu grandes melhorias após o vídeo) [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
 
 # O QUE ELE FAZ?
 
-Existem 3 tipos de automação
-1 - Consulta de terceiros com astrea
-2 - Consulta via token unico com astrea
-3 - Somente astrea
-4 - Somente PJE de terceiros
-5 - Somente PJE (token unico) sem astrea
+Ao copiar o número do processo (formato xxxxxxx-xx.xxxx.5.xx.xxxx) o programa dispara, abrindo o PJE e o sistema (site) que o escritório utiliza (ex: Astrea). O usuário pode optar para usar exclusivamente o PJE, Astrea ou ambos.
 
-Dica: o melhor método atualmente é usando o arquivo o acesso de PJE e Astrea com Login e Senha, isso porque dispensa etapas como o uso do assinador digitalmente. Infelizmente o cadastro do login e senha de vários tribunais é demorado e envolve o envio de senhas para e-mail.
-
-Motivo: cada automação atende uma necessidade do advogado. A mais completa é a primeira (consulta de terceiros com Astrea), a automação abre o PJE (no respectivo site do tribunal), assina com o token via PJE Office, abre a tela de consulta de terceiros, simultaneamente abre o Astrea (com login) no campo de pesquisa com o número do processo. A consulta de terceiros é mais viável em casos de escritórios que usam diversos tokens (o nosso caso). Atualmente o projeto suporta ações trabalhistas (que atende as necessidades da equipe que atuo) mas pode ser adaptado para qualquer área.
+Melhoria recente: a automação é capaz de abrir processos de outros advogados com visualização exata ao seu processo, por exemplo, permitindo o acesso aos expedientes mais facilmente. Ao selecionar a opção de abrir o PJE TST o programa detecta se há processo naquela instância. Caso negativo uma outra aba do sistema mais antigo será aberta.
 
 # LINGUAGEM USADA
-Python e suas bibliotecas (selenium, pyperclip, dotenv) automação via chromedriver
+Python e suas bibliotecas, automação via chromedriver
 
-# COMO PODEREI USÁ-LO?
-🟢PYTHON - instalação
-🟢PIP
-    ▪️curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    ▪️py get-pip.py
-    ▪️Inclusão no path o script (variáveis do ambiente, do Windows):
-    ▪️C:\Users\SEU_USER\AppData\Local\Programas\Python\Python312\Scripts
-🟢Selenium - pip install selenium (cmd do windows)
-🟢Pyperclip - pip install pyperclip (cmd do windows)
-🟢Dotenv - pip install python-dotenv (cmd do windows)
+# MOTIVAÇÃO
+Criei a automação para me auxiliar (e auxiliar a equipe do escritório) na hora de abrir os processos. Atualmente a justiça usa muitos sistemas (trabalhistas são 24 regionais no total, cada um possuindo 2 graus, o que totaliza 48, somado ao TST que possui 2 - o PJE e o sistema mais antigo). Ao total, um advogado que possuaa processos espalhados por todo o Brasil precisa fazer malabarismos diariamente para acessar seus processos. Isso é ainda mais agravado quando existem processos de outros advogados associados.
+
+# COMO POSSO USAR A AUTOMAÇÃO?
+Você pode entrar em contato comigo (81992811496) e posso lhe auxiliar na instalação, sem qualquer custo!
+
+
 
