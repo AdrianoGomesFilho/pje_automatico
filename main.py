@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 # Function to prompt user for credentials using a GUI and save them to a file
 def prompt_for_credentials(file_path, credentials, driver=None):
     main_window = tk.Tk()
-    main_window.title("Dados para login")
+    main_window.title("PJE automático")
     main_window.attributes('-topmost', True)  # Make the window stay on top
 
     # Get the screen width and height
@@ -73,7 +73,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         selected_login_method = login_method.get()
 
         if not username_pje or not password_pje or not username_astrea or not password_astrea:
-            messagebox.showerror("Error", "All fields are required!")
+            messagebox.showerror("Erro", "Precisar preencher todos os campos!")
             return
 
         credentials = {
@@ -94,7 +94,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         run_script(credentials)
 
 
-    tk.Button(main_window, text="Save and Run", command=save_and_run).grid(row=5, column=0, columnspan=2, pady=10)
+    tk.Button(main_window, text="Iniciar", command=save_and_run).grid(row=5, column=0, columnspan=2, pady=10)
 
     main_window.bind('<Return>', save_and_run)
 
