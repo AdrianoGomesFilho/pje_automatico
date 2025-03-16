@@ -66,7 +66,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     login_method_combobox.current(0)  # Set default value
 
     def save_and_run(event=None):
-        username_pje = username_pje_entry.get()
+        username_pje = re.sub(r'\D', '', username_pje_entry.get())  # Remove all non-numeric characters
         password_pje = password_pje_entry.get()
         username_astrea = username_astrea_entry.get()
         password_astrea = password_astrea_entry.get()
@@ -193,6 +193,7 @@ def run_script(credentials):
             return False
 
     def fetch_process_id(driver, id_url):
+        time.sleep(2)
         driver.execute_script(f"window.open('{id_url}', '_blank');")
         id_url_handle = driver.window_handles[-1]
         driver.switch_to.window(id_url_handle)
@@ -293,15 +294,23 @@ def run_script(credentials):
                             WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
                             WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
                         else:
-                            # Fill the input id=username with credentials (USERNAMEPJE)
+                            login_pdpj = WebDriverWait(driver, 25).until(
+                                EC.presence_of_element_located((By.ID, "btnSsoPdpj"))
+                            )
+                            login_pdpj.click()
+
+                            time.sleep(3)
+
+                           
                             driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                            # Fill the input id=password with credentials (PASSWORDPJE)
+                            
                             driver.find_element(By.ID, "password").send_keys(senha_pje)
-                            # Press the button id=btnEntrar
-                            driver.find_element(By.ID, "btnEntrar").click()
+                            
+                            driver.find_element(By.NAME, "login").click()
+                            time.sleep(3)
 
                     try:
-                        # Fetch the id from the id_url using the main driver
+
                         process_id = fetch_process_id(driver, id_url)
 
                         # Construct the final_url using the fetched id
@@ -326,7 +335,7 @@ def run_script(credentials):
                             # Wait for the element with class 'cabecalho-centro' to be present
                             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
                         except TimeoutException:
-                            messagebox.showinfo("Aviso", "Processo não cadastrado no PJE. Abrindo o TST antigo.")
+                            messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
                             driver.close()
                     except Exception as e:
                         if pje_level == "TST":

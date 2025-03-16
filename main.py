@@ -66,6 +66,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     login_method_combobox.current(0)  # Set default value
 
     def save_and_run(event=None):
+        username_pje = re.sub(r'\D', '', username_pje_entry.get())  # Remove all non-numeric characters
         username_pje = username_pje_entry.get()
         password_pje = password_pje_entry.get()
         username_astrea = username_astrea_entry.get()
@@ -326,7 +327,7 @@ def run_script(credentials):
                             # Wait for the element with class 'cabecalho-centro' to be present
                             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
                         except TimeoutException:
-                            messagebox.showinfo("Aviso", "Processo não cadastrado no PJE. Abrindo o TST antigo.")
+                            messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
                             driver.close()
                     except Exception as e:
                         if pje_level == "TST":
