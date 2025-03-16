@@ -59,7 +59,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     login_method_combobox['values'] = (
         "Astrea + PJE (Senha)",  
         "Astrea + PJE (Token)",  
-        "Somente Astrea",  
+        "Somente Astrea",
         "Somente PJE"
     )
     login_method_combobox.grid(row=4, column=1, padx=10, pady=5)
@@ -193,7 +193,6 @@ def run_script(credentials):
             return False
 
     def fetch_process_id(driver, id_url):
-        time.sleep(2)
         driver.execute_script(f"window.open('{id_url}', '_blank');")
         id_url_handle = driver.window_handles[-1]
         driver.switch_to.window(id_url_handle)
@@ -282,35 +281,26 @@ def run_script(credentials):
                     driver.switch_to.window(base_url_handle)
 
                     if not is_logged_in(driver):
-                        # Wait for the "modo-operacao" element to be present
-                        modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
-
-                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
-                            modo_operacao_element.click()
-                            buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
-                            button_id = buttons[0].get_attribute('id')
-                            button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
-                            driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
-                            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
-                            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
-                        else:
-                            login_pdpj = WebDriverWait(driver, 25).until(
+                        try:
+                            # Increase the timeout and use a more specific locator strategy
+                            botao_pdpj = WebDriverWait(driver, 20).until(
                                 EC.presence_of_element_located((By.ID, "btnSsoPdpj"))
                             )
-                            login_pdpj.click()
+                            # Use JavaScript to click the button directly
+                            driver.execute_script("arguments[0].click();", botao_pdpj)
+                        except TimeoutException:
+                            print("Erro ao encontrar o botão de login.")
 
-                            time.sleep(3)
-
-                           
+                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
+                            botao_certificado = driver.find_element(By.ID, "botao-certificado-titulo")
+                            driver.execute_script("arguments[0].click();", botao_certificado)
+                        else:
                             driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                            
                             driver.find_element(By.ID, "password").send_keys(senha_pje)
-                            
                             driver.find_element(By.NAME, "login").click()
-                            time.sleep(3)
 
                     try:
-
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
                         process_id = fetch_process_id(driver, id_url)
 
                         # Construct the final_url using the fetched id
