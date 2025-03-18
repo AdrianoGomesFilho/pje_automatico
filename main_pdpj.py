@@ -59,7 +59,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     login_method_combobox['values'] = (
         "Astrea + PJE (Senha)",  
         "Astrea + PJE (Token)",  
-        "Somente Astrea",  
+        "Somente Astrea",
         "Somente PJE"
     )
     login_method_combobox.grid(row=4, column=1, padx=10, pady=5)
@@ -224,27 +224,35 @@ def run_script(credentials):
                         driver.switch_to.window(astrea_handle)
 
                         try:
-                            # Check if the login element is present
-                            login_element = WebDriverWait(driver, 25).until(
-                                EC.presence_of_element_located((By.NAME, "username"))
+                            # Wait for either the 'search' element or the 'submit' button to appear
+                            element_present = WebDriverWait(driver, 25).until(
+                                    EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Digite seu email']")) or
+                                EC.presence_of_element_located((By.ID, "search")) 
                             )
 
-                            # Credentials
-                            username_field = driver.find_element(By.NAME, "username")
-                            password_field = driver.find_element(By.NAME, "password")
+                            if element_present.get_attribute("id") == "search":
+                                print("Element with ID 'search' is present. Proceeding to open PJE.")
+                                # Proceed to open PJE
+                                # ...existing code to open PJE...
+                            else:
+                                print("Login form is present. Performing login.")
+                                # Credentials
+                                username_field = driver.find_element(By.NAME, "username")
+                                password_field = driver.find_element(By.NAME, "password")
 
-                            username_field.send_keys(usuario_astrea)
-                            password_field.send_keys(senha_astrea)
+                                username_field.send_keys(usuario_astrea)
+                                password_field.send_keys(senha_astrea)
 
-                            # Submit the login form
-                            login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-                            login_button.click()
-
-                            WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, "au-header-app__logo")))
+                                # Submit the login form
+                                login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+                                login_button.click()
+                                print("Login realizado. Proceeding to open PJE.")
+                                # Proceed to open PJE after login
+                                # ...existing code to open PJE...
                         except TimeoutException:
-                            print("Erro no login.")
+                            print("Neither 'search' element nor 'submit' button found. Unable to proceed.")
                     else:
-                        print("Skipping login as already logged in.")
+                        print("Já logado")
                         
                     # Extract the TRT number (15th and 16th characters)
                     trt_number = paste[18:20]
