@@ -299,21 +299,27 @@ def run_script(credentials):
 
                             # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
                             elemento_login = wait_for_any_element(driver, [
-                                (By.CLASS_NAME, "botao-certificado-titulo"),
+                                (By.ID, "kc-login"),
                                 (By.ID, "brasao-republica"),
                                 (By.ID, "formPesquisa")
                             ])
 
-                            if elemento_login.get_attribute("class") == "botao-certificado-titulo":
+                            if elemento_login.get_attribute("ID") == "kc-login":
                                 if login_method in ["Astrea + PJE (Token)", "PJE (token)"]:
-                                    elemento_login.click()
-                                    elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                    driver.find_element(By.NAME, "login-pje-office").click()
+                                    elemento_login = WebDriverWait(driver, 10).until(
+                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or
+                                        EC.presence_of_element_located((By.ID, "formPesquisa"))
+                                    )
                                     process_id = fetch_process_id(driver, id_url)
                                 else:
                                     driver.find_element(By.ID, "username").send_keys(usuario_pje)
                                     driver.find_element(By.ID, "password").send_keys(senha_pje)
                                     driver.find_element(By.ID, "kc-login").click()
-                                    elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                    elemento_login = WebDriverWait(driver, 10).until(
+                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or
+                                        EC.presence_of_element_located((By.ID, "formPesquisa"))
+                                    )
                                     process_id = fetch_process_id(driver, id_url)
                             elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                 process_id = fetch_process_id(driver, id_url)
