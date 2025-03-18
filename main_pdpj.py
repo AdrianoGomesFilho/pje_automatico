@@ -281,16 +281,37 @@ def run_script(credentials):
                     botao_pdpj.click()
                     
                     try:
-                        elemento_login = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "botao-certificado-titulo")))
-                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
-                            elemento_login.click()
-                            elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
-                            process_id = fetch_process_id(driver, id_url)
-                        else:
-                            driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                            driver.find_element(By.ID, "password").send_keys(senha_pje)
-                            driver.find_element(By.ID, "kc-login").click()
-                            elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                        # Custom function to wait for either of two elements to be present
+                        def wait_for_any_element(driver, locators, timeout=10):
+                            for _ in range(timeout * 10):  # Check every 0.1 seconds
+                                for locator in locators:
+                                    try:
+                                        element = driver.find_element(*locator)
+                                        if element.is_displayed():
+                                            return element
+                                    except:
+                                        continue
+                                time.sleep(0.1)
+                            raise TimeoutException("Neither element was found within the timeout period.")
+
+                        # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
+                        elemento_login = wait_for_any_element(driver, [
+                            (By.CLASS_NAME, "botao-certificado-titulo"),
+                            (By.ID, "brasao-republica")
+                        ])
+
+                        if elemento_login.get_attribute("class") == "botao-certificado-titulo":
+                            if login_method in ["Astrea + PJE (Token)", "PJE (token)"]:
+                                elemento_login.click()
+                                elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                process_id = fetch_process_id(driver, id_url)
+                            else:
+                                driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                                driver.find_element(By.ID, "password").send_keys(senha_pje)
+                                driver.find_element(By.ID, "kc-login").click()
+                                elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                process_id = fetch_process_id(driver, id_url)
+                        elif elemento_login.get_attribute("id") == "brasao-republica":
                             process_id = fetch_process_id(driver, id_url)
                     except TimeoutException:
                         # PDPJ já logado, prosseguindo com a busca do id do processo 
