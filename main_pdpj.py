@@ -194,8 +194,10 @@ def run_script(credentials):
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
             page_source = driver.page_source
             soup = BeautifulSoup(page_source, 'html.parser')
-            process_id = soup.find('pre').text.strip()
-            process_id = json.loads(process_id)[0]['id']
+            process_id_element = soup.find('pre')
+            if not process_id_element:
+                raise ValueError("Process ID not found")
+            process_id = json.loads(process_id_element.text.strip())[0]['id']
             return process_id
         finally:
             driver.close()
@@ -254,69 +256,74 @@ def run_script(credentials):
                     else:
                         print("Já logado Astrea ou ignorando login Astrea (método).")
                         
-                    # Extract the TRT number (15th and 16th characters)
-                    trt_number = paste[18:20]
-                    trt_number = trt_number.lstrip('0')
+                    while True:  # Loop to allow the user to choose another PJE level if needed
+                        # Extract the TRT number (15th and 16th characters)
+                        trt_number = paste[18:20]
+                        trt_number = trt_number.lstrip('0')
 
-                    # Prompt user to choose the PJE level
-                    pje_level = prompt_for_pje_level()
+                        # Prompt user to choose the PJE level
+                        pje_level = prompt_for_pje_level()
 
-                    if pje_level == "Primeiro grau":
-                        base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
-                        id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                    elif pje_level == "Segundo grau":
-                        base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
-                        id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                    elif pje_level == "TST":
-                        base_url = "https://pje.tst.jus.br/tst/login.seam"
-                        id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                    else:
-                        messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
-                        continue  # Skip to the next iteration of the loop
+                        if pje_level == "Primeiro grau":
+                            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+                            id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                        elif pje_level == "Segundo grau":
+                            base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
+                            id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                        elif pje_level == "TST":
+                            base_url = "https://pje.tst.jus.br/tst/login.seam"
+                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                        else:
+                            messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
+                            continue  # Skip to the next iteration of the loop
 
-                    base_url_handle = find_or_open_tab(driver, base_url)
-                    driver.switch_to.window(base_url_handle)
+                        base_url_handle = find_or_open_tab(driver, base_url)
+                        driver.switch_to.window(base_url_handle)
 
-                    botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
-                    botao_pdpj.click()
-                    
-                    try:
-                        # Custom function to wait for either of two elements to be present
-                        def wait_for_any_element(driver, locators, timeout=10):
-                            for _ in range(timeout * 10):  # Check every 0.1 seconds
-                                for locator in locators:
-                                    try:
-                                        element = driver.find_element(*locator)
-                                        if element.is_displayed():
-                                            return element
-                                    except:
-                                        continue
-                                time.sleep(0.1)
-                            raise TimeoutException("Neither element was found within the timeout period.")
+                        botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                        botao_pdpj.click()
 
-                        # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
-                        elemento_login = wait_for_any_element(driver, [
-                            (By.CLASS_NAME, "botao-certificado-titulo"),
-                            (By.ID, "brasao-republica")
-                        ])
+                        try:
+                            # Custom function to wait for either of two elements to be present
+                            def wait_for_any_element(driver, locators, timeout=10):
+                                for _ in range(timeout * 10):  # Check every 0.1 seconds
+                                    for locator in locators:
+                                        try:
+                                            element = driver.find_element(*locator)
+                                            if element.is_displayed():
+                                                return element
+                                        except:
+                                            continue
+                                    time.sleep(0.1)
+                                raise TimeoutException("Neither element was found within the timeout period.")
 
-                        if elemento_login.get_attribute("class") == "botao-certificado-titulo":
-                            if login_method in ["Astrea + PJE (Token)", "PJE (token)"]:
-                                elemento_login.click()
-                                elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                            # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
+                            elemento_login = wait_for_any_element(driver, [
+                                (By.CLASS_NAME, "botao-certificado-titulo"),
+                                (By.ID, "brasao-republica")
+                            ])
+
+                            if elemento_login.get_attribute("class") == "botao-certificado-titulo":
+                                if login_method in ["Astrea + PJE (Token)", "PJE (token)"]:
+                                    elemento_login.click()
+                                    elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                    process_id = fetch_process_id(driver, id_url)
+                                else:
+                                    driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                                    driver.find_element(By.ID, "password").send_keys(senha_pje)
+                                    driver.find_element(By.ID, "kc-login").click()
+                                    elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                                    process_id = fetch_process_id(driver, id_url)
+                            elif elemento_login.get_attribute("id") == "brasao-republica":
                                 process_id = fetch_process_id(driver, id_url)
-                            else:
-                                driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                                driver.find_element(By.ID, "password").send_keys(senha_pje)
-                                driver.find_element(By.ID, "kc-login").click()
-                                elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
-                                process_id = fetch_process_id(driver, id_url)
-                        elif elemento_login.get_attribute("id") == "brasao-republica":
-                            process_id = fetch_process_id(driver, id_url)
-                    except TimeoutException:
-                        # PDPJ já logado, prosseguindo com a busca do id do processo 
-                        process_id = fetch_process_id(driver, id_url)
-                    
+                        except (ValueError, TimeoutException):
+                            messagebox.showinfo("Aviso", "Esse processo não tem cadastro neste grau.")
+                            driver.close()  # Close the current base_url tab
+                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last remaining tab
+                            continue  # Prompt the user to choose another PJE level
+                        else:
+                            break  # Exit the loop if process_id is successfully fetched
+
                     # Construct the final_url using the fetched id
                     if pje_level == "TST":
                         final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
