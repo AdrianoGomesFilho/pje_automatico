@@ -252,7 +252,7 @@ def run_script(credentials):
                         except TimeoutException:
                             print("Neither 'search' element nor 'submit' button found. Unable to proceed.")
                     else:
-                        print("Já logado")
+                        print("Já logado Astrea ou ignorando login Astrea (método).")
                         
                     # Extract the TRT number (15th and 16th characters)
                     trt_number = paste[18:20]
@@ -280,17 +280,10 @@ def run_script(credentials):
                     botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
                     botao_pdpj.click()
                     
-                    elemento_login = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.ID, "username")) or
-                            EC.presence_of_element_located((By.ID, "brasao-republica"))
-                            )
-
-                    if "username" in elemento_login.get_attribute("class"):
-                        process_id = fetch_process_id(driver, id_url)
-                    else:
+                    try:
+                        elemento_login = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "botao-certificado-titulo")))
                         if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
-                            botao_pdpj = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, "botao-certificado-titulo")))
-                            botao_pdpj.click()
+                            elemento_login.click()
                             elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
                             process_id = fetch_process_id(driver, id_url)
                         else:
@@ -299,6 +292,9 @@ def run_script(credentials):
                             driver.find_element(By.ID, "kc-login").click()
                             elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
                             process_id = fetch_process_id(driver, id_url)
+                    except TimeoutException:
+                        # PDPJ já logado, prosseguindo com a busca do id do processo 
+                        process_id = fetch_process_id(driver, id_url)
                     
                     # Construct the final_url using the fetched id
                     if pje_level == "TST":
