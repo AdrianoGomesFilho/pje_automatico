@@ -184,20 +184,11 @@ def run_script(credentials):
         new_handle = driver.window_handles[-1]
         return new_handle
 
-    def is_logged_in(driver):
-        try:
-            # Check for an element that is only present when logged in
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "logged-in-element-class")))
-            return True
-        except TimeoutException:
-            return False
 
     def fetch_process_id(driver, id_url):
-        time.sleep(2)
         driver.execute_script(f"window.open('{id_url}', '_blank');")
         id_url_handle = driver.window_handles[-1]
         driver.switch_to.window(id_url_handle)
-        
         try:
             # Wait for the page to load and fetch the process ID from the HTML
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
@@ -275,90 +266,74 @@ def run_script(credentials):
                         messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
                         continue  # Skip to the next iteration of the loop
 
-                    print(f"id_url: {id_url}")  # Print id_url
-
-                    # Find or open the tab for base_url
                     base_url_handle = find_or_open_tab(driver, base_url)
                     driver.switch_to.window(base_url_handle)
 
-                    if not is_logged_in(driver):
-                        # Wait for the "modo-operacao" element to be present
-                        modo_operacao_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "modo-operacao")))
-
-                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
-                            modo_operacao_element.click()
-                            buttons = driver.find_elements(By.XPATH, "//*[contains(@id, 'UtilizarPjeOffice')]")
-                            button_id = buttons[0].get_attribute('id')
-                            button_element = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, button_id)))
-                            driver.execute_script("arguments[0].scrollIntoView(true);", button_element)
-                            WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, button_id))).click()
-                            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))).click()
-                        else:
-                            login_pdpj = WebDriverWait(driver, 25).until(
-                                EC.presence_of_element_located((By.ID, "btnSsoPdpj"))
+                    botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                    botao_pdpj.click()
+                    
+                    elemento_login = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.ID, "username")) or
+                            EC.presence_of_element_located((By.ID, "brasao-republica"))
                             )
-                            login_pdpj.click()
 
-                            time.sleep(3)
-
-                           
+                    if "username" in elemento_login.get_attribute("class"):
+                        process_id = fetch_process_id(driver, id_url)
+                    else:
+                        if login_method == "Astrea + PJE (Token)" or login_method == "PJE (token)":
+                            botao_pdpj = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, "botao-certificado-titulo")))
+                            botao_pdpj.click()
+                            elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                            process_id = fetch_process_id(driver, id_url)
+                        else:
                             driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                            
                             driver.find_element(By.ID, "password").send_keys(senha_pje)
-                            
-                            driver.find_element(By.NAME, "login").click()
-                            time.sleep(3)
+                            driver.find_element(By.ID, "kc-login").click()
+                            elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
+                            process_id = fetch_process_id(driver, id_url)
+                    
+                    # Construct the final_url using the fetched id
+                    if pje_level == "TST":
+                        final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
+                    else:
+                        final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
+
+                    print(f"final_url: {final_url}")  # Print final_url
+
+                    # Close the id_url tab
+                    driver.close()
+
+                    # Switch to the last tab before opening the final_url
+                    driver.switch_to.window(driver.window_handles[-1])
+
+                    # Open the final_url in a new tab
+                    final_url_handle = find_or_open_tab(driver, final_url)
+                    driver.switch_to.window(final_url_handle)
 
                     try:
-
-                        process_id = fetch_process_id(driver, id_url)
-
-                        # Construct the final_url using the fetched id
-                        if pje_level == "TST":
-                            final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
-                        else:
-                            final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
-
-                        print(f"final_url: {final_url}")  # Print final_url
-
-                        # Close the id_url tab
+                        # Wait for the element with class 'cabecalho-centro' to be present
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
+                    except TimeoutException:
+                        messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
                         driver.close()
+                
+                    if pje_level == "TST":
+                        paste_parts = paste.split('-')
+                        numeroTst = paste_parts[0]
+                        remaining_parts = paste_parts[1].split('.')
+                        digitoTst = remaining_parts[0]
+                        anoTst = remaining_parts[1]
+                        orgaoTst = remaining_parts[2]
+                        tribunalTst = remaining_parts[3]
+                        varaTst = remaining_parts[4]
 
-                        # Switch to the last tab before opening the final_url
-                        driver.switch_to.window(driver.window_handles[-1])
+                        antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
 
-                        # Open the final_url in a new tab
-                        final_url_handle = find_or_open_tab(driver, final_url)
-                        driver.switch_to.window(final_url_handle)
+                        print(f"antigo_tst_url: {antigo_tst_url}")  # Print antigo_tst_url
 
-                        try:
-                            # Wait for the element with class 'cabecalho-centro' to be present
-                            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
-                        except TimeoutException:
-                            messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
-                            driver.close()
-                    except Exception as e:
-                        if pje_level == "TST":
-                            paste_parts = paste.split('-')
-                            numeroTst = paste_parts[0]
-                            remaining_parts = paste_parts[1].split('.')
-                            digitoTst = remaining_parts[0]
-                            anoTst = remaining_parts[1]
-                            orgaoTst = remaining_parts[2]
-                            tribunalTst = remaining_parts[3]
-                            varaTst = remaining_parts[4]
+                        messagebox.showinfo("Aviso", "Processo sem cadastro no PJE TST, abrindo o sistema do TST antigo em outra aba...")
+                        driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
 
-                            antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
-
-                            print(f"antigo_tst_url: {antigo_tst_url}")  # Print antigo_tst_url
-
-                            messagebox.showinfo("Aviso", "Processo sem cadastro no PJE TST, abrindo o sistema do TST antigo em outra aba...")
-                            driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                        else:
-                            raise e
-            except Exception as e:
-                print(f"An error occurred in the main loop: {e}")
-                update_credentials(driver)
             finally:
                 time.sleep(1)  # Wait before checking the clipboard again
 
