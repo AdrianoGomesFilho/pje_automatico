@@ -300,7 +300,8 @@ def run_script(credentials):
                             # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
                             elemento_login = wait_for_any_element(driver, [
                                 (By.CLASS_NAME, "botao-certificado-titulo"),
-                                (By.ID, "brasao-republica")
+                                (By.ID, "brasao-republica"),
+                                (By.ID, "formPesquisa")
                             ])
 
                             if elemento_login.get_attribute("class") == "botao-certificado-titulo":
@@ -314,7 +315,7 @@ def run_script(credentials):
                                     driver.find_element(By.ID, "kc-login").click()
                                     elemento_login = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "brasao-republica")))
                                     process_id = fetch_process_id(driver, id_url)
-                            elif elemento_login.get_attribute("id") == "brasao-republica":
+                            elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                 process_id = fetch_process_id(driver, id_url)
                         except (ValueError, TimeoutException):
                             messagebox.showinfo("Aviso", "Esse processo não tem cadastro neste grau.")
