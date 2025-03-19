@@ -65,10 +65,6 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         password_astrea = password_astrea_entry.get()
         selected_login_method = login_method.get()
 
-        if not username_pje or not password_pje or not username_astrea or not password_astrea:
-            messagebox.showerror("Erro", "Preencha todos os campos!")
-            return
-
         credentials = {
             "USERNAMEPJE": username_pje,
             "PASSWORDPJE": password_pje,
@@ -217,8 +213,10 @@ def run_script(credentials):
                         try:
                             # Wait for either the 'search' element or the 'submit' button to appear
                             element_present = WebDriverWait(driver, 25).until(
-                                    EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Digite seu email']")) or
-                                EC.presence_of_element_located((By.ID, "search")) 
+                                EC.any_of(
+                                    EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Digite seu email']")),
+                                    EC.presence_of_element_located((By.ID, "search"))
+                                )
                             )
 
                             if element_present.get_attribute("id") == "search":
