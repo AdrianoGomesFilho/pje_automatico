@@ -87,7 +87,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     main_window.mainloop()
     return credentials
 
-def prompt_for_pje_level():
+def prompt_for_pje_level(paste):
     pje_level_window = tk.Tk()
     pje_level_window.title("Escolha o Grau")
     pje_level_window.attributes('-topmost', True)
@@ -96,14 +96,15 @@ def prompt_for_pje_level():
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
     window_width = 400
-    window_height = 200
+    window_height = 250
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
 
-    tk.Label(pje_level_window, text="Escolha o grau:", bg="#e3f2fd", fg="#0d47a1", font=font_style).pack(pady=10)
+    tk.Label(pje_level_window, text="Escolha o grau", bg="#e3f2fd", fg="#0d47a1", font=font_style).pack(pady=10)
+    tk.Label(pje_level_window, text=f"Processo que será aberto: {paste}", bg="#e3f2fd", fg="#0d47a1", font=font_style).pack(pady=10)
 
     pje_level = tk.StringVar()
 
@@ -249,7 +250,7 @@ def run_script(credentials):
                         trt_number = trt_number.lstrip('0')
 
                         # Prompt user to choose the PJE level
-                        pje_level = prompt_for_pje_level()
+                        pje_level = prompt_for_pje_level(paste)
 
                         if pje_level == "Primeiro grau":
                             base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
