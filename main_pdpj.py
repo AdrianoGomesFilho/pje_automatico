@@ -271,14 +271,27 @@ def run_script(credentials):
                             base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "TST":
+                            paste_parts = paste.split('-')
+                            numeroTst = paste_parts[0]
+                            remaining_parts = paste_parts[1].split('.')
+                            digitoTst = remaining_parts[0]
+                            anoTst = remaining_parts[1]
+                            orgaoTst = remaining_parts[2]
+                            tribunalTst = remaining_parts[3]
+                            varaTst = remaining_parts[4]
+
+                            antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
+
                             base_url = "https://pje.tst.jus.br/tst/login.seam"
                             id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                        
+                        if pje_level == "TST":
+                            driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
+                            base_url_handle = find_or_open_tab(driver, base_url)
+                            driver.switch_to.window(base_url_handle)
                         else:
-                            messagebox.showinfo("Aviso", "Esse processo não está cadastrado neste grau")
-                            continue  # Skip to the next iteration of the loop
-
-                        base_url_handle = find_or_open_tab(driver, base_url)
-                        driver.switch_to.window(base_url_handle)
+                            base_url_handle = find_or_open_tab(driver, base_url)
+                            driver.switch_to.window(base_url_handle)
 
                         botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
                         botao_pdpj.click()
@@ -324,7 +337,7 @@ def run_script(credentials):
                             elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                 process_id = fetch_process_id(driver, id_url)
                         except (ValueError, TimeoutException):
-                            messagebox.showinfo("Aviso", "Esse processo não tem cadastro neste grau.")
+                            messagebox.showinfo("Aviso", "Processo sem cadastro neste PJE. Se desejar abrir outro grau clique OK!")
                             driver.close()  # Close the current base_url tab
                             driver.switch_to.window(driver.window_handles[-1])  # Switch to the last remaining tab
                             continue  # Prompt the user to choose another PJE level
@@ -356,23 +369,7 @@ def run_script(credentials):
                         messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
                         driver.close()
                 
-                    if pje_level == "TST":
-                        paste_parts = paste.split('-')
-                        numeroTst = paste_parts[0]
-                        remaining_parts = paste_parts[1].split('.')
-                        digitoTst = remaining_parts[0]
-                        anoTst = remaining_parts[1]
-                        orgaoTst = remaining_parts[2]
-                        tribunalTst = remaining_parts[3]
-                        varaTst = remaining_parts[4]
-
-                        antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
-
-                        print(f"antigo_tst_url: {antigo_tst_url}")  # Print antigo_tst_url
-
-                        messagebox.showinfo("Aviso", "Processo sem cadastro no PJE TST, abrindo o sistema do TST antigo em outra aba...")
-                        driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-
+                    
             finally:
                 time.sleep(1)  # Wait before checking the clipboard again
 
