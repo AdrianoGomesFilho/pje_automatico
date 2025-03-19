@@ -17,63 +17,54 @@ from bs4 import BeautifulSoup
 # Function to prompt user for credentials using a GUI and save them to a file
 def prompt_for_credentials(file_path, credentials, driver=None):
     main_window = tk.Tk()
-    main_window.title("PJE automático")
-    main_window.attributes('-topmost', True)  # Make the window stay on top
+    main_window.title("PJE Automático")
+    main_window.attributes('-topmost', True)
+    main_window.configure(bg="#f0f0f0")  # Light background color
 
-    # Get the screen width and height
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
-
-    # Calculate the position to center the window
-    window_width = 500  # Increased width
-    window_height = 260
-    position_right = int(screen_width/2 - window_width/2)
-    position_down = int(screen_height/2 - window_height/2)
-
-    # Set the geometry of the window
+    window_width = 500
+    window_height = 300
+    position_right = int(screen_width / 2 - window_width / 2)
+    position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
-    tk.Label(main_window, text="E-mail do Astrea:").grid(row=2, column=0, padx=10, pady=5)
-    username_astrea_entry = tk.Entry(main_window, width=40)  # Increased width
-    username_astrea_entry.grid(row=2, column=1, padx=10, pady=5)
+    tk.Label(main_window, text="E-mail do Astrea:", bg="#f0f0f0").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    username_astrea_entry = tk.Entry(main_window, width=40)
+    username_astrea_entry.grid(row=0, column=1, padx=10, pady=5)
     username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
 
-    tk.Label(main_window, text="Senha do Astrea:").grid(row=3, column=0, padx=10, pady=5)
-    password_astrea_entry = tk.Entry(main_window, show='*', width=40)  # Increased width
-    password_astrea_entry.grid(row=3, column=1, padx=10, pady=5)
+    tk.Label(main_window, text="Senha do Astrea:", bg="#f0f0f0").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    password_astrea_entry = tk.Entry(main_window, show='*', width=40)
+    password_astrea_entry.grid(row=1, column=1, padx=10, pady=5)
     password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
 
-    tk.Label(main_window, text="CPF para login no PJE:").grid(row=0, column=0, padx=10, pady=5)
-    username_pje_entry = tk.Entry(main_window, width=40)  # Increased width
-    username_pje_entry.grid(row=0, column=1, padx=10, pady=5)
+    tk.Label(main_window, text="CPF para login no PJE:", bg="#f0f0f0").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    username_pje_entry = tk.Entry(main_window, width=40)
+    username_pje_entry.grid(row=2, column=1, padx=10, pady=5)
     username_pje_entry.insert(0, credentials.get("USERNAMEPJE", ""))
 
-    tk.Label(main_window, text="Senha para login no PJE:").grid(row=1, column=0, padx=10, pady=5)
-    password_pje_entry = tk.Entry(main_window, show='*', width=40)  # Increased width
-    password_pje_entry.grid(row=1, column=1, padx=10, pady=5)
+    tk.Label(main_window, text="Senha para login no PJE:", bg="#f0f0f0").grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    password_pje_entry = tk.Entry(main_window, show='*', width=40)
+    password_pje_entry.grid(row=3, column=1, padx=10, pady=5)
     password_pje_entry.insert(0, credentials.get("PASSWORDPJE", ""))
 
-    tk.Label(main_window, text="Método de Login:").grid(row=4, column=0, padx=10, pady=5)
-    login_method = tk.StringVar()
-    login_method_combobox = ttk.Combobox(main_window, textvariable=login_method, state='readonly', width=37)  # Increased width
-    login_method_combobox['values'] = (
-        "Astrea + PJE (Senha)",  
-        "Astrea + PJE (Token)",  
-        "Somente Astrea",
-        "Somente PJE"
-    )
-    login_method_combobox.grid(row=4, column=1, padx=10, pady=5)
-    login_method_combobox.current(0)  # Set default value
+    tk.Label(main_window, text="Método de Login:", bg="#f0f0f0").grid(row=4, column=0, padx=10, pady=5, sticky="e")
 
-    def save_and_run(event=None):
-        username_pje = re.sub(r'\D', '', username_pje_entry.get())  # Remove all non-numeric characters
+    login_method = tk.StringVar(value="Astrea + PJE (Senha)")
+    methods = ["Astrea + PJE (Senha)", "Astrea + PJE (Token)", "Somente Astrea", "Somente PJE"]
+    for i, method in enumerate(methods):
+        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg="#f0f0f0").grid(row=4 + i, column=1, sticky="w")
+
+    def save_and_run():
+        username_pje = re.sub(r'\D', '', username_pje_entry.get())
         password_pje = password_pje_entry.get()
         username_astrea = username_astrea_entry.get()
         password_astrea = password_astrea_entry.get()
         selected_login_method = login_method.get()
 
         if not username_pje or not password_pje or not username_astrea or not password_astrea:
-            messagebox.showerror("Erro", "Precisar preencher todos os campos!")
+            messagebox.showerror("Erro", "Preencha todos os campos!")
             return
 
         credentials = {
@@ -93,42 +84,36 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         main_window.destroy()
         run_script(credentials)
 
-
-    tk.Button(main_window, text="Iniciar", command=save_and_run).grid(row=5, column=0, columnspan=2, pady=10)
-
-    main_window.bind('<Return>', save_and_run)
+    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#4CAF50", fg="white", width=15).grid(row=8, column=0, columnspan=2, pady=10)
 
     main_window.mainloop()
     return credentials
 
 def prompt_for_pje_level():
     pje_level_window = tk.Tk()
-    pje_level_window.title("Deseja abrir o processo")
+    pje_level_window.title("Escolha o Grau")
     pje_level_window.attributes('-topmost', True)
+    pje_level_window.configure(bg="#f0f0f0")
 
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
-    window_width = 400  # Increased width
-    window_height = 150
+    window_width = 400
+    window_height = 200
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
-    tk.Label(pje_level_window, text="Escolha o grau:").pack(pady=10)
-    pje_level = tk.StringVar()
-    pje_level_combobox = ttk.Combobox(pje_level_window, textvariable=pje_level, state='readonly', width=37)  # Increased width
-    pje_level_combobox['values'] = ("Primeiro grau", "Segundo grau", "TST")
-    pje_level_combobox.pack(pady=10)
-    pje_level_combobox.current(0)
-    pje_level_combobox.bind('<Return>', lambda e: on_select())
+    tk.Label(pje_level_window, text="Escolha o grau:", bg="#f0f0f0", font=("Arial", 12)).pack(pady=10)
 
-    def on_select(event=None):
+    pje_level = tk.StringVar()
+
+    def select_level(level):
+        pje_level.set(level)
         pje_level_window.destroy()
 
-    ok_button = tk.Button(pje_level_window, text="OK", command=on_select)
-    ok_button.pack(pady=10)
-    pje_level_window.bind('<Return>', on_select)
-    ok_button.bind('<Return>', on_select)
+    tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg="#4CAF50", fg="white", width=20).pack(pady=5)
+    tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg="#2196F3", fg="white", width=20).pack(pady=5)
+    tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg="#FF5722", fg="white", width=20).pack(pady=5)
 
     pje_level_window.mainloop()
     return pje_level.get()
