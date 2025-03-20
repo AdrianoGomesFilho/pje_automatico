@@ -96,7 +96,7 @@ def prompt_for_pje_level(paste):
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
     window_width = 400
-    window_height = 250
+    window_height = 300
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -115,6 +115,7 @@ def prompt_for_pje_level(paste):
     tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg="#4CAF50", fg="white", width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg="#2196F3", fg="white", width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg="#FF5722", fg="white", width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Ignorar e Aguardar", command=lambda: select_level("Ignore"), bg="#9E9E9E", fg="white", width=20, font=font_style).pack(pady=5)
 
     pje_level_window.mainloop()
     return pje_level.get()
@@ -252,6 +253,10 @@ def run_script(credentials):
                         # Prompt user to choose the PJE level
                         pje_level = prompt_for_pje_level(paste)
 
+                        if pje_level == "Ignore":
+                            print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                            break  # Exit the loop and wait for new clipboard content
+
                         if pje_level == "Primeiro grau":
                             base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
@@ -358,11 +363,15 @@ def run_script(credentials):
                         driver.close()
                 
                     
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                continue  # Skip the current iteration and wait for new clipboard content
+
             finally:
                 time.sleep(1)  # Wait before checking the clipboard again
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in the main loop: {e}")
         update_credentials(driver)
 
 # Show the credentials window before running the script
