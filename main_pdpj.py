@@ -197,8 +197,8 @@ def run_script(credentials):
                 pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
                 paste = pyperclip.paste()
 
-                # Check if the clipboard content is new and matches the pattern
-                if paste != last_clipboard_content and pattern.match(paste):
+                # Check if the clipboard content is new and matches the pattern exactly
+                if paste != last_clipboard_content and pattern.fullmatch(paste):
                     print(f"Processo identificado: {paste}")
                     last_clipboard_content = paste  # Update the last clipboard content
 
