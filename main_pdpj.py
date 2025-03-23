@@ -160,6 +160,9 @@ def run_script(credentials):
     # Store the last clipboard content
     last_clipboard_content = ""
 
+    # Add a variable to bypass repeated content
+    bypass_repeated_content = False
+
     def find_or_open_tab(driver, base_url, data_url=None):
         for handle in driver.window_handles:
             driver.switch_to.window(handle)
@@ -197,10 +200,11 @@ def run_script(credentials):
                 pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
                 paste = pyperclip.paste()
 
-                # Check if the clipboard content is new and matches the pattern exactly
-                if paste != last_clipboard_content and pattern.fullmatch(paste):
+                # Check if the clipboard content is new or bypassing is enabled
+                if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
                     last_clipboard_content = paste  # Update the last clipboard content
+                    bypass_repeated_content = False  # Reset bypass flag after processing
 
                     #########################ASTREA######################################
 
@@ -361,6 +365,14 @@ def run_script(credentials):
                     except TimeoutException:
                         messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
                         driver.close()
+
+                    # Prompt the user to reopen PJE or exit
+                    reopen_choice = messagebox.askyesno("Reabrir PJE", "Deseja reabrir outro grau para este processo?")
+                    if reopen_choice:
+                        bypass_repeated_content = True  # Enable bypass for repeated content
+                        continue  # Reopen the PJE level prompt
+                    else:
+                        break  # Exit the loop and wait for new clipboard content
                 
                     
             except Exception as e:
