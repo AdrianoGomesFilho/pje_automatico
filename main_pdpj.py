@@ -342,7 +342,10 @@ def run_script(credentials):
                             break  # Exit the loop if process_id is successfully fetched
 
                     # Construct the final_url using the fetched id
-                    if pje_level == "TST":
+                    if pje_level == "Ignore":
+                        print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                        continue  # Skip processing and wait for new clipboard content
+                    elif pje_level == "TST":
                         final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
                     else:
                         final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
