@@ -359,20 +359,13 @@ def run_script(credentials):
                     final_url_handle = find_or_open_tab(driver, final_url)
                     driver.switch_to.window(final_url_handle)
 
-                    try:
-                        # Wait for the element with class 'cabecalho-centro' to be present
-                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "cabecalho-centro")))
-                    except TimeoutException:
-                        messagebox.showinfo("Aviso", "Processo não cadastrado neste PJE.")
-                        driver.close()
-
-                    # Prompt the user to reopen PJE or exit
-                    reopen_choice = messagebox.askyesno("Reabrir PJE", "Deseja reabrir outro grau para este processo?")
+                    reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
                     if reopen_choice:
                         bypass_repeated_content = True  # Enable bypass for repeated content
                         continue  # Reopen the PJE level prompt
                     else:
-                        break  # Exit the loop and wait for new clipboard content
+                        print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                        continue  # Continue monitoring clipboard content
                 
                     
             except Exception as e:
