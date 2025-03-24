@@ -203,6 +203,11 @@ def run_script(credentials):
                 # Check if the clipboard content is new or bypassing is enabled
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
+                    if not pattern.fullmatch(paste):
+                        print("Conteúdo inválido. Aguardando novo conteúdo na área de transferência.")
+                        messagebox.showwarning("Aviso", "Conteúdo inválido na área de transferência. Por favor, copie um número de processo válido.")
+                        continue  # Wait for new valid clipboard content
+
                     last_clipboard_content = paste  # Update the last clipboard content
                     bypass_repeated_content = False  # Reset bypass flag after processing
 
