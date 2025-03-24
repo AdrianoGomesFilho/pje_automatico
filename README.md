@@ -1,5 +1,5 @@
 # OBJETIVO DO PROJETO (Automação de publicações)
-Automação que abre, automaticamente (ao detectar que você copiou um número de processo), a página respectiva do PJE e (se o usuário quiser) o sistema que utiliza no escritório. Voltado (no presente momento) para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
+Automação que abre, automaticamente (ao detectar que você copiou um número de processo), a página respectiva do PJE e (se o usuário quiser) o sistema que utiliza no escritório. Voltado no presente momento para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
 
 Vídeo de apresentação do projeto no Instagram (obs: o programa recebeu grandes melhorias após o vídeo) [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
 
@@ -7,7 +7,7 @@ Vídeo de apresentação do projeto no Instagram (obs: o programa recebeu grande
 
 Ao copiar o número do processo (formato xxxxxxx-xx.xxxx.5.xx.xxxx) o programa dispara, abrindo o PJE e o sistema (site) que o escritório utiliza (ex: Astrea). O usuário pode optar para usar exclusivamente o PJE, Astrea ou ambos.
 
-Melhoria recente: a automação é capaz de abrir processos de outros advogados com visualização exata ao seu processo, por exemplo, permitindo o acesso aos expedientes mais facilmente. Ao selecionar a opção de abrir o PJE TST o programa detecta se há processo naquela instância. Caso negativo uma outra aba do sistema mais antigo será aberta.
+Melhoria recente: a automação é capaz de abrir processos de outros advogados com visualização igual aos processos pessoais. Tal forma de visualizar permite o acesso aos expedientes mais facilmente.
 
 # LINGUAGEM USADA
 Python e suas bibliotecas, automação via chromedriver
