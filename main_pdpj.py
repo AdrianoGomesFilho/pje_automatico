@@ -284,8 +284,8 @@ def run_script(credentials):
 
                             antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
 
-                            base_url = "https://pje.tst.jus.br/tst/login.seam"
-                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+                            base_url = "https://pje.tst.jus.br/tst/login.seam" 
+                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
                         
                         if pje_level == "TST":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
@@ -295,7 +295,11 @@ def run_script(credentials):
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
 
-                        botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                        try:
+                            botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                        except TimeoutException:
+                            messagebox.showerror("Erro", "Página de login no PJE não carregou. O programa será reiniciado.")
+                            continue  # Show the pje_level prompt again
                         botao_pdpj.click()
 
                         try:
