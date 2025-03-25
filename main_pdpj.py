@@ -376,7 +376,7 @@ def run_script(credentials):
                         bypass_repeated_content = True  # Enable bypass for repeated content
                         continue  # Reopen the PJE level prompt
                     else:
-                        print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                        print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
                         continue  # Continue monitoring clipboard content
                 
                     
