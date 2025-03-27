@@ -412,5 +412,22 @@ def run_script(credentials):
         print(f"An error occurred in the main loop: {e}")
         update_credentials(driver)
 
+# Monkey-patch messagebox to make it topmost
+def topmost_messagebox(func):
+    def wrapper(*args, **kwargs):
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        root.update()
+        result = func(*args, **kwargs)
+        root.destroy()
+        return result
+    return wrapper
+
+messagebox.showinfo = topmost_messagebox(messagebox.showinfo)
+messagebox.showwarning = topmost_messagebox(messagebox.showwarning)
+messagebox.showerror = topmost_messagebox(messagebox.showerror)
+messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
+
 # Show the credentials window before running the script
 prompt_for_credentials(credentials_file, credentials)
