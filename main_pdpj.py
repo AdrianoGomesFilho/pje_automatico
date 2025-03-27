@@ -1,3 +1,23 @@
+import psutil
+import os
+import sys
+import time
+
+PROCESS_NAME = "main_pdpj.exe"  # Change this to match your actual .exe name
+
+# Find and kill any running instance of the process
+for proc in psutil.process_iter(['pid', 'name']):
+    if proc.info['name'] == PROCESS_NAME and proc.pid != os.getpid():
+        print(f"Closing old instance (PID: {proc.pid})...")
+        proc.terminate()  # Try to terminate gracefully
+        time.sleep(1)  # Wait a bit for the process to close
+        if proc.is_running():
+            proc.kill()  # Force kill if still running
+        print("Old instance closed.")
+
+# Continue with the new instance
+print("Starting new instance...")
+
 import time
 import re
 import pyperclip
@@ -54,7 +74,8 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     tk.Label(main_window, text="Método de Login:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
 
     login_method = tk.StringVar(value="Astrea + PJE (Senha)")
-    methods = ["Astrea + PJE (Senha)", "Astrea + PJE (Token)", "Somente Astrea", "Somente PJE"]
+    methods = ["Somente PJE", "Astrea + PJE (Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
+    login_method = tk.StringVar(value=methods[0])  # Set the first option as pre-selected
     for i, method in enumerate(methods):
         tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=4 + i, column=1, sticky="w")
 
@@ -379,7 +400,7 @@ def run_script(credentials):
                         print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
                         continue  # Continue monitoring clipboard content
                 
-                    
+
             except Exception as e:
                 print(f"An error occurred: {e}")
                 continue  # Skip the current iteration and wait for new clipboard content
