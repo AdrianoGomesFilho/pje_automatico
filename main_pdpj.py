@@ -364,10 +364,17 @@ def run_script(credentials):
                             elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                 process_id = fetch_process_id(driver, id_url)
                         except (ValueError, TimeoutException):
-                            messagebox.showinfo("Aviso", "Processo sem cadastro neste PJE. Se desejar abrir outro grau clique OK!")
-                            driver.close()  # Close the current base_url tab
-                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last remaining tab
-                            continue  # Prompt the user to choose another PJE level
+                            user_choice = messagebox.askyesno(
+                                "Aviso", 
+                                "Processo sem cadastro neste PJE. Deseja abrir outro grau para este processo?"
+                            )
+                            if user_choice:
+                                continue  # Reopen the PJE level prompt
+                            else:
+                                print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                                driver.close()  # Close the current base_url tab
+                                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last remaining tab
+                                break  # Exit the loop and wait for new clipboard content
                         else:
                             break  # Exit the loop if process_id is successfully fetched
 
