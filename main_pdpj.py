@@ -70,7 +70,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     main_window = tk.Tk()
     main_window.title("PJE Automático")
     main_window.attributes('-topmost', True)
-    main_window.configure(bg="#e8f5e9")  # Light green background
+    main_window.configure(bg="#D9CDFF")  # Light green background
 
     # Set custom icon for the tkinter window
     main_window.iconbitmap(TKINTER_ICON_PATH)
@@ -85,33 +85,33 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     font_style = ("Montserrat", 10)
 
-    tk.Label(main_window, text="E-mail do Astrea:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="E-mail do Astrea:", bg="#D9CDFF", fg="#484554", font=font_style).grid(row=0, column=0, padx=10, pady=5, sticky="e")
     username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
     username_astrea_entry.grid(row=0, column=1, padx=10, pady=5)
     username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
 
-    tk.Label(main_window, text="Senha do Astrea:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha do Astrea:", bg="#D9CDFF", fg="#484554", font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
     password_astrea_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
     password_astrea_entry.grid(row=1, column=1, padx=10, pady=5)
     password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
 
-    tk.Label(main_window, text="CPF para login no PJE:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="CPF para login no PJE:", bg="#D9CDFF", fg="#484554", font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
     username_pje_entry = tk.Entry(main_window, width=40, font=font_style)
     username_pje_entry.grid(row=2, column=1, padx=10, pady=5)
     username_pje_entry.insert(0, credentials.get("USERNAMEPJE", ""))
 
-    tk.Label(main_window, text="Senha para login no PJE:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha para login no PJE:", bg="#D9CDFF", fg="#484554", font=font_style).grid(row=3, column=0, padx=10, pady=5, sticky="e")
     password_pje_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
     password_pje_entry.grid(row=3, column=1, padx=10, pady=5)
     password_pje_entry.insert(0, credentials.get("PASSWORDPJE", ""))
 
-    tk.Label(main_window, text="Método de Login:", bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Método de Login:", bg="#D9CDFF", fg="#484554", font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
 
     login_method = tk.StringVar(value="Astrea + PJE (Senha)")
     methods = ["Somente PJE", "Astrea + PJE (Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
     login_method = tk.StringVar(value=methods[0])  # Set the first option as pre-selected
     for i, method in enumerate(methods):
-        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg="#e8f5e9", fg="#1b5e20", font=font_style).grid(row=4 + i, column=1, sticky="w")
+        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg="#D9CDFF", fg="#484554", font=font_style).grid(row=4 + i, column=1, sticky="w")
 
     def save_and_run():
         username_pje = re.sub(r'\D', '', username_pje_entry.get())
