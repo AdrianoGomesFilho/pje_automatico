@@ -2,6 +2,10 @@ import psutil
 import os
 import sys
 import time
+import threading
+from pystray import Icon, Menu, MenuItem
+from PIL import Image, ImageDraw
+from tkinter import PhotoImage
 
 PROCESS_NAME = "main_pdpj.exe"  # Change this to match your actual .exe name
 
@@ -33,6 +37,33 @@ from tkinter import simpledialog, messagebox, ttk
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from bs4 import BeautifulSoup
 
+# Path to the custom icon file
+ICON_PATH = os.path.join(os.path.dirname(__file__), "icon.ico")
+
+# Update all references to the icon paths
+TKINTER_ICON_PATH = ICON_PATH
+PYSTRAY_ICON_PATH = ICON_PATH
+
+# Function to create a custom icon for the system tray
+def create_image():
+    image = Image.open(PYSTRAY_ICON_PATH)
+    return image
+
+# Function to stop the script
+def stop_script(icon, item):
+    print("Exiting script...")
+    icon.stop()
+    os._exit(0)
+
+# Function to run the system tray icon
+def run_tray_icon():
+    menu = Menu(MenuItem("Exit", stop_script))
+    icon = Icon("PJE Script", create_image(), "PJE Automático", menu)
+    icon.run()
+
+# Start the tray icon in a separate thread
+tray_thread = threading.Thread(target=run_tray_icon, daemon=True)
+tray_thread.start()
 
 # Function to prompt user for credentials using a GUI and save them to a file
 def prompt_for_credentials(file_path, credentials, driver=None):
@@ -40,6 +71,9 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     main_window.title("PJE Automático")
     main_window.attributes('-topmost', True)
     main_window.configure(bg="#e8f5e9")  # Light green background
+
+    # Set custom icon for the tkinter window
+    main_window.iconbitmap(TKINTER_ICON_PATH)
 
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
@@ -113,6 +147,9 @@ def prompt_for_pje_level(paste):
     pje_level_window.title("Escolha o Grau")
     pje_level_window.attributes('-topmost', True)
     pje_level_window.configure(bg="#e3f2fd")  # Light blue background
+
+    # Set custom icon for the tkinter window
+    pje_level_window.iconbitmap(TKINTER_ICON_PATH)
 
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
