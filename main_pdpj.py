@@ -163,7 +163,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=9, column=0, columnspan=2, pady=10)
 
-    link_label = tk.Label(main_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 12, "underline"))
+    link_label = tk.Label(main_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
     link_label.grid(row=10, column=0, columnspan=2, pady=5)
     link_label.bind("<Button-1>", lambda e: open_link())
 
@@ -207,7 +207,7 @@ def prompt_for_pje_level(paste):
         import webbrowser
         webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
 
-    link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 12, "underline"))
+    link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 10, "underline"))
     link_label.pack(pady=5)
     link_label.bind("<Button-1>", lambda e: open_link())
 
