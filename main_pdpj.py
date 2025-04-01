@@ -74,6 +74,7 @@ TEXT_COLOR = "#484554"       # Dark gray text
 BUTTON_BG_COLOR = "#ffc477"  # Yellow button background
 BUTTON_FG_COLOR = "#333222"  # Dark button text
 DISABLED_BUTTON_BG_COLOR = "#bcbba7"  # Gray button background for disabled buttons
+LINK_COLOR = "#5A57C8"  
 
 # Function to prompt user for credentials using a GUI and save them to a file
 def prompt_for_credentials(file_path, credentials, driver=None):
@@ -88,7 +89,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 300
+    window_height = 350
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -156,7 +157,15 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         main_window.destroy()
         run_script(credentials)
 
-    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=8, column=0, columnspan=2, pady=10)
+    def open_link():
+        import webbrowser
+        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
+
+    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=9, column=0, columnspan=2, pady=10)
+
+    link_label = tk.Label(main_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 12, "underline"))
+    link_label.grid(row=10, column=0, columnspan=2, pady=5)
+    link_label.bind("<Button-1>", lambda e: open_link())
 
     main_window.mainloop()
     return credentials
@@ -165,7 +174,7 @@ def prompt_for_pje_level(paste):
     pje_level_window = tk.Tk()
     pje_level_window.title("Escolha o Grau")
     pje_level_window.attributes('-topmost', True)
-    pje_level_window.configure(bg="#D9CDFF")  # Light blue background
+    pje_level_window.configure(bg="#D9CDFF")
 
     # Set custom icon for the tkinter window
     pje_level_window.iconbitmap(TKINTER_ICON_PATH)
@@ -193,6 +202,14 @@ def prompt_for_pje_level(paste):
     tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg="#ffc477", fg="#333222", width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg="#ffc477", fg="#333222", width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Ignorar e Aguardar", command=lambda: select_level("Ignore"), bg="#bcbba7", fg="#333222", width=20, font=font_style).pack(pady=5)
+
+    def open_link():
+        import webbrowser
+        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
+
+    link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 12, "underline"))
+    link_label.pack(pady=5)
+    link_label.bind("<Button-1>", lambda e: open_link())
 
     pje_level_window.mainloop()
     return pje_level.get()
