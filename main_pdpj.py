@@ -211,6 +211,19 @@ def update_credentials(driver):
     global credentials
     credentials = prompt_for_credentials(credentials_file, credentials, driver)
 
+def monitor_browser(driver):
+    """
+    Monitor the browser and exit the program if the browser is closed.
+    """
+    while True:
+        try:
+            # Check if the browser is still running
+            driver.title  # Accessing a property to ensure the browser is alive
+            time.sleep(1)  # Check periodically
+        except Exception:
+            print("Browser closed. Exiting program...")
+            os._exit(0)  # Exit the program
+
 # Function to run the main script
 def run_script(credentials):
     global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level
@@ -233,6 +246,10 @@ def run_script(credentials):
 
     # Initialize WebDriver with Chrome options
     driver = webdriver.Chrome(options=chrome_options)
+
+    # Start a thread to monitor the browser
+    browser_monitor_thread = threading.Thread(target=monitor_browser, args=(driver,), daemon=True)
+    browser_monitor_thread.start()
 
     # Store the last clipboard content
     last_clipboard_content = ""
