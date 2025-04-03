@@ -16,7 +16,8 @@ Python e suas bibliotecas, automação via chromedriver
 Criei a automação para me auxiliar (e auxiliar a equipe do escritório) na hora de abrir os processos. Atualmente a justiça usa muitos sistemas (trabalhistas são 24 regionais no total, cada um possuindo 2 graus, o que totaliza 48, somado ao TST que possui 2 - o PJE e o sistema mais antigo). Ao total, um advogado que possuaa processos espalhados por todo o Brasil precisa fazer malabarismos diariamente para acessar seus processos. Isso é ainda mais agravado quando existem processos de outros advogados associados.
 
 # COMO POSSO USAR A AUTOMAÇÃO?
-Você pode entrar em contato comigo (81992811496) e posso lhe auxiliar na instalação, sem qualquer custo!
+Baixando o arquivo .exe (pasta "dist"), certificar que possui o Google Chrome instalado antes, e dar início ao programa. Preencher as credenciais (obs: não é obrigatório preencher certos dados a depender do método que você deseje usar). Ex: desejo abrir os processos no token - não é necessário colocar CPF e senha de login (PDPJ).
+Você pode entrar em contato comigo (81992811496) e posso lhe auxiliar na execução.
 
 
 
