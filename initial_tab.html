@@ -21,8 +21,10 @@
             text-align: center;
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 400px;
         }
         h1 {
             color: #5A57C8;
@@ -31,30 +33,39 @@
             font-size: 1.2em;
         }
         a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #ffc477;
-            color: #333222;
+            color: #5A57C8;
             text-decoration: none;
-            border-radius: 5px;
             font-weight: bold;
+            padding: 10px;
+            display: inline-block;
+            margin-top: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
         a:hover {
-            background: #e0a860;
+            text-decoration: none;
+            background: #5A57C8;
+            color: white;
         }
         .gif-container {
-            margin-top: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .gif-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PJE Automático</h1>
-        <a href="https://github.com/AdrianoGomesFilho" target="_blank">Visite o repositório do projeto no GitHub</a>
         <div class="gif-container">
-            <img src="icon.gif" alt="Animated Thunder Lightning" width="100">
+            <img src="logowide.gif" alt="Animated Thunder Lightning">
         </div>
+        <a href="https://github.com/AdrianoGomesFilho/pje_automatico" target="_blank">Visite o repositório do projeto no GitHub</a>
     </div>
+    <footer></footer>
 </body>
 </html>

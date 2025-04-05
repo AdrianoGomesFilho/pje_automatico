@@ -444,11 +444,11 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     def open_link():
         import webbrowser
-        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
+        webbrowser.open("https://github.com/AdrianoGomesFilho/pje_automatico")  # Replace with the desired URL
 
     tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=9, column=0, columnspan=2, pady=10)
 
-    link_label = tk.Label(main_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
+    link_label = tk.Label(main_window, text="Visite o repositório do projeto no GitHub", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
     link_label.grid(row=10, column=0, columnspan=2, pady=5)
     link_label.bind("<Button-1>", lambda e: open_link())
 
