@@ -1,4 +1,5 @@
-# OBJETIVO DO PROJETO (Automação de publicações)
+#PJE AUTOMÁTICO
+# OBJETIVO DO PROJETO
 Automação que abre, automaticamente (ao detectar que você copiou um número de processo), a página respectiva do PJE e (se o usuário quiser) o sistema que utiliza no escritório. Voltado no presente momento para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
 
 Vídeo de apresentação do projeto no Instagram (obs: o programa recebeu grandes melhorias após o vídeo) [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
