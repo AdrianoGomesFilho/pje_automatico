@@ -275,8 +275,8 @@ def run_script(credentials):
                                 if login_method in ["Astrea + PJE (Token)", "Somente PJE (token)"]:
                                     driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
                                     elemento_login = WebDriverWait(driver, 20).until(
-                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or
-                                        EC.presence_of_element_located((By.ID, "formPesquisa"))
+                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
+                                        EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
                                     )
                                     process_id = fetch_process_id(driver, id_url)
                                 else:
@@ -284,8 +284,8 @@ def run_script(credentials):
                                     driver.find_element(By.ID, "password").send_keys(senha_pje)
                                     driver.find_element(By.ID, "kc-login").click()
                                     elemento_login = WebDriverWait(driver, 10).until(
-                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or
-                                        EC.presence_of_element_located((By.ID, "formPesquisa"))
+                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
+                                        EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
                                     )
                                     process_id = fetch_process_id(driver, id_url)
                             elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
