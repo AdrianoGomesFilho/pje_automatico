@@ -76,6 +76,14 @@ BUTTON_FG_COLOR = "#333222"  # Dark button text
 DISABLED_BUTTON_BG_COLOR = "#bcbba7"  # Gray button background for disabled buttons
 LINK_COLOR = "#5A57C8"  
 
+# Function to open the initial tab
+def open_initial_tab(driver):
+    """
+    Open a stylized initial tab in the browser.
+    """
+    initial_tab_path = os.path.join(os.path.dirname(__file__), "initial_tab.html")
+    driver.get(f"file:///{initial_tab_path.replace(os.sep, '/')}")
+
 # Function to run the main script
 def run_script(credentials):
     global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level
@@ -98,6 +106,9 @@ def run_script(credentials):
 
     # Initialize WebDriver with Chrome options
     driver = webdriver.Chrome(options=chrome_options)
+
+    # Open the initial tab
+    open_initial_tab(driver)
 
     # Start a thread to monitor the browser
     browser_monitor_thread = threading.Thread(target=monitor_browser, args=(driver,), daemon=True)
@@ -274,7 +285,7 @@ def run_script(credentials):
                             if elemento_login.get_attribute("ID") == "kc-login":
                                 if login_method in ["Astrea + PJE (Token)", "Somente PJE (token)"]:
                                     driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
-                                    elemento_login = WebDriverWait(driver, 20).until(
+                                    elemento_login = WebDriverWait(driver, 30).until(
                                         EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
                                         EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
                                     )
@@ -283,7 +294,7 @@ def run_script(credentials):
                                     driver.find_element(By.ID, "username").send_keys(usuario_pje)
                                     driver.find_element(By.ID, "password").send_keys(senha_pje)
                                     driver.find_element(By.ID, "kc-login").click()
-                                    elemento_login = WebDriverWait(driver, 10).until(
+                                    elemento_login = WebDriverWait(driver, 30).until(
                                         EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
                                         EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
                                     )
