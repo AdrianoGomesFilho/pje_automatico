@@ -160,7 +160,7 @@ def run_script(credentials):
 
                     #########################ASTREA######################################
 
-                    if login_method in ["Astrea + PJE (Senha)", "Astrea", "Astrea + PJE (Token)"]:
+                    if login_method in ["Astrea + PJE (login PDPJ CPF e Senha)", "Astrea", "Astrea + PJE (Token)"]:
                         # Perform Astrea login and other actions
                         astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
                         driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
@@ -200,6 +200,7 @@ def run_script(credentials):
                             print("Neither 'search' element nor 'submit' button found. Unable to proceed.")
                     else:
                         print("Já logado Astrea ou ignorando login Astrea (método).")
+
                         
                     while True:  # Loop to allow the user to choose another PJE level if needed
                         # Extract the TRT number (15th and 16th characters)
@@ -271,9 +272,9 @@ def run_script(credentials):
                             ])
 
                             if elemento_login.get_attribute("ID") == "kc-login":
-                                if login_method in ["Astrea + PJE (Token)", "PJE (token)"]:
-                                    driver.find_element(By.NAME, "login-pje-office").click()
-                                    elemento_login = WebDriverWait(driver, 10).until(
+                                if login_method in ["Astrea + PJE (Token)", "Somente PJE (token)"]:
+                                    driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
+                                    elemento_login = WebDriverWait(driver, 20).until(
                                         EC.presence_of_element_located((By.ID, "brasao-republica")) or
                                         EC.presence_of_element_located((By.ID, "formPesquisa"))
                                     )
@@ -389,8 +390,10 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
 
-    login_method = tk.StringVar(value="Astrea + PJE (Senha)")
-    methods = ["Somente PJE", "Astrea + PJE (Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
+    login_method = tk.StringVar(value="Astrea + PJE (login PDPJ CPF e Senha)")
+
+    methods = ["Somente PJE (login CPF e senha)", "Somente PJE (token)", "Astrea + PJE (login PDPJ CPF e Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
+
     login_method = tk.StringVar(value=methods[0])  # Set the first option as pre-selected
     for i, method in enumerate(methods):
         tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4 + i, column=1, sticky="w")
