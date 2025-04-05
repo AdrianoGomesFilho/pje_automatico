@@ -156,6 +156,7 @@ def run_script(credentials):
 
                     last_clipboard_content = paste  # Update the last clipboard content
                     bypass_repeated_content = False  # Reset bypass flag after processing
+                    processo_nao_cadastrado = False
 
                     #########################ASTREA######################################
 
@@ -289,49 +290,51 @@ def run_script(credentials):
                             elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                 process_id = fetch_process_id(driver, id_url)
                         except (ValueError, TimeoutException):
-                            user_choice = messagebox.askyesno(
-                                "Aviso", 
-                                "Processo sem cadastro neste PJE. Deseja abrir outro grau para este processo?"
-                            )
-                            if user_choice:
-                                continue  # Reopen the PJE level prompt
-                            else:
-                                print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
-                                driver.close()  # Close the current base_url tab
-                                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last remaining tab
-                                break  # Exit the loop and wait for new clipboard content
+                            bypass_repeated_content = True  # Enable bypass for repeated content
+                            processo_nao_cadastrado = True
+                            break  # Exit the loop and reopen the PJE level prompt
                         else:
                             break  # Exit the loop if process_id is successfully fetched
 
-                    # Construct the final_url using the fetched id
-                    if pje_level == "Ignore":
-                        print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
-                        continue  # Skip processing and wait for new clipboard content
-                    elif pje_level == "TST":
-                        final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
+
+                    if processo_nao_cadastrado:
+                        reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
+                        if reopen_choice:
+                            bypass_repeated_content = True  # Enable bypass for repeated content
+                            continue  # Reopen the PJE level prompt
+                        else:
+                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                            bypass_repeated_content = False
+                            continue  # Continue monitoring clipboard content
                     else:
-                        final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
+                            # Construct the final_url using the fetched id
+                        if pje_level == "Ignore":
+                            print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                            continue  # Skip processing and wait for new clipboard content
+                        elif pje_level == "TST":
+                            final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
+                        else:
+                            final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
 
-                    print(f"final_url: {final_url}")  # Print final_url
+                        print(f"final_url: {final_url}")  # Print final_url
+                        # Close the id_url tab
+                        driver.close()
 
-                    # Close the id_url tab
-                    driver.close()
+                        # Switch to the last tab before opening the final_url
+                        driver.switch_to.window(driver.window_handles[-1])
 
-                    # Switch to the last tab before opening the final_url
-                    driver.switch_to.window(driver.window_handles[-1])
+                        # Open the final_url in a new tab
+                        final_url_handle = find_or_open_tab(driver, final_url)
+                        driver.switch_to.window(final_url_handle)
 
-                    # Open the final_url in a new tab
-                    final_url_handle = find_or_open_tab(driver, final_url)
-                    driver.switch_to.window(final_url_handle)
-
-                    reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
-                    if reopen_choice:
-                        bypass_repeated_content = True  # Enable bypass for repeated content
-                        continue  # Reopen the PJE level prompt
-                    else:
-                        print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
-                        continue  # Continue monitoring clipboard content
-                
+                        reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
+                        if reopen_choice:
+                            bypass_repeated_content = True  # Enable bypass for repeated content
+                            continue  # Reopen the PJE level prompt
+                        else:
+                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                            bypass_repeated_content = False
+                            continue  # Continue monitoring clipboard content
 
             except Exception as e:
                 print(f"An error occurred: {e}")
