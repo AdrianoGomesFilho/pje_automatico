@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main_pdpj.py'],
+    ['pje_automatico.py'],
     pathex=[],
     binaries=[],
     datas=[('initial_tab.html', '.'), ('icon.ico', '.'), ('logowide.gif', '.')],
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=os.path.abspath('icon.ico'),  # Use absolute path for the icon
 )
