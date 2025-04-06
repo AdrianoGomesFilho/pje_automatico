@@ -1,4 +1,4 @@
-('C:\\Users\\fish\\pje_automatico\\build\\pje_automatico\\PYZ-00.pyz',
+('C:\\Users\\fish\\pje_automatico\\build\\PJE_Automatico\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\fish\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\PIL\\__init__.py',
    'PYMODULE'),

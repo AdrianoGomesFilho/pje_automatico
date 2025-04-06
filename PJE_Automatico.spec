@@ -8,6 +8,8 @@ a = Analysis(
     datas=[
         ('icon.ico', '.'), 
         ('logowide.png', '.'),  # Include logowide.png
+        ('initial_tab.html', '.'),  # Include initial_tab.html
+        ('logowide.gif', '.'),  # Include your GIF file
     ],
     hiddenimports=[
         'tkinter',  # Ensure tkinter is included
@@ -39,5 +41,5 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,  # Set to False if you want a windowed app
+    console=False,  # Prevent console window from opening
 )
