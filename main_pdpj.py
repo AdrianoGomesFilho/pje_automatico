@@ -37,13 +37,17 @@ from tkinter import simpledialog, messagebox, ttk
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from bs4 import BeautifulSoup
 
-# Path to the custom icon file
+# Path to the custom icon and additional files
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
-    ICON_PATH = os.path.join(sys._MEIPASS, "icon.ico")
+    BASE_PATH = sys._MEIPASS
 else:
-    ICON_PATH = os.path.join(os.path.dirname(__file__), "icon.ico")
+    BASE_PATH = os.path.dirname(__file__)
 
-# Update all references to the icon paths
+ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
+LOGO_PATH = os.path.join(BASE_PATH, "logowide.gif")
+INITIAL_TAB_PATH = os.path.join(BASE_PATH, "initial_tab.html")
+
+# Update references to the paths
 TKINTER_ICON_PATH = ICON_PATH
 PYSTRAY_ICON_PATH = ICON_PATH
 
@@ -81,8 +85,7 @@ def open_initial_tab(driver):
     """
     Open a stylized initial tab in the browser.
     """
-    initial_tab_path = os.path.join(os.path.dirname(__file__), "initial_tab.html")
-    driver.get(f"file:///{initial_tab_path.replace(os.sep, '/')}")
+    driver.get(f"file:///{INITIAL_TAB_PATH.replace(os.sep, '/')}")
 
 # Function to run the main script
 def run_script(credentials):
