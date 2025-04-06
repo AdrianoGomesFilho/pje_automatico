@@ -73,12 +73,12 @@ tray_thread = threading.Thread(target=run_tray_icon, daemon=True)
 tray_thread.start()
 
 # Define color variables
-BACKGROUND_COLOR = "#D9CDFF"  # Light green background
-TEXT_COLOR = "#484554"       # Dark gray text
-BUTTON_BG_COLOR = "#ffc477"  # Yellow button background
-BUTTON_FG_COLOR = "#333222"  # Dark button text
-DISABLED_BUTTON_BG_COLOR = "#bcbba7"  # Gray button background for disabled buttons
-LINK_COLOR = "#5A57C8"  
+BACKGROUND_COLOR = "#ECE9FD"  # Very light lavender, soft background
+TEXT_COLOR = "#3F3D56"        # Deep gray-purple, strong contrast for readability
+BUTTON_BG_COLOR = "#A084E8"   # Soft purple, eye-catching and on-theme
+BUTTON_FG_COLOR = "#FFFFFF"   # White, clean text on button
+DISABLED_BUTTON_BG_COLOR = "#CFCBE7"  # Muted lavender-gray, subtle disabled state
+LINK_COLOR = "#7B6EF6"        # Vivid purple-blue, good for links   
 
 # Function to open the initial tab
 def open_initial_tab(driver):
