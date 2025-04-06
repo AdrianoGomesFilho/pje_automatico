@@ -5,35 +5,39 @@ a = Analysis(
     ['pje_automatico.py'],
     pathex=[],
     binaries=[],
-    datas=[('initial_tab.html', '.'), ('icon.ico', '.'), ('logowide.gif', '.')],
-    hiddenimports=[],
+    datas=[
+        ('icon.ico', '.'), 
+        ('logowide.png', '.'),  # Include logowide.png
+    ],
+    hiddenimports=[
+        'tkinter',  # Ensure tkinter is included
+        'PIL._imagingtk',  # Include PIL's tkinter support
+        'pystray._win32',  # Include pystray for Windows
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
     noarchive=False,
-    optimize=0,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
+    a.zipfiles,
     a.datas,
     [],
-    name='PJE_Automatico',
+    name='pje_automatico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=os.path.abspath('icon.ico'),  # Use absolute path for the icon
+    console=True,  # Set to False if you want a windowed app
 )

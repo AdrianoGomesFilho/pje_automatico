@@ -44,7 +44,7 @@ else:
     BASE_PATH = os.path.dirname(__file__)
 
 ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
-LOGO_PATH = os.path.join(BASE_PATH, "logowide.gif")
+LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
 INITIAL_TAB_PATH = os.path.join(BASE_PATH, "initial_tab.html")
 
 # Update references to the paths
@@ -372,23 +372,22 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     # Set custom icon for the tkinter window
     main_window.iconbitmap(TKINTER_ICON_PATH)
 
+    # Add the logowide.png image to the interface
+    logo_image = tk.PhotoImage(file=LOGO_PATH)
+    logo_label = tk.Label(main_window, image=logo_image, bg=BACKGROUND_COLOR)
+    logo_label.image = logo_image  # Keep a reference to avoid garbage collection
+    logo_label.grid(row=0, column=0, columnspan=2, pady=(10, 5))
+
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 450
+    window_height = 560
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 10)
     title_font_style = ("Montserrat", 14, "bold")
-
-    # Add principal title
-    tk.Label(main_window, text="PJE Automático", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).grid(row=0, column=0, columnspan=2, pady=(10, 5))
-
-    # Add secondary title
-    tk.Label(main_window, text="Preencha as credenciais de acordo com o uso desejado.", 
-             bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, justify="center").grid(row=1, column=0, columnspan=2, pady=(0, 15))
 
     tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
     username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
