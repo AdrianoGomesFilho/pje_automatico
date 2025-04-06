@@ -96,8 +96,8 @@ def run_script(credentials):
     senha_astrea = credentials["PASSWORDASTREA"]
     login_method = credentials["LOGIN_METHOD"]
 
-    print(f"CPF para login no PJE: {usuario_pje}")
-    print(f"Senha para login no PJE: xxxxxxxxxxxx")
+    print(f"CPF para login no PDPJ: {usuario_pje}")
+    print(f"Senha para login no PDPJ: xxxxxxxxxxxx")
     print(f"E-mail do Astrea: {usuario_astrea}")
     print(f"Senha do Astrea: xxxxxxxxxxxx")
     print(f"Método de Login: {login_method}")
@@ -375,42 +375,50 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 350
+    window_height = 450
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 10)
+    title_font_style = ("Montserrat", 14, "bold")
 
-    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    # Add principal title
+    tk.Label(main_window, text="PJE Automático", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).grid(row=0, column=0, columnspan=2, pady=(10, 5))
+
+    # Add secondary title
+    tk.Label(main_window, text="Preencha as credenciais de acordo com o uso desejado.", 
+             bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, justify="center").grid(row=1, column=0, columnspan=2, pady=(0, 15))
+
+    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
     username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_astrea_entry.grid(row=0, column=1, padx=10, pady=5)
+    username_astrea_entry.grid(row=2, column=1, padx=10, pady=5)
     username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
 
-    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=3, column=0, padx=10, pady=5, sticky="e")
     password_astrea_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_astrea_entry.grid(row=1, column=1, padx=10, pady=5)
+    password_astrea_entry.grid(row=3, column=1, padx=10, pady=5)
     password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
 
-    tk.Label(main_window, text="CPF para login no PJE:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
     username_pje_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_pje_entry.grid(row=2, column=1, padx=10, pady=5)
+    username_pje_entry.grid(row=4, column=1, padx=10, pady=5)
     username_pje_entry.insert(0, credentials.get("USERNAMEPJE", ""))
 
-    tk.Label(main_window, text="Senha para login no PJE:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=5, column=0, padx=10, pady=5, sticky="e")
     password_pje_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_pje_entry.grid(row=3, column=1, padx=10, pady=5)
+    password_pje_entry.grid(row=5, column=1, padx=10, pady=5)
     password_pje_entry.insert(0, credentials.get("PASSWORDPJE", ""))
 
-    tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=6, column=0, padx=10, pady=5, sticky="e")
 
     login_method = tk.StringVar(value="Astrea + PJE (login PDPJ CPF e Senha)")
 
-    methods = ["Somente PJE (login CPF e senha)", "Somente PJE (token)", "Astrea + PJE (login PDPJ CPF e Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
+    methods = ["Somente PJE (login PDPJ CPF e senha)", "Somente PJE (token)", "Astrea + PJE (login PDPJ CPF e Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
 
     login_method = tk.StringVar(value=methods[0])  # Set the first option as pre-selected
     for i, method in enumerate(methods):
-        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4 + i, column=1, sticky="w")
+        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=6 + i, column=1, sticky="w")
 
     def save_and_run():
         username_pje = re.sub(r'\D', '', username_pje_entry.get())
@@ -449,10 +457,10 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         import webbrowser
         webbrowser.open("https://github.com/AdrianoGomesFilho/pje_automatico")  # Replace with the desired URL
 
-    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=9, column=0, columnspan=2, pady=10)
+    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=11, column=0, columnspan=2, pady=10)
 
     link_label = tk.Label(main_window, text="Visite o repositório do projeto no GitHub", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
-    link_label.grid(row=10, column=0, columnspan=2, pady=5)
+    link_label.grid(row=12, column=0, columnspan=2, pady=5)
     link_label.bind("<Button-1>", lambda e: open_link())
 
     main_window.mainloop()
