@@ -1,4 +1,4 @@
-![Logo](logowide.png)
+![Logo](logowide.gif)
 # OBJETIVO DO PROJETO
 Automação que abre, automaticamente (ao detectar que você copiou um número de processo), a página respectiva do PJE e (se o usuário quiser) o sistema que utiliza no escritório. Voltado no presente momento para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
 
