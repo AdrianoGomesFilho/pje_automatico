@@ -72,6 +72,23 @@ def run_tray_icon():
 tray_thread = threading.Thread(target=run_tray_icon, daemon=True)
 tray_thread.start()
 
+# Function to create a custom icon for the taskbar
+def create_taskbar_icon():
+    return Image.open(ICON_PATH)
+
+# Function to set the taskbar icon
+def set_taskbar_icon():
+    icon = Icon("PJE Automático", create_taskbar_icon())
+    icon.visible = True
+    return icon
+
+# Start the taskbar icon
+taskbar_icon = set_taskbar_icon()
+
+# Ensure the icon is removed when the application exits
+import atexit
+atexit.register(taskbar_icon.stop)
+
 # Define color variables
 BACKGROUND_COLOR = "#ECE9FD"  # Very light lavender, soft background
 TEXT_COLOR = "#3F3D56"        # Deep gray-purple, strong contrast for readability
