@@ -6,6 +6,7 @@ import threading
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from tkinter import PhotoImage
+from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
@@ -103,6 +104,20 @@ def open_initial_tab(driver):
     Open a stylized initial tab in the browser.
     """
     driver.get(f"file:///{INITIAL_TAB_PATH.replace(os.sep, '/')}")
+
+# Define the monitor_browser function first
+def monitor_browser(driver):
+    """
+    Monitor the browser and exit the program if the browser is closed.
+    """
+    while True:
+        try:
+            # Check if the browser is still running
+            driver.title  # Accessing a property to ensure the browser is alive
+            time.sleep(1)  # Check periodically
+        except Exception:
+            print("Browser closed. Exiting program...")
+            os._exit(0)  # Exit the program
 
 # Function to run the main script
 def run_script(credentials):
@@ -462,17 +477,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
             "LOGIN_METHOD": selected_login_method
         }
 
-        with open(file_path, 'w') as cred_file:
-            json.dump(credentials, cred_file)
-
-        if driver:
-            driver.quit()
-
-        main_window.destroy()
-        run_script(credentials)
-
-        with open(file_path, 'w') as cred_file:
-            json.dump(credentials, cred_file)
+        save_credentials(file_path, credentials)
 
         if driver:
             driver.quit()
@@ -537,36 +542,64 @@ def prompt_for_pje_level(paste):
     pje_level_window.mainloop()
     return pje_level.get()
 
+# Encryption logic
+KEY_FILE = os.path.expanduser('~/encryption_key.key')
+if not os.path.exists(KEY_FILE):
+    with open(KEY_FILE, 'wb') as key_file:
+        key_file.write(Fernet.generate_key())
+
+# Load the encryption key
+with open(KEY_FILE, 'rb') as key_file:
+    ENCRYPTION_KEY = key_file.read()
+
+cipher = Fernet(ENCRYPTION_KEY)
+
+def encrypt_credentials(credentials):
+    """
+    Encrypt the credentials dictionary.
+    """
+    credentials_json = json.dumps(credentials).encode('utf-8')
+    encrypted = cipher.encrypt(credentials_json)
+    return encrypted
+
+def decrypt_credentials(encrypted_credentials):
+    """
+    Decrypt the encrypted credentials.
+    """
+    decrypted_json = cipher.decrypt(encrypted_credentials).decode('utf-8')
+    return json.loads(decrypted_json)
+
+# Save encrypted credentials to a file
+def save_credentials(file_path, credentials):
+    encrypted = encrypt_credentials(credentials)
+    with open(file_path, 'wb') as cred_file:
+        cred_file.write(encrypted)
+
+# Load and decrypt credentials from a file
+def load_credentials(file_path):
+    with open(file_path, 'rb') as cred_file:
+        encrypted = cred_file.read()
+    return decrypt_credentials(encrypted)
+
 # Load credentials from a file or prompt the user if the file doesn't exist or is invalid
 credentials_file = os.path.expanduser('~/credentials.json')
 credentials = {}
 if os.path.exists(credentials_file):
     try:
-        with open(credentials_file, 'r') as cred_file:
-            credentials = json.load(cred_file)
-    except (json.JSONDecodeError, ValueError):
-        print("Invalid or empty credentials file. Prompting for new credentials...")
+        credentials = load_credentials(credentials_file)
+    except Exception:
+        print("Invalid or corrupted credentials file. Prompting for new credentials...")
         credentials = prompt_for_credentials(credentials_file, credentials)
+        save_credentials(credentials_file, credentials)
 else:
     credentials = prompt_for_credentials(credentials_file, credentials)
+    save_credentials(credentials_file, credentials)
 
 # Allow the user to update credentials
 def update_credentials(driver):
     global credentials
     credentials = prompt_for_credentials(credentials_file, credentials, driver)
-
-def monitor_browser(driver):
-    """
-    Monitor the browser and exit the program if the browser is closed.
-    """
-    while True:
-        try:
-            # Check if the browser is still running
-            driver.title  # Accessing a property to ensure the browser is alive
-            time.sleep(1)  # Check periodically
-        except Exception:
-            print("Browser closed. Exiting program...")
-            os._exit(0)  # Exit the program
+    save_credentials(credentials_file, credentials)
 
 # Monkey-patch messagebox to make it topmost
 def topmost_messagebox(func):
