@@ -106,12 +106,13 @@ def open_initial_tab(driver):
 
 # Function to run the main script
 def run_script(credentials):
-    global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level
+    global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level, open_tabs
     usuario_pje = credentials["USERNAMEPJE"]
     senha_pje = credentials["PASSWORDPJE"]
     usuario_astrea = credentials["USERNAMEASTREA"]
     senha_astrea = credentials["PASSWORDASTREA"]
     login_method = credentials["LOGIN_METHOD"]
+    open_tabs = {}
 
     print(f"CPF para login no PDPJ: {usuario_pje}")
     print(f"Senha para login no PDPJ: xxxxxxxxxxxx")
@@ -140,17 +141,27 @@ def run_script(credentials):
     # Add a variable to bypass repeated content
     bypass_repeated_content = False
 
-    def find_or_open_tab(driver, base_url, data_url=None):
-        for handle in driver.window_handles:
-            driver.switch_to.window(handle)
-            if (base_url in driver.current_url or (data_url and data_url in driver.current_url)):
-                return handle
-        # Switch to the last tab before opening a new one
-        driver.switch_to.window(driver.window_handles[-1])
+    def find_or_open_tab(driver, base_url, pje_level, data_url=None):
+        global open_tabs
+
+        # Check if a tab for the same pje_level is already open
+        if pje_level in open_tabs:
+            try:
+                driver.switch_to.window(open_tabs[pje_level])
+                if base_url in driver.current_url or (data_url and data_url in driver.current_url):
+                    print(f"Tab for {pje_level} is already open. Switching to it.")
+                    return open_tabs[pje_level]
+            except Exception:
+                # If the tab is no longer valid, remove it from the dictionary
+                print(f"Tab for {pje_level} is no longer valid. Removing from tracking.")
+                del open_tabs[pje_level]
+
+        # Open a new tab if no valid tab exists for the pje_level
+        driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
         driver.execute_script(f"window.open('{base_url}', '_blank');")
         new_handle = driver.window_handles[-1]
+        open_tabs[pje_level] = new_handle  # Track the new tab
         return new_handle
-
 
     def fetch_process_id(driver, id_url):
         driver.execute_script(f"window.open('{id_url}', '_blank');")
@@ -268,10 +279,10 @@ def run_script(credentials):
                         
                         if pje_level == "TST":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            base_url_handle = find_or_open_tab(driver, base_url)
+                            base_url_handle = find_or_open_tab(driver, base_url, pje_level)
                             driver.switch_to.window(base_url_handle)
                         else:
-                            base_url_handle = find_or_open_tab(driver, base_url)
+                            base_url_handle = find_or_open_tab(driver, base_url, pje_level)
                             driver.switch_to.window(base_url_handle)
 
                         try:
@@ -356,7 +367,7 @@ def run_script(credentials):
                         driver.switch_to.window(driver.window_handles[-1])
 
                         # Open the final_url in a new tab
-                        final_url_handle = find_or_open_tab(driver, final_url)
+                        final_url_handle = find_or_open_tab(driver, final_url, pje_level)
                         driver.switch_to.window(final_url_handle)
 
                         reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
