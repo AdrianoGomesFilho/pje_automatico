@@ -187,9 +187,9 @@ def run_script(credentials):
         # Switch to the last tab before opening a new one
         driver.switch_to.window(driver.window_handles[-1])
         driver.execute_script(f"window.open('{base_url}', '_blank');")
-        time.sleep(0.5)  # Allow the browser to register the new tab
-        driver.switch_to.window(driver.window_handles[-1])  # Ensure the last tab is active
-        return driver.current_window_handle
+        new_handle = driver.window_handles[-1]
+        return new_handle
+
 
     def fetch_process_id(driver, id_url):
         driver.execute_script(f"window.open('{id_url}', '_blank');")
