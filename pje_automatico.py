@@ -119,6 +119,24 @@ def monitor_browser(driver):
             print("Browser closed. Exiting program...")
             os._exit(0)  # Exit the program
 
+def remove_cdk_overlay(driver):
+    """
+    Continuously monitor the page for the 'cdk-overlay-container' element and remove it from the DOM if it appears.
+    """
+    while True:
+        try:
+            driver.execute_script("""
+                const overlay = document.querySelector('.cdk-overlay-container');
+                if (overlay) {
+                    overlay.remove();
+                    console.log('Removed cdk-overlay-container from DOM.');
+                }
+            """)
+            time.sleep(1)  # Check periodically
+        except Exception as e:
+            print(f"Error while removing cdk-overlay-container: {e}")
+            break
+
 # Function to run the main script
 def run_script(credentials):
     global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level
@@ -148,6 +166,10 @@ def run_script(credentials):
     # Start a thread to monitor the browser
     browser_monitor_thread = threading.Thread(target=monitor_browser, args=(driver,), daemon=True)
     browser_monitor_thread.start()
+
+    # Start a thread to monitor and remove 'cdk-overlay-container'
+    overlay_removal_thread = threading.Thread(target=remove_cdk_overlay, args=(driver,), daemon=True)
+    overlay_removal_thread.start()
 
     # Store the last clipboard content
     last_clipboard_content = ""
