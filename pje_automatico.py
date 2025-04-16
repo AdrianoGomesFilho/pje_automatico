@@ -423,7 +423,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     main_window = tk.Tk()
     main_window.title("PJE Automático")
     main_window.attributes('-topmost', True)
-    main_window.configure(bg=BACKGROUND_COLOR)  # Light green background
+    main_window.configure(bg=BACKGROUND_COLOR)
 
     # Set custom icon for the tkinter window
     main_window.iconbitmap(TKINTER_ICON_PATH)
@@ -445,35 +445,68 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     font_style = ("Montserrat", 10)
     title_font_style = ("Montserrat", 14, "bold")
 
-    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
-    username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_astrea_entry.grid(row=2, column=1, padx=10, pady=5)
-    username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
+    # Login method options
+    tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    login_method = tk.StringVar(value="1")  # Default to the first option
 
-    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=3, column=0, padx=10, pady=5, sticky="e")
-    password_astrea_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_astrea_entry.grid(row=3, column=1, padx=10, pady=5)
-    password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
+    methods = [
+        ("1 Somente PJE (login PDPJ CPF e senha)", "1"),
+        ("2 Somente PJE (token)", "2"),
+        ("3 Astrea + PJE (login PDPJ CPF e Senha)", "3"),
+        ("4 Astrea + PJE (Token)", "4"),
+        ("5 Somente Astrea", "5")
+    ]
 
-    tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=4, column=0, padx=10, pady=5, sticky="e")
+    for i, (text, value) in enumerate(methods):
+        tk.Radiobutton(main_window, text=text, variable=login_method, value=value, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1 + i, column=1, sticky="w")
+
+    # Input fields
+    tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=7, column=0, padx=10, pady=5, sticky="e")
     username_pje_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_pje_entry.grid(row=4, column=1, padx=10, pady=5)
+    username_pje_entry.grid(row=7, column=1, padx=10, pady=5)
     username_pje_entry.insert(0, credentials.get("USERNAMEPJE", ""))
 
-    tk.Label(main_window, text="Senha para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=5, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=8, column=0, padx=10, pady=5, sticky="e")
     password_pje_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_pje_entry.grid(row=5, column=1, padx=10, pady=5)
+    password_pje_entry.grid(row=8, column=1, padx=10, pady=5)
     password_pje_entry.insert(0, credentials.get("PASSWORDPJE", ""))
 
-    tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=6, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=9, column=0, padx=10, pady=5, sticky="e")
+    username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
+    username_astrea_entry.grid(row=9, column=1, padx=10, pady=5)
+    username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
 
-    login_method = tk.StringVar(value="Astrea + PJE (login PDPJ CPF e Senha)")
+    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=10, column=0, padx=10, pady=5, sticky="e")
+    password_astrea_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
+    password_astrea_entry.grid(row=10, column=1, padx=10, pady=5)
+    password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
 
-    methods = ["Somente PJE (login PDPJ CPF e senha)", "Somente PJE (token)", "Astrea + PJE (login PDPJ CPF e Senha)", "Astrea + PJE (Token)", "Somente Astrea"]
+    # Function to update input field states based on the selected login method
+    def update_input_states(*args):
+        method = login_method.get()
+        if method == "1":  # Somente PJE (login PDPJ CPF e senha)
+            username_pje_entry.config(state="normal")
+            password_pje_entry.config(state="normal")
+            username_astrea_entry.config(state="disabled")
+            password_astrea_entry.config(state="disabled")
+        elif method == "2":  # Somente PJE (token)
+            username_pje_entry.config(state="disabled")
+            password_pje_entry.config(state="disabled")
+            username_astrea_entry.config(state="disabled")
+            password_astrea_entry.config(state="disabled")
+        elif method == "3":  # Astrea + PJE (login PDPJ CPF e Senha)
+            username_pje_entry.config(state="normal")
+            password_pje_entry.config(state="normal")
+            username_astrea_entry.config(state="normal")
+            password_astrea_entry.config(state="normal")
+        elif method in ["4", "5"]:  # Astrea + PJE (Token) or Somente Astrea
+            username_pje_entry.config(state="disabled")
+            password_pje_entry.config(state="disabled")
+            username_astrea_entry.config(state="normal")
+            password_astrea_entry.config(state="normal")
 
-    login_method = tk.StringVar(value=methods[0])  # Set the first option as pre-selected
-    for i, method in enumerate(methods):
-        tk.Radiobutton(main_window, text=method, variable=login_method, value=method, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=6 + i, column=1, sticky="w")
+    login_method.trace("w", update_input_states)
+    update_input_states()
 
     def save_and_run():
         username_pje = re.sub(r'\D', '', username_pje_entry.get())
@@ -498,15 +531,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         main_window.destroy()
         run_script(credentials)
 
-    def open_link():
-        import webbrowser
-        webbrowser.open("https://github.com/AdrianoGomesFilho/pje_automatico")  # Replace with the desired URL
-
     tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=11, column=0, columnspan=2, pady=10)
-
-    link_label = tk.Label(main_window, text="Visite o repositório do projeto no GitHub", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
-    link_label.grid(row=12, column=0, columnspan=2, pady=5)
-    link_label.bind("<Button-1>", lambda e: open_link())
 
     main_window.mainloop()
     return credentials
