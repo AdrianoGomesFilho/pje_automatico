@@ -112,11 +112,13 @@ def monitor_browser(driver):
     """
     while True:
         try:
-            # Check if the browser is still running
-            driver.title  # Accessing a property to ensure the browser is alive
+            # Check if there are any open tabs
+            if len(driver.window_handles) == 0:
+                print("No tabs open. Exiting program...")
+                os._exit(0)  # Exit the program
             time.sleep(1)  # Check periodically
-        except Exception:
-            print("Browser closed. Exiting program...")
+        except Exception as e:
+            print(f"Error in monitor_browser: {e}")
             os._exit(0)  # Exit the program
 
 def remove_cdk_overlay(driver):
@@ -185,8 +187,9 @@ def run_script(credentials):
         # Switch to the last tab before opening a new one
         driver.switch_to.window(driver.window_handles[-1])
         driver.execute_script(f"window.open('{base_url}', '_blank');")
-        new_handle = driver.window_handles[-1]
-        return new_handle
+        time.sleep(0.5)  # Allow the browser to register the new tab
+        driver.switch_to.window(driver.window_handles[-1])  # Ensure the last tab is active
+        return driver.current_window_handle
 
     def fetch_process_id(driver, id_url):
         driver.execute_script(f"window.open('{id_url}', '_blank');")
