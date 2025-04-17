@@ -7,16 +7,32 @@ import requests  # Add this import for HTTP requests
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from tkinter import PhotoImage
+import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
 CURRENT_VERSION = "1.0.3"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
+
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
+
+# Path to the custom icon and additional files
+if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
+    BASE_PATH = sys._MEIPASS
+else:
+    BASE_PATH = os.path.dirname(__file__)
+
+ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
+LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
+INITIAL_TAB_PATH = os.path.join(BASE_PATH, "initial_tab.html")
+
+# Update references to the paths
+TKINTER_ICON_PATH = ICON_PATH
+PYSTRAY_ICON_PATH = ICON_PATH
 
 def check_for_updates():
     """
-    Verifica se há uma nova versão do programa disponível e atualiza, se necessário.
+    Verifica se há uma nova versão do programa disponível e redireciona o usuário para a página de releases.
     """
     try:
         response = requests.get(UPDATE_URL, timeout=10)
@@ -28,63 +44,52 @@ def check_for_updates():
             return
 
         latest_version = update_info.get("version")
-        download_url = update_info.get("download_url")
+        releases_page_url = update_info.get("download_url")  # Use the URL from the JSON file
 
-        if latest_version and download_url and latest_version != CURRENT_VERSION:
-            print(f"Nova versão disponível: {latest_version}. Baixando atualização...")
-            download_and_replace(download_url)
+        if latest_version and latest_version != CURRENT_VERSION:
+            # Show a GUI alert for the new version
+            alert_window = tk.Tk()
+            alert_window.title("Atualização Disponível")
+            alert_window.attributes('-topmost', True)
+            alert_window.configure(bg="#ECE9FD")
+
+            # Set custom icon for the tkinter window
+            alert_window.iconbitmap(TKINTER_ICON_PATH)
+
+            screen_width = alert_window.winfo_screenwidth()
+            screen_height = alert_window.winfo_screenheight()
+            window_width = 400
+            window_height = 200
+            position_right = int(screen_width / 2 - window_width / 2)
+            position_down = int(screen_height / 2 - window_height / 2)
+            alert_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+
+            font_style = ("Montserrat", 12)
+
+            tk.Label(alert_window, text="Nova versão disponível!", bg="#ECE9FD", fg="#3F3D56", font=("Montserrat", 14, "bold")).pack(pady=10)
+            tk.Label(alert_window, text=f"Versão: {latest_version}", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
+            tk.Label(alert_window, text="Clique no botão abaixo para abrir a página de releases:", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
+
+            def open_releases_page():
+                import webbrowser
+                webbrowser.open(releases_page_url)
+
+            tk.Button(alert_window, text="Abrir Página de Releases", command=open_releases_page, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=10)
+
+            def close_program():
+                alert_window.destroy()
+                sys.exit(0)
+
+            # Handle the close (X) button
+            alert_window.protocol("WM_DELETE_WINDOW", close_program)
+
+            tk.Button(alert_window, text="Fechar", command=close_program, bg="#CFCBE7", fg="#3F3D56", font=font_style, width=20).pack(pady=5)
+
+            alert_window.mainloop()
         else:
             print("Nenhuma atualização disponível.")
     except Exception as e:
         print(f"Falha ao verificar atualizações: {e}")
-
-def download_and_replace(download_url):
-    """
-    Baixa a nova versão do programa e substitui o executável atual.
-    """
-    try:
-        response = requests.get(download_url, stream=True, timeout=30)
-        response.raise_for_status()
-
-        # Log the content type of the response
-        content_type = response.headers.get("Content-Type", "unknown")
-        print(f"Content-Type do arquivo baixado: {content_type}")
-
-        exe_path = sys.argv[0]  # Caminho do executável atual
-        temp_path = exe_path + ".new"
-
-        with open(temp_path, "wb") as temp_file:
-            for chunk in response.iter_content(chunk_size=8192):
-                temp_file.write(chunk)
-
-        # Validate the downloaded file
-        try:
-            if not os.access(temp_path, os.X_OK):
-                print("Erro: O arquivo baixado não é um executável válido.")
-                raise ValueError("Invalid executable permissions")
-
-            # Additional validation: Check if the file is a valid PE (Portable Executable) format
-            with open(temp_path, "rb") as temp_file:
-                header = temp_file.read(2)
-                if header != b'MZ':  # PE files start with 'MZ'
-                    print("Erro: O arquivo baixado não é um executável PE válido.")
-                    raise ValueError("Invalid PE format")
-        except Exception as e:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)  # Ensure the invalid file is deleted
-            print(f"Erro durante a validação do arquivo baixado: {e}")
-            return
-
-        os.replace(temp_path, exe_path)  # Substitui o executável antigo pelo novo
-        print("Atualização concluída com sucesso. Reiniciando o programa...")
-        os.execv(exe_path, sys.argv)  # Reinicia o programa
-    except Exception as e:
-        if os.path.exists(temp_path):
-            try:
-                os.remove(temp_path)  # Ensure the temporary file is deleted
-            except Exception as cleanup_error:
-                print(f"Erro ao remover o arquivo temporário: {cleanup_error}")
-        print(f"Falha ao atualizar o programa: {e}")
 
 # Verifica atualizações antes de iniciar o script principal
 check_for_updates()
@@ -116,20 +121,6 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox, ttk
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from bs4 import BeautifulSoup
-
-# Path to the custom icon and additional files
-if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
-    BASE_PATH = sys._MEIPASS
-else:
-    BASE_PATH = os.path.dirname(__file__)
-
-ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
-LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
-INITIAL_TAB_PATH = os.path.join(BASE_PATH, "initial_tab.html")
-
-# Update references to the paths
-TKINTER_ICON_PATH = ICON_PATH
-PYSTRAY_ICON_PATH = ICON_PATH
 
 # Function to create a custom icon for the system tray
 def create_image():
@@ -540,8 +531,8 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     # Add the logowide.png image to the interface
     logo_image = tk.PhotoImage(file=LOGO_PATH)
+    main_window.logo_image = logo_image  # Retain a reference to prevent garbage collection
     logo_label = tk.Label(main_window, image=logo_image, bg=BACKGROUND_COLOR)
-    logo_label.image = logo_image  # Keep a reference to avoid garbage collection
     logo_label.grid(row=0, column=0, columnspan=2, pady=(10, 5))
 
     screen_width = main_window.winfo_screenwidth()
