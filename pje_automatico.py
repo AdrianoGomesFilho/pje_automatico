@@ -3,12 +3,60 @@ import os
 import sys
 import time
 import threading
+import requests  # Add this import for HTTP requests
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from tkinter import PhotoImage
 from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
+
+CURRENT_VERSION = "1.0.0"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
+UPDATE_URL = "https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
+
+def check_for_updates():
+    """
+    Verifica se há uma nova versão do programa disponível e atualiza, se necessário.
+    """
+    try:
+        response = requests.get(UPDATE_URL, timeout=10)
+        response.raise_for_status()
+        update_info = response.json()
+
+        latest_version = update_info.get("version")
+        download_url = update_info.get("download_url")
+
+        if latest_version and download_url and latest_version != CURRENT_VERSION:
+            print(f"Nova versão disponível: {latest_version}. Baixando atualização...")
+            download_and_replace(download_url)
+        else:
+            print("Nenhuma atualização disponível.")
+    except Exception as e:
+        print(f"Falha ao verificar atualizações: {e}")
+
+def download_and_replace(download_url):
+    """
+    Baixa a nova versão do programa e substitui o executável atual.
+    """
+    try:
+        response = requests.get(download_url, stream=True, timeout=30)
+        response.raise_for_status()
+
+        exe_path = sys.argv[0]  # Caminho do executável atual
+        temp_path = exe_path + ".new"
+
+        with open(temp_path, "wb") as temp_file:
+            for chunk in response.iter_content(chunk_size=8192):
+                temp_file.write(chunk)
+
+        os.replace(temp_path, exe_path)  # Substitui o executável antigo pelo novo
+        print("Atualização concluída com sucesso. Reiniciando o programa...")
+        os.execv(exe_path, sys.argv)  # Reinicia o programa
+    except Exception as e:
+        print(f"Falha ao atualizar o programa: {e}")
+
+# Verifica atualizações antes de iniciar o script principal
+check_for_updates()
 
 # Find and kill any running instance of the process
 for proc in psutil.process_iter(['pid', 'name']):
