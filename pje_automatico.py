@@ -11,8 +11,8 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.2"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
-UPDATE_URL = "https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
+CURRENT_VERSION = "1.0.3"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
+UPDATE_URL = "https://github.com/AdrianoGomesFilho/pje_automatico/blob/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
 
 def check_for_updates():
     """
@@ -206,7 +206,7 @@ def run_script(credentials):
     print(f"Senha para login no PDPJ: xxxxxxxxxxxx")
     print(f"E-mail do Astrea: {usuario_astrea}")
     print(f"Senha do Astrea: xxxxxxxxxxxx")
-    print(f"Método de Login: {login_method}")
+    print(f"Método de login: {login_method}")
 
     # Specify the path to your Chrome user data directory
     chrome_options = webdriver.ChromeOptions()
