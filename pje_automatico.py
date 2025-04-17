@@ -220,8 +220,33 @@ def run_script(credentials):
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
                     if not pattern.fullmatch(paste):
-                        print("Conteúdo inválido. Aguardando novo conteúdo na área de transferência.")
-                        messagebox.showwarning("Aviso", "Conteúdo inválido na área de transferência. Por favor, copie um número de processo válido.")
+                        invalid_content_window = tk.Tk()
+                        invalid_content_window.title("Aviso")
+                        invalid_content_window.attributes('-topmost', True)
+                        invalid_content_window.configure(bg=BACKGROUND_COLOR)
+
+                        # Set custom icon for the tkinter window
+                        invalid_content_window.iconbitmap(TKINTER_ICON_PATH)
+
+                        screen_width = invalid_content_window.winfo_screenwidth()
+                        screen_height = invalid_content_window.winfo_screenheight()
+                        window_width = 400
+                        window_height = 200
+                        position_right = int(screen_width / 2 - window_width / 2)
+                        position_down = int(screen_height / 2 - window_height / 2)
+                        invalid_content_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+
+                        font_style = ("Montserrat", 12)
+
+                        tk.Label(invalid_content_window, text="Conteúdo inválido", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).pack(pady=10)
+                        tk.Label(invalid_content_window, text="Por favor, copie um número de processo válido no formato XXXXXXX-XX.XXXX.5.XX.XXXX e aperte OK!.", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+
+                        def close_window():
+                            invalid_content_window.destroy()
+
+                        tk.Button(invalid_content_window, text="OK", command=close_window, bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=15, font=font_style).pack(pady=10)
+
+                        invalid_content_window.mainloop()
                         continue  # Wait for new valid clipboard content
 
                     last_clipboard_content = paste  # Update the last clipboard content
@@ -612,14 +637,14 @@ def prompt_reopen_pje(paste):
         reopen_window.destroy()
 
     tk.Button(reopen_window, text="Sim", command=lambda: select_reopen(True), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=15, font=font_style).pack(pady=5)
-    tk.Button(reopen_window, text="Não", command=lambda: select_reopen(False), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=15, font=font_style).pack(pady=5)
+    tk.Button(reopen_window, text="Não", command=lambda: select_reopen(False), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=15, font=font_style).pack(pady=10)  # Increased bottom padding
 
     def open_link():
         import webbrowser
         webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
 
     link_label = tk.Label(reopen_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
-    link_label.pack(pady=5)
+    link_label.pack(pady=10)  # Added more padding above the link
     link_label.bind("<Button-1>", lambda e: open_link())
 
     reopen_choice = False
