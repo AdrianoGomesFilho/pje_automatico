@@ -123,15 +123,21 @@ def monitor_browser(driver):
 
 def remove_cdk_overlay(driver):
     """
-    Continuously monitor the page for the 'cdk-overlay-container' element and remove it from the DOM if it appears.
+    Continuously monitor the page for the 'cdk-overlay-container' element and remove it from the DOM 
+    if any of its children contain the text 'A página será fechada'.
     """
     while True:
         try:
             driver.execute_script("""
                 const overlay = document.querySelector('.cdk-overlay-container');
                 if (overlay) {
-                    overlay.remove();
-                    console.log('Removed cdk-overlay-container from DOM.');
+                    const containsText = Array.from(overlay.querySelectorAll('*')).some(el => 
+                        el.textContent.includes('A página será fechada')
+                    );
+                    if (containsText) {
+                        overlay.remove();
+                        console.log('Removed cdk-overlay-container from DOM.');
+                    }
                 }
             """)
             time.sleep(1)  # Check periodically
