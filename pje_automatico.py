@@ -369,7 +369,7 @@ def run_script(credentials):
 
 
                     if processo_nao_cadastrado:
-                        reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
+                        reopen_choice = prompt_reopen_pje(paste)
                         if reopen_choice:
                             bypass_repeated_content = True  # Enable bypass for repeated content
                             continue  # Reopen the PJE level prompt
@@ -398,7 +398,7 @@ def run_script(credentials):
                         final_url_handle = find_or_open_tab(driver, final_url)
                         driver.switch_to.window(final_url_handle)
 
-                        reopen_choice = messagebox.askyesno("Reabrir PJE", f"Deseja reabrir outro grau para este processo {paste}?")
+                        reopen_choice = prompt_reopen_pje(paste)
                         if reopen_choice:
                             bypass_repeated_content = True  # Enable bypass for repeated content
                             continue  # Reopen the PJE level prompt
@@ -564,10 +564,10 @@ def prompt_for_pje_level(paste):
         pje_level.set(level)
         pje_level_window.destroy()
 
-    tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg="#ffc477", fg="#333222", width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg="#ffc477", fg="#333222", width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg="#ffc477", fg="#333222", width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="Ignorar e Aguardar", command=lambda: select_level("Ignore"), bg="#bcbba7", fg="#333222", width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Ignorar e aguardar", command=lambda: select_level("Ignore"), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=20, font=font_style).pack(pady=5)
 
     def open_link():
         import webbrowser
@@ -579,6 +579,52 @@ def prompt_for_pje_level(paste):
 
     pje_level_window.mainloop()
     return pje_level.get()
+
+def prompt_reopen_pje(paste):
+    """
+    Prompt the user with a styled window to decide whether to reopen another PJE level.
+    """
+    reopen_window = tk.Tk()
+    reopen_window.title("Reabrir PJE")
+    reopen_window.attributes('-topmost', True)
+    reopen_window.configure(bg=BACKGROUND_COLOR)
+
+    # Set custom icon for the tkinter window
+    reopen_window.iconbitmap(TKINTER_ICON_PATH)
+
+    screen_width = reopen_window.winfo_screenwidth()
+    screen_height = reopen_window.winfo_screenheight()
+    window_width = 400
+    window_height = 300
+    position_right = int(screen_width / 2 - window_width / 2)
+    position_down = int(screen_height / 2 - window_height / 2)
+    reopen_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+
+    font_style = ("Montserrat", 12)
+    title_font_style = ("Montserrat", 14, "bold")
+
+    tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
+    tk.Label(reopen_window, text=f"Deseja reabrir outro grau para o processo {paste}?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+
+    def select_reopen(choice):
+        nonlocal reopen_choice
+        reopen_choice = choice
+        reopen_window.destroy()
+
+    tk.Button(reopen_window, text="Sim", command=lambda: select_reopen(True), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=15, font=font_style).pack(pady=5)
+    tk.Button(reopen_window, text="Não", command=lambda: select_reopen(False), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=15, font=font_style).pack(pady=5)
+
+    def open_link():
+        import webbrowser
+        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
+
+    link_label = tk.Label(reopen_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
+    link_label.pack(pady=5)
+    link_label.bind("<Button-1>", lambda e: open_link())
+
+    reopen_choice = False
+    reopen_window.mainloop()
+    return reopen_choice
 
 # Encryption logic
 KEY_FILE = os.path.expanduser('~/encryption_key.key')
