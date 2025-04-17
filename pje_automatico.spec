@@ -5,7 +5,7 @@ a = Analysis(
     ['pje_automatico.py'],
     pathex=[],
     binaries=[],
-    datas=[('logowide.gif', '.'), ('logowide.png', '.'), ('initial_tab.html', '.'), ('icon.ico', '.')],
+    datas=[('logowide.gif', '.'), ('logowide.png', '.'), ('initial_tab.html', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
