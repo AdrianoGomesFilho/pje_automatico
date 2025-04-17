@@ -12,7 +12,7 @@ from cryptography.fernet import Fernet
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
 CURRENT_VERSION = "1.0.3"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
-UPDATE_URL = "https://github.com/AdrianoGomesFilho/pje_automatico/blob/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
+UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
 
 def check_for_updates():
     """
@@ -21,7 +21,11 @@ def check_for_updates():
     try:
         response = requests.get(UPDATE_URL, timeout=10)
         response.raise_for_status()
-        update_info = response.json()
+        try:
+            update_info = response.json()
+        except ValueError:
+            print("Erro: Resposta do servidor não é um JSON válido.")
+            return
 
         latest_version = update_info.get("version")
         download_url = update_info.get("download_url")
@@ -611,6 +615,9 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         run_script(credentials)
 
     tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=11, column=0, columnspan=2, pady=10)
+
+    # Add the current version label at the bottom
+    tk.Label(main_window, text=f"Versão: {CURRENT_VERSION}", fg=TEXT_COLOR, bg=BACKGROUND_COLOR, font=("Montserrat", 10)).grid(row=12, column=0, columnspan=2, pady=(5, 10))
 
     main_window.mainloop()
     return credentials
