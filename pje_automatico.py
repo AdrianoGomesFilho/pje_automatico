@@ -11,7 +11,7 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.0"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
+CURRENT_VERSION = "1.0.2"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
 UPDATE_URL = "https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
 
 def check_for_updates():
@@ -525,7 +525,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     title_font_style = ("Montserrat", 14, "bold")
 
     # Login method options
-    tk.Label(main_window, text="Método de Login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Método de login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
     login_method = tk.StringVar(value="1")  # Default to the first option
 
     methods = [
