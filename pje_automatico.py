@@ -583,7 +583,7 @@ def prompt_for_pje_level(paste):
     tk.Label(pje_level_window, text="Escolha o grau", bg="#D9CDFF", fg="#484554", font=font_style).pack(pady=10)
     tk.Label(pje_level_window, text=f"Processo que será aberto: {paste}", bg="#D9CDFF", fg="#484554", font=font_style).pack(pady=10)
 
-    pje_level = tk.StringVar()
+    pje_level = tk.StringVar(value="Ignore")  # Default to "Ignore"
 
     def select_level(level):
         pje_level.set(level)
@@ -601,6 +601,13 @@ def prompt_for_pje_level(paste):
     link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 10, "underline"))
     link_label.pack(pady=5)
     link_label.bind("<Button-1>", lambda e: open_link())
+
+    # Handle window close event
+    def on_close():
+        pje_level.set("Ignore")
+        pje_level_window.destroy()
+
+    pje_level_window.protocol("WM_DELETE_WINDOW", on_close)
 
     pje_level_window.mainloop()
     return pje_level.get()
