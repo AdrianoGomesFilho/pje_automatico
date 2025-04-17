@@ -46,6 +46,10 @@ def download_and_replace(download_url):
         response = requests.get(download_url, stream=True, timeout=30)
         response.raise_for_status()
 
+        # Log the content type of the response
+        content_type = response.headers.get("Content-Type", "unknown")
+        print(f"Content-Type do arquivo baixado: {content_type}")
+
         exe_path = sys.argv[0]  # Caminho do executável atual
         temp_path = exe_path + ".new"
 
@@ -53,10 +57,33 @@ def download_and_replace(download_url):
             for chunk in response.iter_content(chunk_size=8192):
                 temp_file.write(chunk)
 
+        # Validate the downloaded file
+        try:
+            if not os.access(temp_path, os.X_OK):
+                print("Erro: O arquivo baixado não é um executável válido.")
+                raise ValueError("Invalid executable permissions")
+
+            # Additional validation: Check if the file is a valid PE (Portable Executable) format
+            with open(temp_path, "rb") as temp_file:
+                header = temp_file.read(2)
+                if header != b'MZ':  # PE files start with 'MZ'
+                    print("Erro: O arquivo baixado não é um executável PE válido.")
+                    raise ValueError("Invalid PE format")
+        except Exception as e:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)  # Ensure the invalid file is deleted
+            print(f"Erro durante a validação do arquivo baixado: {e}")
+            return
+
         os.replace(temp_path, exe_path)  # Substitui o executável antigo pelo novo
         print("Atualização concluída com sucesso. Reiniciando o programa...")
         os.execv(exe_path, sys.argv)  # Reinicia o programa
     except Exception as e:
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)  # Ensure the temporary file is deleted
+            except Exception as cleanup_error:
+                print(f"Erro ao remover o arquivo temporário: {cleanup_error}")
         print(f"Falha ao atualizar o programa: {e}")
 
 # Verifica atualizações antes de iniciar o script principal
