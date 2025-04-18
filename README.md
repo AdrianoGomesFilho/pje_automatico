@@ -10,11 +10,10 @@ Ao copiar o número do processo (formato xxxxxxx-xx.xxxx.5.xx.xxxx) o programa d
 
 Melhoria recente: a automação agora permite abrir processos de outros advogados com a mesma visualização dos processos pessoais (tudo isso sem deixar rastros de acesso de terceiros).
 
-# COMO POSSO USAR A AUTOMAÇÃO?
-Baixe o arquivo .exe (na pasta "dist"), certifique-se de que o Google Chrome está instalado (e o PJE Office Pro, caso use token), e inicie o programa.
-A próxima etapa é preencher as credenciais (obs: não é obrigatório preencher certos dados a depender do método que você deseje usar). Exemplo: desejo abrir os processos no token - não é necessário colocar CPF e senha de login (PDPJ).
+# COMO USO O PROGRAMA?
+Disponibilizo um site de apresentação onde deixo as instruções e link para baixar o programa: https://pje-automatico.vercel.app/
 
-É altamente recomendável criar credenciais no login PDPJ (os tribunais já começaram a aderir a este login)
+É necessário ter o Google Chrome instalado previamente.
 
 Qualquer dificuldade pode entrar em contato comigo 81992811496📲
 
