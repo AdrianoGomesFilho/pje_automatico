@@ -12,9 +12,10 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.3"  # Versão atual do programa. Lembre-se de atualizar ao lançar uma nova versão.
+CURRENT_VERSION = "1.0.3"
 
-UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # Substitua pelo URL do arquivo JSON no GitHub
+UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # GitHub JSON URL
+GOOGLE_DRIVE_URL = "https://drive.google.com/file/d/1ThyhX93SUNOx_nIfK71A4BYJcaHj8Lng/view?usp=sharing"  # Replace 'your_file_id' with the actual file ID
 
 # Path to the custom icon and additional files
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
@@ -38,7 +39,7 @@ def check_for_updates():
         response = requests.get(UPDATE_URL, timeout=10)
         response.raise_for_status()
         try:
-            update_info = response.json()
+            update_info = response.json()  # Ensure the hosted file is a valid JSON
         except ValueError:
             print("Erro: Resposta do servidor não é um JSON válido.")
             return
@@ -59,7 +60,7 @@ def check_for_updates():
             screen_width = alert_window.winfo_screenwidth()
             screen_height = alert_window.winfo_screenheight()
             window_width = 400
-            window_height = 200
+            window_height = 250
             position_right = int(screen_width / 2 - window_width / 2)
             position_down = int(screen_height / 2 - window_height / 2)
             alert_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -68,13 +69,22 @@ def check_for_updates():
 
             tk.Label(alert_window, text="Nova versão disponível!", bg="#ECE9FD", fg="#3F3D56", font=("Montserrat", 14, "bold")).pack(pady=10)
             tk.Label(alert_window, text=f"Versão: {latest_version}", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
-            tk.Label(alert_window, text="Clique no botão abaixo para abrir a página de releases:", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
+            tk.Label(alert_window, text="Clique abaixo para fazer download", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
 
             def open_releases_page():
                 import webbrowser
                 webbrowser.open(releases_page_url)
 
-            tk.Button(alert_window, text="Abrir Página de Releases", command=open_releases_page, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=10)
+            def open_google_drive():
+                import webbrowser
+                webbrowser.open(GOOGLE_DRIVE_URL)
+
+            tk.Button(alert_window, text="Download do Google Drive", command=open_google_drive, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=5)
+
+            def close_window():
+                alert_window.destroy()
+
+            tk.Button(alert_window, text="Continuar com a versão atual", command=close_window, bg="#CFCBE7", fg="#3F3D56", font=font_style, width=25).pack(pady=5)
 
             def close_program():
                 alert_window.destroy()
