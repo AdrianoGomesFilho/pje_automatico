@@ -15,7 +15,7 @@ PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe nam
 CURRENT_VERSION = "1.0.3"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # GitHub JSON URL
-GOOGLE_DRIVE_URL = "https://drive.google.com/file/d/1ThyhX93SUNOx_nIfK71A4BYJcaHj8Lng/view?usp=sharing"  # Replace 'your_file_id' with the actual file ID
+GOOGLE_DRIVE_URL = "https://drive.google.com/drive/folders/1f8OhPD2TMATaUAsgfWl-Qb3OFNNyDQ0-?usp=sharing"  # Replace 'your_file_id' with the actual file ID
 
 # Path to the custom icon and additional files
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle

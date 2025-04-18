@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PJE Automático</title>
+    <link rel="icon" href="icon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --primary-color: #7B6EF6; /* Soft violet from logo */
+            --secondary-color: #ECE9FD; /* Very light lavender */
+            --text-color: #3F3D56; /* Dark desaturated purple for contrast */
+            --background-gradient: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            --white: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.2); /* Slightly softer shadow */
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            display: inline-block;
+            margin-top: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .gif-container {
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .gif-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="gif-container">
+            <img src="logowide.gif" alt="Animated Thunder Lightning">
+        </div>
+        <a href="https://github.com/AdrianoGomesFilho/pje_automatico" target="_blank">Visite o repositório do projeto no GitHub</a>
+    </div>
+    <footer></footer>
+</body>
+</html>
