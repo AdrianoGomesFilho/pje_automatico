@@ -12,12 +12,12 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.3"
+CURRENT_VERSION = "1.0.6"
 
-UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"  # GitHub JSON URL
-GOOGLE_DRIVE_URL = "https://drive.google.com/drive/folders/1f8OhPD2TMATaUAsgfWl-Qb3OFNNyDQ0-?usp=sharing"  # Replace 'your_file_id' with the actual file ID
+UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
-# Path to the custom icon and additional files
+SITE_PJE_AUTOMATICO = "https://pje-automatico.vercel.app/"
+
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
     BASE_PATH = sys._MEIPASS
 else:
@@ -75,11 +75,11 @@ def check_for_updates():
                 import webbrowser
                 webbrowser.open(releases_page_url)
 
-            def open_google_drive():
+            def open_pje_automatico_site():
                 import webbrowser
-                webbrowser.open(GOOGLE_DRIVE_URL)
+                webbrowser.open(SITE_PJE_AUTOMATICO)
 
-            tk.Button(alert_window, text="Download do Google Drive", command=open_google_drive, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=5)
+            tk.Button(alert_window, text="Ir para download", command=open_pje_automatico_site, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=5)
 
             def close_window():
                 alert_window.destroy()
@@ -181,9 +181,9 @@ LINK_COLOR = "#7B6EF6"        # Vivid purple-blue, good for links
 # Function to open the initial tab
 def open_initial_tab(driver):
     """
-    Open a stylized initial tab in the browser.
+    Open the specified site in the browser.
     """
-    driver.get(f"file:///{INITIAL_TAB_PATH.replace(os.sep, '/')}")
+    driver.get("https://pje-automatico.vercel.app/")
 
 # Define the monitor_browser function first
 def monitor_browser(driver):
@@ -548,7 +548,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 560
+    window_height = 600
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -556,8 +556,11 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     font_style = ("Montserrat", 10)
     title_font_style = ("Montserrat", 14, "bold")
 
+    # Add the alert message
+    tk.Label(main_window, text="Certifique-se de possuir o Google Chrome instalado!", bg=BACKGROUND_COLOR, fg="red", font=font_style).grid(row=1, column=0, columnspan=2, pady=(5, 10))
+
     # Login method options
-    tk.Label(main_window, text="Método de login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Método de login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
     login_method = tk.StringVar(value="1")  # Default to the first option
 
     methods = [
@@ -569,7 +572,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     ]
 
     for i, (text, value) in enumerate(methods):
-        tk.Radiobutton(main_window, text=text, variable=login_method, value=value, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=1 + i, column=1, sticky="w")
+        tk.Radiobutton(main_window, text=text, variable=login_method, value=value, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2 + i, column=1, sticky="w")
 
     # Input fields
     tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=7, column=0, padx=10, pady=5, sticky="e")
