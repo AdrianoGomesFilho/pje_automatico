@@ -152,7 +152,11 @@ def create_menu():
     def open_process(icon, item):
         process_number = item.text
         print(f"Opening process: {process_number}")
-        # Logic to handle opening the process can be added here
+        # Prompt the user with the reopen prompt
+        reopen_choice = prompt_reopen_pje(process_number)
+        if reopen_choice:
+            print(f"Reopening process: {process_number}")
+            # Logic to reopen the process can be added here
 
     if recent_processes:
         recent_menu_items = [MenuItem(process, open_process) for process in recent_processes]
