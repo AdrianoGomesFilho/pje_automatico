@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 from tkinter import PhotoImage
 import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
+from pyperclip import copy  # Add this import for clipboard functionality
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
@@ -139,20 +140,33 @@ def create_image():
 
 # Store recent process numbers
 recent_processes = []
+dummy_content = "DUMMY_CONTENT"  # Define a dummy content to bypass the loop
 
 # Function to add a process to the recent list
 def add_to_recent(process_number):
-    if process_number not in recent_processes:
-        recent_processes.append(process_number)
-        if len(recent_processes) > 5:  # Limit to 5 recent processes
-            recent_processes.pop(0)
+    if process_number in recent_processes:
+        recent_processes.remove(process_number)  # Remove it to re-add at the top
+    recent_processes.insert(0, process_number)  # Add to the top of the list
+    if len(recent_processes) > 5:  # Limit to 5 recent processes
+        recent_processes.pop()  # Remove the oldest (last) entry
 
 # Function to create the system tray menu dynamically
 def create_menu():
     def open_process(icon, item):
         process_number = item.text
-        print(f"Opening process: {process_number}")
-        # Prompt the user with the reopen prompt
+        print(f"Copying process to clipboard: {process_number}")
+        copy(process_number)  # Copy the process number to the clipboard
+        # Trigger the main loop with dummy content
+        pyperclip.copy(dummy_content)
+        print(f"Dummy content set to trigger main loop for process: {process_number}")
+
+        # Automatically recopy the process number after clearing the clipboard
+        def recopy_process():
+            time.sleep(2)  # Small delay to ensure clipboard is cleared
+            copy(process_number)
+            print(f"Process {process_number} recopied to clipboard.")
+
+        threading.Thread(target=recopy_process, daemon=True).start()
 
     if recent_processes:
         recent_menu_items = [MenuItem(process, open_process) for process in recent_processes]
@@ -327,6 +341,12 @@ def run_script(credentials):
                 # Monitor clipboard for specific data pattern
                 pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
                 paste = pyperclip.paste()
+
+                # Check if dummy content is set
+                if paste == dummy_content:
+                    print("Dummy content detected. Skipping PJE prompt level.")
+                    last_clipboard_content = dummy_content  # Update last clipboard content
+                    continue  # Skip processing and wait for new clipboard content
 
                 # Check if the clipboard content is new or bypassing is enabled
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
