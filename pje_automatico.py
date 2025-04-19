@@ -162,7 +162,7 @@ def create_menu():
 
         # Automatically recopy the process number after clearing the clipboard
         def recopy_process():
-            time.sleep(2)  # Small delay to ensure clipboard is cleared
+            time.sleep(1)  # Small delay to ensure clipboard is cleared
             copy(process_number)
             print(f"Process {process_number} recopied to clipboard.")
 
@@ -262,8 +262,12 @@ def remove_cdk_overlay(driver):
             """)
             time.sleep(1)  # Check periodically
         except Exception as e:
-            print(f"Error while removing cdk-overlay-container: {e}")
-            break
+            if "no such window" in str(e) or "web view not found" in str(e):
+                print("Window already closed. Continuing execution...")
+                break  # Exit the loop gracefully
+            else:
+                print(f"Error while removing cdk-overlay-container: {e}")
+                break
 
 # Function to run the main script
 def run_script(credentials):
