@@ -137,6 +137,26 @@ def create_image():
     image = Image.open(PYSTRAY_ICON_PATH)
     return image
 
+# Store recent process numbers
+recent_processes = []
+
+# Function to add a process to the recent list
+def add_to_recent(process_number):
+    if process_number not in recent_processes:
+        recent_processes.append(process_number)
+        if len(recent_processes) > 5:  # Limit to 5 recent processes
+            recent_processes.pop(0)
+
+# Function to create the system tray menu dynamically
+def create_menu():
+    def open_process(icon, item):
+        process_number = item.text
+        print(f"Opening process: {process_number}")
+        # Logic to handle opening the process can be added here
+
+    recent_menu_items = [MenuItem(process, open_process) for process in recent_processes]
+    return Menu(*recent_menu_items)
+
 # Function to stop the script
 def stop_script(icon, item):
     print("Exiting script...")
@@ -145,8 +165,16 @@ def stop_script(icon, item):
 
 # Function to run the system tray icon
 def run_tray_icon():
-    menu = Menu(MenuItem("Exit", stop_script))
+    menu = create_menu()
     icon = Icon("PJE Script", create_image(), "PJE Automático", menu)
+
+    # Update the menu dynamically when recent processes change
+    def update_menu():
+        while True:
+            icon.menu = create_menu()
+            time.sleep(5)  # Update every 5 seconds
+
+    threading.Thread(target=update_menu, daemon=True).start()
     icon.run()
 
 # Start the tray icon in a separate thread
@@ -305,6 +333,7 @@ def run_script(credentials):
                 # Check if the clipboard content is new or bypassing is enabled
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
+                    add_to_recent(paste)  # Add the process to the recent list
                     if not pattern.fullmatch(paste):
                         invalid_content_window = tk.Tk()
                         invalid_content_window.title("Aviso")
