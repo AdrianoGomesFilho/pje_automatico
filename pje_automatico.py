@@ -154,14 +154,12 @@ def create_menu():
         print(f"Opening process: {process_number}")
         # Logic to handle opening the process can be added here
 
-    recent_menu_items = [MenuItem(process, open_process) for process in recent_processes]
-    return Menu(*recent_menu_items)
+    if recent_processes:
+        recent_menu_items = [MenuItem(process, open_process) for process in recent_processes]
+    else:
+        recent_menu_items = [MenuItem("Sem processos recentes detectados", lambda icon, item: None, enabled=False)]
 
-# Function to stop the script
-def stop_script(icon, item):
-    print("Exiting script...")
-    icon.stop()
-    os._exit(0)
+    return Menu(*recent_menu_items)
 
 # Function to run the system tray icon
 def run_tray_icon():
