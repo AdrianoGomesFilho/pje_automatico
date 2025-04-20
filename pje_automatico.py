@@ -153,11 +153,22 @@ def add_to_recent(process):
 # Update the tray menu dynamically
         tray_icon.menu = create_menu()
 
+def set_bypass_repeated_content():
+    """
+    Set the bypass_repeated_content variable to True to allow reopening the same process.
+    """
+    global bypass_repeated_content
+    bypass_repeated_content = True
+
 # Function to create the system tray menu
 def create_menu():
+    global bypass_repeated_content  # Ensure we can modify the global variable
     # Main menu with recent processes displayed directly
     menu = Menu(
-        *(MenuItem(str(process), lambda item, p=process: pyperclip.copy(str(p))) for process in recent_processes)
+        *(MenuItem(
+            str(process), 
+            lambda item, p=process: (pyperclip.copy(str(p)), set_bypass_repeated_content())
+        ) for process in recent_processes)
     )
     return menu
 
@@ -250,7 +261,9 @@ def remove_cdk_overlay(driver):
 
 # Function to run the main script
 def run_script(credentials):
-    global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level
+    global usuario_pje, senha_pje, usuario_astrea, senha_astrea, login_method, pje_level, bypass_repeated_content
+    bypass_repeated_content = False  # Initialize the variable
+
     usuario_pje = credentials["USERNAMEPJE"]
     senha_pje = credentials["PASSWORDPJE"]
     usuario_astrea = credentials["USERNAMEASTREA"]
@@ -284,9 +297,6 @@ def run_script(credentials):
 
     # Store the last clipboard content
     last_clipboard_content = ""
-
-    # Add a variable to bypass repeated content
-    bypass_repeated_content = False
 
     def find_or_open_tab(driver, base_url, data_url=None):
         for handle in driver.window_handles:
