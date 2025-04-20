@@ -13,7 +13,7 @@ import pyperclip  # Ensure pyperclip is imported
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.7"
+CURRENT_VERSION = "1.0.8"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
