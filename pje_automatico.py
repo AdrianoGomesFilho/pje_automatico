@@ -160,22 +160,36 @@ def set_bypass_repeated_content():
     global bypass_repeated_content
     bypass_repeated_content = True
 
-# Function to create the system tray menu
 def create_menu():
+    """
+    Create the system tray menu with a title and recent processes.
+    """
     global bypass_repeated_content  # Ensure we can modify the global variable
-    # Main menu with recent processes displayed directly
-    menu = Menu(
-        *(MenuItem(
-            str(process), 
-            lambda item, p=process: (pyperclip.copy(str(p)), set_bypass_repeated_content())
-        ) for process in recent_processes)
-    )
-    return menu
 
-# Function to run the system tray icon
+    # Add a title to the menu
+    menu_items = [
+        MenuItem("Processos recentes (clique para reabrir)", lambda: None, enabled=False)  # Title as a disabled item
+    ]
+
+    # Add recent processes to the menu
+    menu_items.extend(
+        MenuItem(
+            str(process),
+            lambda item, p=process: (pyperclip.copy(str(p)), set_bypass_repeated_content())
+        ) for process in recent_processes
+    )
+
+    return Menu(*menu_items)
+
 def run_tray_icon():
+    """
+    Run the system tray icon with left-click access.
+    """
     global tray_icon
     tray_icon = Icon("PJE Script", create_image(), "PJE Automático", create_menu())
+
+    # Enable left-click access to the menu
+    tray_icon.menu = create_menu()
     tray_icon.run()
 
 # Start the tray icon in a separate thread
