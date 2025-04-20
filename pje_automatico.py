@@ -139,17 +139,32 @@ def create_image():
     image = Image.open(PYSTRAY_ICON_PATH)
     return image
 
-# Function to stop the script
-def stop_script(icon, item):
-    print("Exiting script...")
-    icon.stop()
-    os._exit(0)
+# Store recent processes in a list
+recent_processes = []
+
+# Function to add a process to the recent list
+def add_to_recent(process):
+    global recent_processes, tray_icon
+    if process not in recent_processes:
+        recent_processes.insert(0, process)  # Add to the top of the list
+        if len(recent_processes) > 10:  # Limit to 10 items
+            recent_processes.pop()
+# Update the tray menu dynamically
+        tray_icon.menu = create_menu()
+
+# Function to create the system tray menu
+def create_menu():
+    # Main menu with recent processes displayed directly
+    menu = Menu(
+        *(MenuItem(process, lambda: None) for process in recent_processes)
+    )
+    return menu
 
 # Function to run the system tray icon
 def run_tray_icon():
-    menu = Menu(MenuItem("Exit", stop_script))
-    icon = Icon("PJE Script", create_image(), "PJE Automático", menu)
-    icon.run()
+    global tray_icon
+    tray_icon = Icon("PJE Script", create_image(), "PJE Automático", create_menu())
+    tray_icon.run()
 
 # Start the tray icon in a separate thread
 tray_thread = threading.Thread(target=run_tray_icon, daemon=True)
@@ -312,6 +327,7 @@ def run_script(credentials):
                 # Check if the clipboard content is new or bypassing is enabled
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
+                    add_to_recent(paste)  # Add the detected process to the recent list
                     if not pattern.fullmatch(paste):
                         invalid_content_window = tk.Tk()
                         invalid_content_window.title("Aviso")
