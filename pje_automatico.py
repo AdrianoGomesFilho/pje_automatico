@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 from tkinter import PhotoImage
 import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
+import pyperclip  # Ensure pyperclip is imported
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
@@ -156,7 +157,7 @@ def add_to_recent(process):
 def create_menu():
     # Main menu with recent processes displayed directly
     menu = Menu(
-        *(MenuItem(process, lambda: None) for process in recent_processes)
+        *(MenuItem(str(process), lambda item, p=process: pyperclip.copy(str(p))) for process in recent_processes)
     )
     return menu
 
