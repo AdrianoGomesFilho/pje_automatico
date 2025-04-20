@@ -12,7 +12,7 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.6"
+CURRENT_VERSION = "1.0.7"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
@@ -222,8 +222,13 @@ def remove_cdk_overlay(driver):
             """)
             time.sleep(1)  # Check periodically
         except Exception as e:
-            print(f"Error while removing cdk-overlay-container: {e}")
-            break
+            if "no such window" in str(e) or "web view not found" in str(e):
+                print("Window already closed. Continuing execution...")
+                break  # Exit the loop gracefully
+            else:
+                print(f"Error while removing cdk-overlay-container: {e}")
+                break
+
 
 # Function to run the main script
 def run_script(credentials):
