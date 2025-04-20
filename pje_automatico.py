@@ -168,7 +168,7 @@ def create_menu():
 
     # Add a title to the menu
     menu_items = [
-        MenuItem("Processos recentes (clique para reabrir)", lambda: None, enabled=False)  # Title as a disabled item
+        MenuItem("Processos recentes detectados (clique em um se desejar reabrir)", lambda: None, enabled=False)  # Title as a disabled item
     ]
 
     # Add recent processes to the menu
