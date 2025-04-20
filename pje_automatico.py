@@ -12,7 +12,7 @@ from cryptography.fernet import Fernet
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.7"
+CURRENT_VERSION = "1.0.6"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
@@ -69,15 +69,12 @@ def check_for_updates():
 
             tk.Label(alert_window, text="Nova versão disponível!", bg="#ECE9FD", fg="#3F3D56", font=("Montserrat", 14, "bold")).pack(pady=10)
             tk.Label(alert_window, text=f"Versão: {latest_version}", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
-            tk.Label(alert_window, text="Clique abaixo para fazer download", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
-
-            def open_releases_page():
-                import webbrowser
-                webbrowser.open(releases_page_url)
 
             def open_pje_automatico_site():
                 import webbrowser
                 webbrowser.open(SITE_PJE_AUTOMATICO)
+                alert_window.destroy()  # Close the current window
+                sys.exit(0)
 
             tk.Button(alert_window, text="Ir para download", command=open_pje_automatico_site, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=5)
 
@@ -223,7 +220,7 @@ def remove_cdk_overlay(driver):
             time.sleep(1)  # Check periodically
         except Exception as e:
             if "no such window" in str(e) or "web view not found" in str(e):
-                print("Window already closed. Continuing execution...")
+                print("Window already closed (overlay cdk). Continuing execution...")
                 break  # Exit the loop gracefully
             else:
                 print(f"Error while removing cdk-overlay-container: {e}")
@@ -693,7 +690,8 @@ def prompt_for_pje_level(paste):
 
     def open_link():
         import webbrowser
-        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
+        webbrowser.open("https://github.com/AdrianoGomesFilho")
+        pje_level_window.destroy()  # Close the window after opening the link
 
     link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 10, "underline"))
     link_label.pack(pady=5)
@@ -831,5 +829,4 @@ messagebox.showwarning = topmost_messagebox(messagebox.showwarning)
 messagebox.showerror = topmost_messagebox(messagebox.showerror)
 messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
 
-# Show the credentials window before running the script
 prompt_for_credentials(credentials_file, credentials)
