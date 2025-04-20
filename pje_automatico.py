@@ -36,18 +36,23 @@ def check_for_updates():
     Verifica se há uma nova versão do programa disponível e redireciona o usuário para a página de releases.
     """
     try:
+        print("Checking for updates...")  # Debug: Start of update check
         response = requests.get(UPDATE_URL, timeout=10)
+        print(f"Response status code: {response.status_code}")  # Debug: HTTP response status
         response.raise_for_status()
         try:
             update_info = response.json()  # Ensure the hosted file is a valid JSON
+            print(f"Update info received: {update_info}")  # Debug: JSON response content
         except ValueError:
             print("Erro: Resposta do servidor não é um JSON válido.")
             return
 
         latest_version = update_info.get("version")
         releases_page_url = update_info.get("download_url")  # Use the URL from the JSON file
+        print(f"Latest version: {latest_version}, Current version: {CURRENT_VERSION}")  # Debug: Version comparison
 
         if latest_version and latest_version != CURRENT_VERSION:
+            print("New version available. Prompting user...")  # Debug: New version detected
             # Show a GUI alert for the new version
             alert_window = tk.Tk()
             alert_window.title("Atualização Disponível")
@@ -550,7 +555,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 600
+    window_height = 500
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
