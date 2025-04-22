@@ -13,7 +13,7 @@ import pyperclip  # Ensure pyperclip is imported
 
 PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
-CURRENT_VERSION = "1.0.8"
+CURRENT_VERSION = "1.0.9"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
@@ -501,7 +501,7 @@ def run_script(credentials):
                             ])
 
                             if elemento_login.get_attribute("ID") == "kc-login":
-                                if login_method in ["Astrea + PJE (Token)", "Somente PJE (token)"]:
+                                if login_method in ["4", "2"]:
                                     driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
                                     elemento_login = WebDriverWait(driver, 30).until(
                                         EC.presence_of_element_located((By.ID, "brasao-republica")) or
@@ -651,7 +651,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
             password_pje_entry.config(state="normal")
             username_astrea_entry.config(state="disabled")
             password_astrea_entry.config(state="disabled")
-        elif method == "2":  # Somente PJE (token)
+        elif method == "2":  #2Somente PJE (token)
             username_pje_entry.config(state="disabled")
             password_pje_entry.config(state="disabled")
             username_astrea_entry.config(state="disabled")
