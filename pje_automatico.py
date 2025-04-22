@@ -714,8 +714,8 @@ def prompt_for_pje_level(paste):
     screen_height = pje_level_window.winfo_screenheight()
     window_width = 400
     window_height = 300
-    position_right = int(screen_width / 2 - window_width / 2)
-    position_down = int(screen_height / 2 - window_height / 2)
+    position_right = screen_width - window_width - 20  # 20px margin from the right
+    position_down = screen_height - window_height - 50  # 50px margin from the bottom
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
@@ -769,8 +769,8 @@ def prompt_reopen_pje(paste):
     screen_height = reopen_window.winfo_screenheight()
     window_width = 400
     window_height = 300
-    position_right = int(screen_width / 2 - window_width / 2)
-    position_down = int(screen_height / 2 - window_height / 2)
+    position_right = screen_width - window_width - 20  # 20px margin from the right
+    position_down = screen_height - window_height - 50  # 50px margin from the bottom
     reopen_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
