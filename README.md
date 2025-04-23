@@ -2,7 +2,7 @@
 # OBJETIVO DO PROJETO
 Automação que, ao detectar a cópia de um número de processo, abre automaticamente a página correspondente do PJE e, se desejado, também o sistema utilizado no escritório (atualmente configurado para o Astrea). Voltado no presente momento para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS. O acesso ao processo é mantido sigiloso (ou seja, se você acessar processos de outros advogados o sistema não registra).
 
-Vídeo de apresentação do projeto no Instagram (obs: o programa foi significativamente aprimorado após o vídeo). Pretendo regravar o vídeo futuramente! [@adrianogomes.adv](https://instagram.com/adrianogomes.adv).
+Vídeo de apresentação do projeto no Instagram https://www.instagram.com/p/DIv3eyoOURq/
 
 # O QUE ELE FAZ?
 
