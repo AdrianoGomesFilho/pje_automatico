@@ -19,43 +19,39 @@ UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico
 
 SITE_PJE_AUTOMATICO = "https://pje-automatico.vercel.app/"
 
-if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller bundle
-    BASE_PATH = sys._MEIPASS
+if getattr(sys, 'frozen', False): #diferencia se o programa está rodando como .exe ou não
+    BASE_PATH = sys._MEIPASS #meipass é o diretório temporário onde o PyInstaller extrai os arquivos
+    print(f"Running in frozen mode (executable). Base path: {BASE_PATH}")
 else:
-    BASE_PATH = os.path.dirname(__file__)
+    BASE_PATH = os.path.dirname(__file__) #o próprio diretório do script
+    print(f"Running in normal mode (script). Base path: {BASE_PATH}") 
 
 ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
 LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
-INITIAL_TAB_PATH = os.path.join(BASE_PATH, "initial_tab.html")
 
-# Update references to the paths
 TKINTER_ICON_PATH = ICON_PATH
 PYSTRAY_ICON_PATH = ICON_PATH
 
 def check_for_updates():
-    """
-    Verifica se há uma nova versão do programa disponível e redireciona o usuário para a página de releases.
-    """
     try:
-        print("Checking for updates...")  # Debug: Start of update check
+        print("Checking for updates...")
         response = requests.get(UPDATE_URL, timeout=10)
-        print(f"Response status code: {response.status_code}")  # Debug: HTTP response status
+        print(f"Response status code: {response.status_code}")
         response.raise_for_status()
         try:
-            update_info = response.json()  # Ensure the hosted file is a valid JSON
-            print(f"Update info received: {update_info}")  # Debug: JSON response content
+            update_info = response.json()
+            print(f"Update info received: {update_info}") 
         except ValueError:
             print("Erro: Resposta do servidor não é um JSON válido.")
             return
 
         latest_version = update_info.get("version")
-        releases_page_url = update_info.get("download_url")  # Use the URL from the JSON file
-        print(f"Latest version: {latest_version}, Current version: {CURRENT_VERSION}")  # Debug: Version comparison
+        releases_page_url = update_info.get("download_url")
+        print(f"Latest version: {latest_version}, Current version: {CURRENT_VERSION}")
 
         if latest_version and latest_version != CURRENT_VERSION:
-            print("New version available. Prompting user...")  # Debug: New version detected
-            # Show a GUI alert for the new version
-            alert_window = tk.Tk()
+            print("New version available. Prompting user...") 
+            alert_window = tk.Tk() #cria uma nova janela
             alert_window.title("Atualização Disponível")
             alert_window.attributes('-topmost', True)
             alert_window.configure(bg="#ECE9FD")
