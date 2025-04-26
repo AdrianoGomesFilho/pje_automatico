@@ -493,6 +493,9 @@ def run_script(credentials):
                             base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "TST":
+                            base_url = "https://pje.tst.jus.br/tst/login.seam" 
+                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
+                        elif pje_level == "TST Antigo":
                             paste_parts = paste.split('-')
                             numeroTst = paste_parts[0]
                             remaining_parts = paste_parts[1].split('.')
@@ -504,12 +507,9 @@ def run_script(credentials):
 
                             antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
 
-                            base_url = "https://pje.tst.jus.br/tst/login.seam" 
-                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
                         
-                        if pje_level == "TST":
+                        if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
@@ -775,6 +775,7 @@ def prompt_for_pje_level(paste):
     tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="TST Antigo", command=lambda: select_level("TST Antigo"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Ignorar e aguardar", command=lambda: select_level("Ignore"), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=20, font=font_style).pack(pady=5)
 
     def open_link():
