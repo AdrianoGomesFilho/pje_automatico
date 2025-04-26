@@ -1,6 +1,6 @@
 import psutil
 import os
-import sys
+import sys 
 import time
 import threading
 import requests  # Add this import for HTTP requests
@@ -10,8 +10,6 @@ from tkinter import PhotoImage
 import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
 import pyperclip  # Ensure pyperclip is imported
-
-PROCESS_NAME = "pje_automatico.exe"  # Change this to match your actual .exe name
 
 CURRENT_VERSION = "1.0.9"
 
@@ -103,8 +101,11 @@ def check_for_updates():
 # Verifica atualizações antes de iniciar o script principal
 check_for_updates()
 
+# Dynamically determine the process name based on the executable file
+PROCESS_NAME = os.path.basename(sys.executable) if getattr(sys, 'frozen', False) else "pje_automatico.py"
+
 # Find and kill any running instance of the process
-for proc in psutil.process_iter(['pid', 'name']):
+for proc in psutil.process_iter(['pid', 'name']): # loop that iterates over processes
     if proc.info['name'] == PROCESS_NAME and proc.pid != os.getpid():
         print(f"Closing old instance (PID: {proc.pid})...")
         proc.terminate()  # Try to terminate gracefully
@@ -291,19 +292,65 @@ def run_script(credentials):
     chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
     chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
 
-    # Initialize WebDriver with Chrome options
-    driver = webdriver.Chrome(options=chrome_options)
+    # Declare browser_process_id as a global variable and initialize it
+    global browser_process_id
+    browser_process_id = None
 
-    # Open the initial tab
-    open_initial_tab(driver)
+    # Enhanced function to check if the browser process is running
+    def is_browser_running():
+        global browser_process_id
+        if browser_process_id is None:
+            return False
+        try:
+            # Check if the process with the stored ID is still running and is a browser
+            process = psutil.Process(browser_process_id)
+            if "chrome" in process.name().lower():
+                return True
+        except psutil.NoSuchProcess:
+            pass
+        return False
 
-    # Start a thread to monitor the browser
-    browser_monitor_thread = threading.Thread(target=monitor_browser, args=(driver,), daemon=True)
-    browser_monitor_thread.start()
+    # Function to close any existing browser instances associated with the application
+    def close_existing_browser_instances():
+        print("[INFO] Checking for existing browser instances...")
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                # Check if the process is a browser (e.g., Chrome) and was launched by this application
+                if "chrome" in proc.info['name'].lower() and proc.info['cmdline'] and any("--remote-debugging-port" in cmd for cmd in proc.info['cmdline']):
+                    print(f"[INFO] Found browser instance: PID={proc.pid}. Closing...")
+                    proc.terminate()  # Try to terminate gracefully
+                    time.sleep(1)  # Wait a bit for the process to close
+                    if proc.is_running():
+                        print(f"[WARNING] Process PID={proc.pid} still running. Forcing kill...")
+                        proc.kill()  # Force kill if still running
+                    print(f"[INFO] Successfully closed browser instance: PID={proc.pid}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
 
-    # Start a thread to monitor and remove 'cdk-overlay-container'
-    overlay_removal_thread = threading.Thread(target=remove_cdk_overlay, args=(driver,), daemon=True)
-    overlay_removal_thread.start()
+    # Call the function to close existing browser instances
+    close_existing_browser_instances()
+
+    # Update the browser launch logic
+    if not is_browser_running():
+        print("No existing browser instance detected. Launching a new browser...")
+        # Initialize WebDriver with Chrome options
+        driver = webdriver.Chrome(options=chrome_options)
+
+        # Store the browser process ID
+        browser_process_id = driver.service.process.pid
+
+        # Open the initial tab
+        open_initial_tab(driver)
+
+        # Start a thread to monitor the browser
+        browser_monitor_thread = threading.Thread(target=monitor_browser, args=(driver,), daemon=True)
+        browser_monitor_thread.start()
+
+        # Start a thread to monitor and remove 'cdk-overlay-container'
+        overlay_removal_thread = threading.Thread(target=remove_cdk_overlay, args=(driver,), daemon=True)
+        overlay_removal_thread.start()
+    else:
+        print("Browser is already running. Avoiding duplicate instance.")
 
     # Store the last clipboard content
     last_clipboard_content = ""
