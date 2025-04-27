@@ -10,6 +10,7 @@ from tkinter import PhotoImage
 import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
 import pyperclip  # Ensure pyperclip is imported
+from plyer import notification
 
 CURRENT_VERSION = "1.0.9"
 
@@ -918,5 +919,18 @@ messagebox.showinfo = topmost_messagebox(messagebox.showinfo)
 messagebox.showwarning = topmost_messagebox(messagebox.showwarning)
 messagebox.showerror = topmost_messagebox(messagebox.showerror)
 messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
+
+# Show a notification when the program starts
+def show_startup_notification():
+    notification.notify(
+        title="PJE Automático",
+        message="💡Você pode acessar a lista de últimos processos clicando no ícone na barra de notificações",
+        app_name="PJE Automático",
+        app_icon=ICON_PATH,
+        timeout=10  # Notification duration in seconds
+    )
+
+# Call the notification function at the start of the program
+show_startup_notification()
 
 prompt_for_credentials(credentials_file, credentials)
