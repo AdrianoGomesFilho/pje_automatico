@@ -11,6 +11,7 @@ import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
 import pyperclip  # Ensure pyperclip is imported
 from plyer import notification
+import tkinter.messagebox as messagebox  # Import messagebox for alerts
 
 CURRENT_VERSION = "1.0.9"
 
@@ -236,10 +237,12 @@ def monitor_browser(driver):
             # Check if there are any open tabs
             if len(driver.window_handles) == 0:
                 print("No tabs open. Exiting program...")
+                messagebox.showinfo("Aviso", "O PJE Automático foi encerrado")  # Alert the user before exiting
                 os._exit(0)  # Exit the program
             time.sleep(1)  # Check periodically
         except Exception as e:
             print(f"Error in monitor_browser: {e}")
+            messagebox.showinfo("Aviso", "O PJE Automático foi encerrado")  # Alert the user before exiting
             os._exit(0)  # Exit the program
 
 def remove_cdk_overlay(driver):
@@ -911,16 +914,12 @@ messagebox.showerror = topmost_messagebox(messagebox.showerror)
 messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
 
 # Show a notification when the program starts
-def show_startup_notification():
-    notification.notify(
-        title="PJE Automático",
-        message="💡Para reabrir algum processo, acesse o ícone na barra de notificações",
-        app_name="PJE Automático",
-        app_icon=ICON_PATH,
-        timeout=3  # Notification duration in seconds
-    )
-
-# Call the notification function at the start of the program
-show_startup_notification()
+notification.notify(
+    title="PJE Automático",
+    message="Programa iniciado. Para reabrir processos, acesse o ícone da barra de notificações",
+    app_name="PJE Automático",
+    app_icon=ICON_PATH,
+    timeout=5
+)
 
 prompt_for_credentials(credentials_file, credentials)
