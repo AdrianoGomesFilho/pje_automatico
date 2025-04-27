@@ -10,8 +10,8 @@ from tkinter import PhotoImage
 import tkinter as tk  # Ensure tkinter is imported as tk
 from cryptography.fernet import Fernet
 import pyperclip  # Ensure pyperclip is imported
-from plyer import notification
 import tkinter.messagebox as messagebox  # Import messagebox for alerts
+from plyer import notification
 
 CURRENT_VERSION = "1.0.9"
 
@@ -237,12 +237,12 @@ def monitor_browser(driver):
             # Check if there are any open tabs
             if len(driver.window_handles) == 0:
                 print("No tabs open. Exiting program...")
-                messagebox.showinfo("Aviso", "O PJE Automático foi encerrado")  # Alert the user before exiting
+                notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
                 os._exit(0)  # Exit the program
             time.sleep(1)  # Check periodically
         except Exception as e:
             print(f"Error in monitor_browser: {e}")
-            messagebox.showinfo("Aviso", "O PJE Automático foi encerrado")  # Alert the user before exiting
+            notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
             os._exit(0)  # Exit the program
 
 def remove_cdk_overlay(driver):
@@ -267,8 +267,8 @@ def remove_cdk_overlay(driver):
             time.sleep(1)  # Check periodically
         except Exception as e:
             if "no such window" in str(e) or "web view not found" in str(e):
-                print("Window already closed (overlay cdk). Continuing execution...")
-                break  # Exit the loop gracefully
+                print("Window already closed. Continuing execution...")
+                continue  # Skip to the next iteration
             else:
                 print(f"Error while removing cdk-overlay-container: {e}")
                 break
@@ -490,16 +490,13 @@ def run_script(credentials):
                             break  # Exit the loop and wait for new clipboard content
 
                         if pje_level == "Primeiro grau":
-                            # base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
-                            base_url = f"https://httpbin.org/delay/10"
+                            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "Segundo grau":
-                            # base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
-                            base_url = f"https://httpbin.org/delay/10"
+                            base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "TST":
-                            # base_url = "https://pje.tst.jus.br/tst/login.seam" 
-                            base_url = f"https://httpbin.org/delay/10"
+                            base_url = "https://pje.tst.jus.br/tst/login.seam"
                             id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
                         elif pje_level == "TST Antigo":
                             paste_parts = paste.split('-')
@@ -521,11 +518,13 @@ def run_script(credentials):
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
                             try:
-                                botao_pdpj = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                                botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                                botao_pdpj.click()
                             except TimeoutException:
-                                messagebox.showerror("Erro", "Página de login no PJE demorou para carregar.")
-                                continue  # Show the pje_level prompt again
-                            botao_pdpj.click()
+                                notifier.send("O PJE demorou muito para carregar... Vamos tentar novamente.")
+                                driver.close()  # Close the current tab
+                                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
+                                continue  # Retry by showing the pje_level prompt again
 
                             try:
                                 # Custom function to wait for either of two elements to be present
@@ -573,36 +572,39 @@ def run_script(credentials):
                                 break  # Exit the loop and reopen the PJE level prompt
                             else:
                                 break  # Exit the loop if process_id is successfully fetched
-                    if processo_nao_cadastrado:
-                        reopen_choice = prompt_reopen_pje(paste)
-                        if reopen_choice:
-                            bypass_repeated_content = True  # Enable bypass for repeated content
-                            continue  # Reopen the PJE level prompt
+                    if pje_level != "TST Antigo":
+                        if processo_nao_cadastrado:
+                            reopen_choice = prompt_reopen_pje(paste)
+                            if reopen_choice:
+                                bypass_repeated_content = True  # Enable bypass for repeated content
+                                continue  # Reopen the PJE level prompt
+                            else:
+                                print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                                bypass_repeated_content = False
+                                continue  # Continue monitoring clipboard content
                         else:
-                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
-                            bypass_repeated_content = False
+                                # Construct the final_url using the fetched id
+                            if pje_level == "Ignore":
+                                print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                                continue  # Skip processing and wait for new clipboard content
+                            elif pje_level == "TST":
+                                final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
+                            else:
+                                final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
+
+                            print(f"final_url: {final_url}")  # Print final_url
+                            # Close the id_url tab
+                            driver.close()
+
+                            # Switch to the last tab before opening the final_url
+                            driver.switch_to.window(driver.window_handles[-1])
+
+                            # Open the final_url in a new tab
+                            final_url_handle = find_or_open_tab(driver, final_url)
+                            driver.switch_to.window(final_url_handle)
                             continue  # Continue monitoring clipboard content
                     else:
-                            # Construct the final_url using the fetched id
-                        if pje_level == "Ignore":
-                            print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
-                            continue  # Skip processing and wait for new clipboard content
-                        elif pje_level == "TST":
-                            final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
-                        else:
-                            final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
-
-                        print(f"final_url: {final_url}")  # Print final_url
-                        # Close the id_url tab
-                        driver.close()
-
-                        # Switch to the last tab before opening the final_url
-                        driver.switch_to.window(driver.window_handles[-1])
-
-                        # Open the final_url in a new tab
-                        final_url_handle = find_or_open_tab(driver, final_url)
-                        driver.switch_to.window(final_url_handle)
-                        continue  # Continue monitoring clipboard content
+                        continue            
             except Exception as e:
                 print(f"An error occurred: {e}")
                 continue  # Skip the current iteration and wait for new clipboard content
@@ -752,7 +754,7 @@ def prompt_for_pje_level(paste):
     window_width = 400
     window_height = 300
     position_right = screen_width - window_width - 20  # 20px margin from the right
-    position_down = screen_height - window_height - 50  # 50px margin from the bottom
+    position_down = screen_height - window_height - 80  # 50px margin from the bottom
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
@@ -771,15 +773,6 @@ def prompt_for_pje_level(paste):
     tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="TST Antigo", command=lambda: select_level("TST Antigo"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Ignorar e aguardar", command=lambda: select_level("Ignore"), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=20, font=font_style).pack(pady=5)
-
-    def open_link():
-        import webbrowser
-        webbrowser.open("https://github.com/AdrianoGomesFilho")
-        pje_level_window.destroy()  # Close the window after opening the link
-
-    link_label = tk.Label(pje_level_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg="#D9CDFF", cursor="hand2", font=("Montserrat", 10, "underline"))
-    link_label.pack(pady=5)
-    link_label.bind("<Button-1>", lambda e: open_link())
 
     # Handle window close event
     def on_close():
@@ -914,12 +907,23 @@ messagebox.showerror = topmost_messagebox(messagebox.showerror)
 messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
 
 # Show a notification when the program starts
-notification.notify(
-    title="PJE Automático",
-    message="Programa iniciado. Para reabrir processos, acesse o ícone da barra de notificações",
-    app_name="PJE Automático",
-    app_icon=ICON_PATH,
-    timeout=5
-)
+class Notifier:
+    def __init__(self, title="PJE Automático", app_name="PJE Automático", app_icon=ICON_PATH, timeout=5):
+        self.title = title
+        self.app_name = app_name
+        self.app_icon = app_icon
+        self.timeout = timeout
+
+    def send(self, message):
+        notification.notify(
+            title=self.title,
+            message=message,
+            app_name=self.app_name,
+            app_icon=self.app_icon,
+            timeout=self.timeout
+        )
+
+notifier = Notifier()
+notifier.send("Programa iniciado. Para reabrir processos, acesse o ícone da barra de notificações")
 
 prompt_for_credentials(credentials_file, credentials)
