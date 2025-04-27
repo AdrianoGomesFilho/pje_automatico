@@ -12,6 +12,7 @@ from cryptography.fernet import Fernet
 import pyperclip  # Ensure pyperclip is imported
 import tkinter.messagebox as messagebox  # Import messagebox for alerts
 from plyer import notification
+from selenium.common.exceptions import NoSuchElementException
 
 CURRENT_VERSION = "1.0.9"
 
@@ -513,6 +514,16 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
+                            # Check if the tab received the name "Consulta Processual - TST"
+                            try:
+                                time.sleep(5)
+                                if "Consulta Processual - TST" in driver.title:
+                                    notifier.send("Ops! Abriu uma consulta de terceiros. Isso significa que há cadastro no PJE. Tente reabrir o processo clicando no ícone.")
+                                else:
+                                    break
+                            except Exception as e:
+                                notifier.send(f"Erro ao verificar o título da aba: {e}")
+
                             break
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
@@ -924,6 +935,6 @@ class Notifier:
         )
 
 notifier = Notifier()
-notifier.send("Programa iniciado. Para reabrir processos, acesse o ícone da barra de notificações")
+notifier.send("Para reabrir processos, acesse o ícone da barra de notificações")
 
 prompt_for_credentials(credentials_file, credentials)
