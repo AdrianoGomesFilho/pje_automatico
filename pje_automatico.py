@@ -512,16 +512,7 @@ def run_script(credentials):
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
                             antigo_tst_url_handle = driver.window_handles[-1]  # Get the handle of the last opened tab
                             driver.switch_to.window(antigo_tst_url_handle)
-
-                            time.sleep(5)
-                            reopen_choice = prompt_reopen_pje(paste)
-                            if reopen_choice:
-                                bypass_repeated_content = True  # Enable bypass for repeated content
-                                continue  # Reopen the PJE level prompt
-                            else:
-                                print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
-                                bypass_repeated_content = False
-                                break  # Exit the while True loop entirely
+                            continue  # Continue monitoring clipboard content
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
@@ -608,16 +599,7 @@ def run_script(credentials):
                         # Open the final_url in a new tab
                         final_url_handle = find_or_open_tab(driver, final_url)
                         driver.switch_to.window(final_url_handle)
-
-                        reopen_choice = prompt_reopen_pje(paste)
-                        if reopen_choice:
-                            bypass_repeated_content = True  # Enable bypass for repeated content
-                            continue  # Reopen the PJE level prompt
-                        else:
-                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
-                            bypass_repeated_content = False
-                            continue  # Continue monitoring clipboard content
-
+                        continue  # Continue monitoring clipboard content
             except Exception as e:
                 print(f"An error occurred: {e}")
                 continue  # Skip the current iteration and wait for new clipboard content
@@ -932,7 +914,7 @@ messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
 def show_startup_notification():
     notification.notify(
         title="PJE Automático",
-        message="💡Você pode acessar a lista de últimos processos clicando no ícone na barra de notificações",
+        message="💡Para reabrir algum processo, acesse o ícone na barra de notificações",
         app_name="PJE Automático",
         app_icon=ICON_PATH,
         timeout=3  # Notification duration in seconds
