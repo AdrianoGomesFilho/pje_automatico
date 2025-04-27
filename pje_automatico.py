@@ -487,13 +487,16 @@ def run_script(credentials):
                             break  # Exit the loop and wait for new clipboard content
 
                         if pje_level == "Primeiro grau":
-                            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+                            # base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
+                            base_url = f"https://httpbin.org/delay/10"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "Segundo grau":
-                            base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
+                            # base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
+                            base_url = f"https://httpbin.org/delay/10"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
                         elif pje_level == "TST":
-                            base_url = "https://pje.tst.jus.br/tst/login.seam" 
+                            # base_url = "https://pje.tst.jus.br/tst/login.seam" 
+                            base_url = f"https://httpbin.org/delay/10"
                             id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
                         elif pje_level == "TST Antigo":
                             paste_parts = paste.split('-')
@@ -514,7 +517,6 @@ def run_script(credentials):
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
-
                             try:
                                 botao_pdpj = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
                             except TimeoutException:
