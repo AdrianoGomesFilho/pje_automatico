@@ -510,9 +510,7 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            antigo_tst_url_handle = driver.window_handles[-1]  # Get the handle of the last opened tab
-                            driver.switch_to.window(antigo_tst_url_handle)
-                            continue  # Continue monitoring clipboard content
+                            break
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
