@@ -474,9 +474,8 @@ def run_script(credentials):
                     else:
                         print("Já logado Astrea ou ignorando login Astrea (método).")
 
-                        
-                    while True:  # Loop to allow the user to choose another PJE level if needed
-                        # Extract the TRT number (15th and 16th characters)
+            
+                    while True:
                         trt_number = paste[18:20]
                         trt_number = trt_number.lstrip('0')
 
@@ -511,66 +510,75 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            driver.switch_to.window(base_url_handle)
+                            antigo_tst_url_handle = driver.window_handles[-1]  # Get the handle of the last opened tab
+                            driver.switch_to.window(antigo_tst_url_handle)
+
+                            # Show the reopen choice directly for TST Antigo
+                            reopen_choice = prompt_reopen_pje(paste)
+                            if reopen_choice:
+                                bypass_repeated_content = True  # Enable bypass for repeated content
+                                continue  # Reopen the PJE level prompt
+                            else:
+                                print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                                bypass_repeated_content = False
+                                continue  # Continue monitoring clipboard content
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
 
-                        try:
-                            botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
-                        except TimeoutException:
-                            messagebox.showerror("Erro", "Página de login no PJE não carregou. O programa será reiniciado.")
-                            continue  # Show the pje_level prompt again
-                        botao_pdpj.click()
+                            try:
+                                botao_pdpj = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
+                            except TimeoutException:
+                                messagebox.showerror("Erro", "Página de login no PJE demorou para carregar.")
+                                continue  # Show the pje_level prompt again
+                            botao_pdpj.click()
 
-                        try:
-                            # Custom function to wait for either of two elements to be present
-                            def wait_for_any_element(driver, locators, timeout=10):
-                                for _ in range(timeout * 10):  # Check every 0.1 seconds
-                                    for locator in locators:
-                                        try:
-                                            element = driver.find_element(*locator)
-                                            if element.is_displayed():
-                                                return element
-                                        except:
-                                            continue
-                                    time.sleep(0.1)
-                                raise TimeoutException("Neither element was found within the timeout period.")
+                            try:
+                                # Custom function to wait for either of two elements to be present
+                                def wait_for_any_element(driver, locators, timeout=10):
+                                    for _ in range(timeout * 10):  # Check every 0.1 seconds
+                                        for locator in locators:
+                                            try:
+                                                element = driver.find_element(*locator)
+                                                if element.is_displayed():
+                                                    return element
+                                            except:
+                                                continue
+                                        time.sleep(0.1)
+                                    raise TimeoutException("Neither element was found within the timeout period.")
 
-                            # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
-                            elemento_login = wait_for_any_element(driver, [
-                                (By.ID, "kc-login"),
-                                (By.ID, "brasao-republica"),
-                                (By.ID, "formPesquisa")
-                            ])
+                                # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
+                                elemento_login = wait_for_any_element(driver, [
+                                    (By.ID, "kc-login"),
+                                    (By.ID, "brasao-republica"),
+                                    (By.ID, "formPesquisa")
+                                ])
 
-                            if elemento_login.get_attribute("ID") == "kc-login":
-                                if login_method in ["4", "2"]:
-                                    driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
-                                    elemento_login = WebDriverWait(driver, 30).until(
-                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or
-                                        EC.presence_of_element_located((By.ID, "formPesquisa"))
-                                    )
+                                if elemento_login.get_attribute("ID") == "kc-login":
+                                    if login_method in ["4", "2"]:
+                                        driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
+                                        elemento_login = WebDriverWait(driver, 30).until(
+                                            EC.presence_of_element_located((By.ID, "brasao-republica")) or
+                                            EC.presence_of_element_located((By.ID, "formPesquisa"))
+                                        )
+                                        process_id = fetch_process_id(driver, id_url)
+                                    else:
+                                        driver.find_element(By.ID, "username").send_keys(usuario_pje)
+                                        driver.find_element(By.ID, "password").send_keys(senha_pje)
+                                        driver.find_element(By.ID, "kc-login").click()
+                                        elemento_login = WebDriverWait(driver, 30).until(
+                                            EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
+                                            EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
+                                        )
+                                        process_id = fetch_process_id(driver, id_url)
+                                elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
                                     process_id = fetch_process_id(driver, id_url)
-                                else:
-                                    driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                                    driver.find_element(By.ID, "password").send_keys(senha_pje)
-                                    driver.find_element(By.ID, "kc-login").click()
-                                    elemento_login = WebDriverWait(driver, 30).until(
-                                        EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
-                                        EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
-                                    )
-                                    process_id = fetch_process_id(driver, id_url)
-                            elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
-                                process_id = fetch_process_id(driver, id_url)
-                        except (ValueError, TimeoutException):
-                            bypass_repeated_content = True  # Enable bypass for repeated content
-                            processo_nao_cadastrado = True
-                            break  # Exit the loop and reopen the PJE level prompt
-                        else:
-                            break  # Exit the loop if process_id is successfully fetched
-
-
+                            except (ValueError, TimeoutException):
+                                bypass_repeated_content = True  # Enable bypass for repeated content
+                                processo_nao_cadastrado = True
+                                break  # Exit the loop and reopen the PJE level prompt
+                            else:
+                                break  # Exit the loop if process_id is successfully fetched
                     if processo_nao_cadastrado:
                         reopen_choice = prompt_reopen_pje(paste)
                         if reopen_choice:
@@ -927,7 +935,7 @@ def show_startup_notification():
         message="💡Você pode acessar a lista de últimos processos clicando no ícone na barra de notificações",
         app_name="PJE Automático",
         app_icon=ICON_PATH,
-        timeout=10  # Notification duration in seconds
+        timeout=3  # Notification duration in seconds
     )
 
 # Call the notification function at the start of the program
