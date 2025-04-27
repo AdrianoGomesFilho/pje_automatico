@@ -513,7 +513,7 @@ def run_script(credentials):
                             antigo_tst_url_handle = driver.window_handles[-1]  # Get the handle of the last opened tab
                             driver.switch_to.window(antigo_tst_url_handle)
 
-                            # Show the reopen choice directly for TST Antigo
+                            time.sleep(5)
                             reopen_choice = prompt_reopen_pje(paste)
                             if reopen_choice:
                                 bypass_repeated_content = True  # Enable bypass for repeated content
@@ -521,7 +521,7 @@ def run_script(credentials):
                             else:
                                 print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
                                 bypass_repeated_content = False
-                                continue  # Continue monitoring clipboard content
+                                break  # Exit the while True loop entirely
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
                             driver.switch_to.window(base_url_handle)
