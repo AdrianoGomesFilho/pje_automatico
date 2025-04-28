@@ -520,7 +520,7 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            time.sleep(2)
+                            time.sleep(3)
                             notifier.send("TST Antigo - Caso esteja em consulta de terceiros, tente reabrir com a opcão 'TST PJE'")
                             break
                         else:
@@ -806,10 +806,10 @@ def prompt_reopen_pje(paste):
 
     screen_width = reopen_window.winfo_screenwidth()
     screen_height = reopen_window.winfo_screenheight()
-    window_width = 400
-    window_height = 300
-    position_right = screen_width - window_width - 20  # 20px margin from the right
-    position_down = screen_height - window_height - 50  # 50px margin from the bottom
+    window_width = 300
+    window_height = 260
+    position_right = screen_width - window_width - 20 
+    position_down = screen_height - window_height - 80  
     reopen_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
@@ -825,14 +825,6 @@ def prompt_reopen_pje(paste):
 
     tk.Button(reopen_window, text="Sim", command=lambda: select_reopen(True), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=15, font=font_style).pack(pady=5)
     tk.Button(reopen_window, text="Não", command=lambda: select_reopen(False), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=15, font=font_style).pack(pady=10)  # Increased bottom padding
-
-    def open_link():
-        import webbrowser
-        webbrowser.open("https://github.com/AdrianoGomesFilho")  # Replace with the desired URL
-
-    link_label = tk.Label(reopen_window, text="Github Adriano Gomes", fg=LINK_COLOR, bg=BACKGROUND_COLOR, cursor="hand2", font=("Montserrat", 10, "underline"))
-    link_label.pack(pady=10)  # Added more padding above the link
-    link_label.bind("<Button-1>", lambda e: open_link())
 
     reopen_choice = False
     reopen_window.mainloop()
