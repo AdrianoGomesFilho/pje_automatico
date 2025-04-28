@@ -145,13 +145,17 @@ recent_processes = []
 
 # Function to add a process to the recent list
 def add_to_recent(process):
+    """
+    Add a process to the recent list, ensuring the last opened process is always at the top.
+    """
     global recent_processes, tray_icon
-    if process not in recent_processes:
-        recent_processes.insert(0, process)  # Add to the top of the list
-        if len(recent_processes) > 20:  # Limit the list to 20 items
-            recent_processes.pop()  # Remove the oldest item
-        # Update the tray menu dynamically
-        tray_icon.menu = create_menu()
+    if process in recent_processes:
+        recent_processes.remove(process)  # Remove the process if it already exists
+    recent_processes.insert(0, process)  # Add the process to the top of the list
+    if len(recent_processes) > 20:  # Limit the list to 20 items
+        recent_processes.pop()  # Remove the oldest item
+    # Update the tray menu dynamically
+    tray_icon.menu = create_menu()
 
 def set_bypass_repeated_content():
     """
@@ -271,7 +275,7 @@ def remove_cdk_overlay(driver):
         except Exception as e:
             if "no such window" in str(e) or "web view not found" in str(e):
                 print("Window already closed. Continuing execution...")
-                continue  # Skip to the next iteration
+                break
             else:
                 print(f"Error while removing cdk-overlay-container: {e}")
                 break
