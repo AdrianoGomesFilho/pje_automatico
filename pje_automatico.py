@@ -366,18 +366,6 @@ def run_script(credentials):
     # Store the last clipboard content
     last_clipboard_content = ""
 
-    def find_or_open_tab(driver, base_url, data_url=None):
-        for handle in driver.window_handles:
-            driver.switch_to.window(handle)
-            if (base_url in driver.current_url or (data_url and data_url in driver.current_url)):
-                return handle
-        # Switch to the last tab before opening a new one
-        driver.switch_to.window(driver.window_handles[-1])
-        driver.execute_script(f"window.open('{base_url}', '_blank');")
-        new_handle = driver.window_handles[-1]
-        return new_handle
-
-
     def fetch_process_id(driver, id_url):
         driver.execute_script(f"window.open('{id_url}', '_blank');")
         id_url_handle = driver.window_handles[-1]
@@ -515,17 +503,18 @@ def run_script(credentials):
                             tribunalTst = remaining_parts[3]
                             varaTst = remaining_parts[4]
 
-                            antigo_tst_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
+                            base_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
 
                         
                         if pje_level == "TST Antigo":
-                            driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
+                            driver.execute_script(f"window.open('{base_url}', '_blank');")
                             time.sleep(3)
                             notifier.send("TST Antigo - Caso esteja em consulta de terceiros, tente reabrir com a opcão 'TST PJE'")
                             break
                         else:
-                            base_url_handle = find_or_open_tab(driver, base_url)
-                            driver.switch_to.window(base_url_handle)
+                            driver.execute_script(f"window.open('{base_url}', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
                             try:
                                 botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
                                 botao_pdpj.click()
@@ -609,8 +598,8 @@ def run_script(credentials):
                             driver.switch_to.window(driver.window_handles[-1])
 
                             # Open the final_url in a new tab
-                            final_url_handle = find_or_open_tab(driver, final_url)
-                            driver.switch_to.window(final_url_handle)
+                            driver.execute_script(f"window.open('{final_url}', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])
                             continue  # Continue monitoring clipboard content
                     else:
                         continue            
