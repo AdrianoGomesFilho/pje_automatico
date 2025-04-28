@@ -15,7 +15,7 @@ from plyer import notification
 from selenium.common.exceptions import NoSuchElementException
 from win10toast import ToastNotifier  # Add this import for Windows notifications
 
-CURRENT_VERSION = "1.0.9"
+CURRENT_VERSION = "1.1.0"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
