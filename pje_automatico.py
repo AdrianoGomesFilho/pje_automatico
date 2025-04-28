@@ -13,6 +13,7 @@ import pyperclip  # Ensure pyperclip is imported
 import tkinter.messagebox as messagebox  # Import messagebox for alerts
 from plyer import notification
 from selenium.common.exceptions import NoSuchElementException
+from win10toast import ToastNotifier  # Add this import for Windows notifications
 
 CURRENT_VERSION = "1.0.9"
 
@@ -897,20 +898,27 @@ messagebox.askyesno = topmost_messagebox(messagebox.askyesno)
 
 # Show a notification when the program starts
 class Notifier:
-    def __init__(self, title="PJE Automático", app_name="PJE Automático", app_icon=ICON_PATH, timeout=5):
+    def __init__(self, title="PJE Automático", app_icon=ICON_PATH, timeout=5):
         self.title = title
-        self.app_name = app_name
         self.app_icon = app_icon
         self.timeout = timeout
+        self.toast_notifier = ToastNotifier()  # Initialize win10toast
 
     def send(self, message):
-        notification.notify(
-            title=self.title,
-            message=message,
-            app_name=self.app_name,
-            app_icon=self.app_icon,
-            timeout=self.timeout
-        )
+        try:
+            notification.notify(
+                title=self.title,
+                message=message,
+                app_icon=self.app_icon,
+                timeout=self.timeout
+            )
+        except NotImplementedError:
+            print(f"[Notification] {self.title}: {message}")  # Fallback to console output
+            try:
+                # Use win10toast as a fallback for Windows
+                self.toast_notifier.show_toast(self.title, message, icon_path=self.app_icon, duration=self.timeout)
+            except Exception as e:
+                print(f"[Error] Failed to send notification using win10toast: {e}")
 
 notifier = Notifier()
 notifier.send("Para reabrir processos: acesse o ícone da barra de notificações")
