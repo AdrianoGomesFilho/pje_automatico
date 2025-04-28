@@ -239,11 +239,13 @@ def monitor_browser(driver):
             if len(driver.window_handles) == 0:
                 print("No tabs open. Exiting program...")
                 notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
+                time.sleep(1)  # Wait a bit before retrying
                 os._exit(0)  # Exit the program
             time.sleep(1)  # Check periodically
         except Exception as e:
             print(f"Error in monitor_browser: {e}")
             notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
+            time.sleep(1)  # Wait a bit before retrying
             os._exit(0)  # Exit the program
 
 def remove_cdk_overlay(driver):
@@ -514,16 +516,6 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
-                            # Check if the tab received the name "Consulta Processual - TST"
-                            try:
-                                time.sleep(5)
-                                if "Consulta Processual - TST" in driver.title:
-                                    notifier.send("Ops! Abriu uma consulta de terceiros. Isso significa que há cadastro no PJE. Tente reabrir o processo clicando no ícone.")
-                                else:
-                                    break
-                            except Exception as e:
-                                notifier.send(f"Erro ao verificar o título da aba: {e}")
-
                             break
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
