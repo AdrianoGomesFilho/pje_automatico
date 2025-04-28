@@ -148,9 +148,9 @@ def add_to_recent(process):
     global recent_processes, tray_icon
     if process not in recent_processes:
         recent_processes.insert(0, process)  # Add to the top of the list
-        if len(recent_processes) > 10:  # Limit to 10 items
-            recent_processes.pop()
-# Update the tray menu dynamically
+        if len(recent_processes) > 20:  # Limit the list to 20 items
+            recent_processes.pop()  # Remove the oldest item
+        # Update the tray menu dynamically
         tray_icon.menu = create_menu()
 
 def set_bypass_repeated_content():
@@ -168,7 +168,7 @@ def create_menu():
 
     # Add a title to the menu
     menu_items = [
-        MenuItem("Processos recentes detectados (clique em um se desejar reabrir)", lambda: None, enabled=False)  # Title as a disabled item
+        MenuItem("Processos recentes detectados (clique para reabrir)", lambda: None, enabled=False)  # Title as a disabled item
     ]
 
     # Add recent processes to the menu
@@ -928,6 +928,6 @@ class Notifier:
         )
 
 notifier = Notifier()
-notifier.send("Para reabrir processos, acesse o ícone da barra de notificações")
+notifier.send("Para reabrir processos: acesse o ícone da barra de notificações")
 
 prompt_for_credentials(credentials_file, credentials)
