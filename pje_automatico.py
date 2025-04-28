@@ -492,13 +492,13 @@ def run_script(credentials):
                             print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
                             break  # Exit the loop and wait for new clipboard content
 
-                        if pje_level == "Primeiro grau":
+                        if pje_level == "Primeiro grau PJE":
                             base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                        elif pje_level == "Segundo grau":
+                        elif pje_level == "Segundo grau PJE":
                             base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
                             id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                        elif pje_level == "TST":
+                        elif pje_level == "TST PJE":
                             base_url = "https://pje.tst.jus.br/tst/login.seam"
                             id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
                         elif pje_level == "TST Antigo":
@@ -516,6 +516,8 @@ def run_script(credentials):
                         
                         if pje_level == "TST Antigo":
                             driver.execute_script(f"window.open('{antigo_tst_url}', '_blank');")
+                            time.sleep(2)
+                            notifier.send("TST Antigo - Caso esteja em consulta de terceiros, tente reabrir com a opcão 'TST PJE'")
                             break
                         else:
                             base_url_handle = find_or_open_tab(driver, base_url)
@@ -590,7 +592,7 @@ def run_script(credentials):
                             if pje_level == "Ignore":
                                 print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
                                 continue  # Skip processing and wait for new clipboard content
-                            elif pje_level == "TST":
+                            elif pje_level == "TST PJE":
                                 final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
                             else:
                                 final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
@@ -754,16 +756,15 @@ def prompt_for_pje_level(paste):
 
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
-    window_width = 400
-    window_height = 300
+    window_width = 260
+    window_height = 260
     position_right = screen_width - window_width - 20  # 20px margin from the right
     position_down = screen_height - window_height - 80  # 50px margin from the bottom
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
 
-    tk.Label(pje_level_window, text="Escolha o grau", bg="#D9CDFF", fg="#484554", font=font_style).pack(pady=10)
-    tk.Label(pje_level_window, text=f"Processo que será aberto: {paste}", bg="#D9CDFF", fg="#484554", font=font_style).pack(pady=10)
+    tk.Label(pje_level_window, text=f"{paste}", bg="#D9CDFF", fg="#484554", font=(font_style[0], font_style[1], "bold")).pack(pady=10)
 
     pje_level = tk.StringVar(value="Ignore")  # Default to "Ignore"
 
@@ -771,9 +772,9 @@ def prompt_for_pje_level(paste):
         pje_level.set(level)
         pje_level_window.destroy()
 
-    tk.Button(pje_level_window, text="Primeiro Grau", command=lambda: select_level("Primeiro grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="Segundo Grau", command=lambda: select_level("Segundo grau"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="TST", command=lambda: select_level("TST"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Primeiro Grau PJE", command=lambda: select_level("Primeiro grau PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="Segundo Grau PJE", command=lambda: select_level("Segundo grau PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
+    tk.Button(pje_level_window, text="TST PJE", command=lambda: select_level("TST PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="TST Antigo", command=lambda: select_level("TST Antigo"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
     tk.Button(pje_level_window, text="Ignorar e aguardar", command=lambda: select_level("Ignore"), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=20, font=font_style).pack(pady=5)
 
