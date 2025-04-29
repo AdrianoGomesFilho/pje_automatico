@@ -517,13 +517,6 @@ def run_script(credentials):
                             try:
                                 botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
                                 botao_pdpj.click()
-                            except TimeoutException:
-                                notifier.send("O PJE demorou muito para carregar... Vamos tentar novamente.")
-                                driver.close()  # Close the current tab
-                                driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                                continue  # Retry by showing the pje_level prompt again
-
-                            try:
                                 # Custom function to wait for either of two elements to be present
                                 def wait_for_any_element(driver, locators, timeout=10):
                                     for _ in range(timeout * 10):  # Check every 0.1 seconds
@@ -795,6 +788,7 @@ def prompt_reopen_pje(paste):
     """
     reopen_window = tk.Tk()
     reopen_window.title("Reabrir PJE")
+    
     reopen_window.attributes('-topmost', True)
     reopen_window.configure(bg=BACKGROUND_COLOR)
 
@@ -803,7 +797,7 @@ def prompt_reopen_pje(paste):
 
     screen_width = reopen_window.winfo_screenwidth()
     screen_height = reopen_window.winfo_screenheight()
-    window_width = 300
+    window_width = 350
     window_height = 260
     position_right = screen_width - window_width - 20 
     position_down = screen_height - window_height - 80  
@@ -813,7 +807,7 @@ def prompt_reopen_pje(paste):
     title_font_style = ("Montserrat", 14, "bold")
 
     tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
-    tk.Label(reopen_window, text=f"Deseja reabrir outro grau para o processo {paste}?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+    tk.Label(reopen_window, text=f"Houve algum erro ou o processo {paste} não está cadastrado nessa instância. Deseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
 
     def select_reopen(choice):
         nonlocal reopen_choice
