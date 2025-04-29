@@ -603,36 +603,16 @@ def run_script(credentials):
                     else:
                         continue            
             except Exception as e:
-                print(f"[DEBUG] Exception occurred: {e}")
                 if "no such window" in str(e).lower():
                     print("[DEBUG] Detected 'no such window' error. Checking if a new tab is needed...")
                     try:
                         if len(driver.window_handles) == 0:
-                            print("[DEBUG] No tabs are open. Opening a new tab...")
                             driver.execute_script("window.open('about:blank', '_blank');")
                             driver.switch_to.window(driver.window_handles[-1])
-                            print("[DEBUG] New tab opened successfully.")
                         else:
                             print("[DEBUG] Tabs are still available. Switching to the last tab...")
                             driver.switch_to.window(driver.window_handles[-1])
-                            # Validate the tab state
-                            for attempt in range(3):  # Retry up to 3 times
-                                try:
-                                    driver.current_url  # Attempt to access the current tab's URL
-                                    print(f"[DEBUG] Successfully switched to the last tab on attempt {attempt + 1}. Validating page readiness...")
-                                    WebDriverWait(driver, 5).until(
-                                        lambda d: d.execute_script("return document.readyState") == "complete"
-                                    )
-                                    print("[DEBUG] Tab is fully loaded and ready.")
-                                    break  # Exit the retry loop if successful
-                                except Exception as tab_state_error:
-                                    print(f"[DEBUG] Attempt {attempt + 1} failed: {tab_state_error}")
-                                    time.sleep(1)  # Small delay before retrying
-                                    if attempt == 2:  # On the last attempt, open a new tab
-                                        print("[DEBUG] Last tab is invalid or not ready after retries. Opening a new tab...")
-                                        driver.execute_script("window.open('about:blank', '_blank');")
-                                        driver.switch_to.window(driver.window_handles[-1])
-                                        print("[DEBUG] New tab opened successfully after validation.")
+                            print("[DEBUG] Successfully switched to the last tab.")
                     except Exception as tab_error:
                         print(f"[ERROR] Failed to handle 'no such window' scenario: {tab_error}")
             finally:
