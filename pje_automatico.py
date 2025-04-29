@@ -750,15 +750,15 @@ def prompt_for_pje_level(paste):
 
     screen_width = pje_level_window.winfo_screenwidth()
     screen_height = pje_level_window.winfo_screenheight()
-    window_width = 260
-    window_height = 260
+    window_width = 300
+    window_height = 300
     position_right = screen_width - window_width - 20  # 20px margin from the right
     position_down = screen_height - window_height - 80  # 50px margin from the bottom
     pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
 
     font_style = ("Montserrat", 12)
 
-    tk.Label(pje_level_window, text=f"{paste}", bg="#D9CDFF", fg="#484554", font=(font_style[0], font_style[1], "bold")).pack(pady=10)
+    tk.Label(pje_level_window, text=f"Detectado o processo\n{paste}", bg="#D9CDFF", fg="#484554", font=(font_style[0], font_style[1], "bold")).pack(pady=10)
 
     pje_level = tk.StringVar(value="Ignore")  # Default to "Ignore"
 
@@ -807,7 +807,7 @@ def prompt_reopen_pje(paste):
     title_font_style = ("Montserrat", 14, "bold")
 
     tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
-    tk.Label(reopen_window, text=f"Houve algum erro ou o processo {paste} não está cadastrado nessa instância. Deseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+    tk.Label(reopen_window, text=f"{paste}\nHouve algum erro ou o processo não está cadastrado nessa instância.\nDeseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
 
     def select_reopen(choice):
         nonlocal reopen_choice
