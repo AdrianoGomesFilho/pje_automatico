@@ -388,9 +388,8 @@ def run_script(credentials):
     try:
         while True:
             try:
-                # Monitor clipboard for specific data pattern
+                paste = pyperclip.paste().strip()  # Remove leading and trailing spaces
                 pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
-                paste = pyperclip.paste()
 
                 # Check if the clipboard content is new or bypassing is enabled
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
