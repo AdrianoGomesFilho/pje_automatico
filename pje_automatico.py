@@ -395,36 +395,35 @@ def run_script(credentials):
                 if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
                     print(f"Processo identificado: {paste}")
                     add_to_recent(paste)  # Add the detected process to the recent list
-                    if not pattern.fullmatch(paste):
-                        invalid_content_window = tk.Tk()
-                        invalid_content_window.title("Aviso")
-                        invalid_content_window.attributes('-topmost', True)
-                        invalid_content_window.configure(bg=BACKGROUND_COLOR)
 
-                        # Set custom icon for the tkinter window
-                        invalid_content_window.iconbitmap(TKINTER_ICON_PATH)
+                    # Debugging: Log the current state of window handles
+                    print(f"[DEBUG] Current window handles: {driver.window_handles}")
 
-                        screen_width = invalid_content_window.winfo_screenwidth()
-                        screen_height = invalid_content_window.winfo_screenheight()
-                        window_width = 400
-                        window_height = 200
-                        position_right = int(screen_width / 2 - window_width / 2)
-                        position_down = int(screen_height / 2 - window_height / 2)
-                        invalid_content_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+                    # Reset the state if tabs are closed or WebDriver loses connection
+                    if not driver.window_handles:  # Check if the list is empty
+                        print("[DEBUG] No tabs detected (driver.window_handles is empty). Resetting state...")
+                        last_clipboard_content = ""  # Clear the last clipboard content
+                        bypass_repeated_content = False  # Reset bypass flag
+                        try:
+                            # Attempt to open a new tab to recover
+                            driver.execute_script("window.open('about:blank', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])
+                            print("[DEBUG] Recovered by opening a new tab.")
+                        except Exception as recovery_error:
+                            print(f"[ERROR] Failed to recover WebDriver state: {recovery_error}")
+                            break  # Exit the loop if recovery fails
+                        continue  # Wait for new clipboard content
 
-                        font_style = ("Montserrat", 12)
+                    # Ensure the current tab is valid
+                    try:
+                        driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
+                        driver.current_url  # Validate the current tab
+                    except Exception as e:
+                        print(f"[DEBUG] Current tab is invalid: {e}. Opening a new tab...")
+                        driver.execute_script("window.open('about:blank', '_blank');")
+                        driver.switch_to.window(driver.window_handles[-1])
 
-                        tk.Label(invalid_content_window, text="Conteúdo inválido", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).pack(pady=10)
-                        tk.Label(invalid_content_window, text="Por favor, copie um número de processo válido no formato XXXXXXX-XX.XXXX.5.XX.XXXX e aperte OK!.", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
-
-                        def close_window():
-                            invalid_content_window.destroy()
-
-                        tk.Button(invalid_content_window, text="OK", command=close_window, bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=15, font=font_style).pack(pady=10)
-
-                        invalid_content_window.mainloop()
-                        continue  # Wait for new valid clipboard content
-
+                    # Process the new clipboard content
                     last_clipboard_content = paste  # Update the last clipboard content
                     bypass_repeated_content = False  # Reset bypass flag after processing
                     processo_nao_cadastrado = False
@@ -604,9 +603,38 @@ def run_script(credentials):
                     else:
                         continue            
             except Exception as e:
-                print(f"An error occurred: {e}")
-                continue  # Skip the current iteration and wait for new clipboard content
-
+                print(f"[DEBUG] Exception occurred: {e}")
+                if "no such window" in str(e).lower():
+                    print("[DEBUG] Detected 'no such window' error. Checking if a new tab is needed...")
+                    try:
+                        if len(driver.window_handles) == 0:
+                            print("[DEBUG] No tabs are open. Opening a new tab...")
+                            driver.execute_script("window.open('about:blank', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])
+                            print("[DEBUG] New tab opened successfully.")
+                        else:
+                            print("[DEBUG] Tabs are still available. Switching to the last tab...")
+                            driver.switch_to.window(driver.window_handles[-1])
+                            # Validate the tab state
+                            for attempt in range(3):  # Retry up to 3 times
+                                try:
+                                    driver.current_url  # Attempt to access the current tab's URL
+                                    print(f"[DEBUG] Successfully switched to the last tab on attempt {attempt + 1}. Validating page readiness...")
+                                    WebDriverWait(driver, 5).until(
+                                        lambda d: d.execute_script("return document.readyState") == "complete"
+                                    )
+                                    print("[DEBUG] Tab is fully loaded and ready.")
+                                    break  # Exit the retry loop if successful
+                                except Exception as tab_state_error:
+                                    print(f"[DEBUG] Attempt {attempt + 1} failed: {tab_state_error}")
+                                    time.sleep(1)  # Small delay before retrying
+                                    if attempt == 2:  # On the last attempt, open a new tab
+                                        print("[DEBUG] Last tab is invalid or not ready after retries. Opening a new tab...")
+                                        driver.execute_script("window.open('about:blank', '_blank');")
+                                        driver.switch_to.window(driver.window_handles[-1])
+                                        print("[DEBUG] New tab opened successfully after validation.")
+                    except Exception as tab_error:
+                        print(f"[ERROR] Failed to handle 'no such window' scenario: {tab_error}")
             finally:
                 time.sleep(1)  # Wait before checking the clipboard again
 
