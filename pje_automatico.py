@@ -634,7 +634,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 500
+    window_height = 550
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -660,25 +660,38 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     for i, (text, value) in enumerate(methods):
         tk.Radiobutton(main_window, text=text, variable=login_method, value=value, bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2 + i, column=1, sticky="w")
 
+    # Add a "Mostrar senhas" checkbox
+    def toggle_password_visibility():
+        show = "" if show_password_var.get() else "*"
+        password_pje_entry.config(show=show)
+        password_astrea_entry.config(show=show)
+
+    show_password_var = tk.BooleanVar(value=False)
+    show_password_checkbox = tk.Checkbutton(
+        main_window, text="Mostrar senhas", variable=show_password_var, command=toggle_password_visibility,
+        bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, activebackground=BACKGROUND_COLOR
+    )
+    show_password_checkbox.grid(row=7, column=0, columnspan=2, pady=10, sticky="n")
+
     # Input fields
-    tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=7, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="CPF para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=8, column=0, padx=10, pady=5, sticky="e")
     username_pje_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_pje_entry.grid(row=7, column=1, padx=10, pady=5)
+    username_pje_entry.grid(row=8, column=1, padx=10, pady=5)
     username_pje_entry.insert(0, credentials.get("USERNAMEPJE", ""))
 
-    tk.Label(main_window, text="Senha para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=8, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha para login no PDPJ:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=9, column=0, padx=10, pady=5, sticky="e")
     password_pje_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_pje_entry.grid(row=8, column=1, padx=10, pady=5)
+    password_pje_entry.grid(row=9, column=1, padx=10, pady=5)
     password_pje_entry.insert(0, credentials.get("PASSWORDPJE", ""))
 
-    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=9, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="E-mail do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=10, column=0, padx=10, pady=5, sticky="e")
     username_astrea_entry = tk.Entry(main_window, width=40, font=font_style)
-    username_astrea_entry.grid(row=9, column=1, padx=10, pady=5)
+    username_astrea_entry.grid(row=10, column=1, padx=10, pady=5)
     username_astrea_entry.insert(0, credentials.get("USERNAMEASTREA", ""))
 
-    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=10, column=0, padx=10, pady=5, sticky="e")
+    tk.Label(main_window, text="Senha do Astrea:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=11, column=0, padx=10, pady=5, sticky="e")
     password_astrea_entry = tk.Entry(main_window, show='*', width=40, font=font_style)
-    password_astrea_entry.grid(row=10, column=1, padx=10, pady=5)
+    password_astrea_entry.grid(row=11, column=1, padx=10, pady=5)
     password_astrea_entry.insert(0, credentials.get("PASSWORDASTREA", ""))
 
     # Function to update input field states based on the selected login method
@@ -731,10 +744,10 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         main_window.destroy()
         run_script(credentials)
 
-    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=11, column=0, columnspan=2, pady=10)
+    tk.Button(main_window, text="Iniciar", command=save_and_run, bg="#ffc477", fg="#333222", width=15, font=font_style).grid(row=12, column=0, columnspan=2, pady=10)
 
     # Add the current version label at the bottom
-    tk.Label(main_window, text=f"Versão: {CURRENT_VERSION}", fg=TEXT_COLOR, bg=BACKGROUND_COLOR, font=("Montserrat", 10)).grid(row=12, column=0, columnspan=2, pady=(5, 10))
+    tk.Label(main_window, text=f"Versão: {CURRENT_VERSION}", fg=TEXT_COLOR, bg=BACKGROUND_COLOR, font=("Montserrat", 10)).grid(row=13, column=0, columnspan=2, pady=(5, 10))
 
     main_window.mainloop()
     return credentials
