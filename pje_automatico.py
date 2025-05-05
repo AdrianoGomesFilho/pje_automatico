@@ -207,16 +207,26 @@ def create_taskbar_icon():
 
 # Function to set the taskbar icon
 def set_taskbar_icon():
-    icon = Icon("PJE Automático", create_taskbar_icon())
-    icon.visible = True
-    return icon
+    """
+    Set a custom icon for the taskbar.
+    """
+    from ctypes import windll
+    import win32gui
+    import win32con
 
-# Start the taskbar icon
+    hwnd = win32gui.GetForegroundWindow()  # Get the current window handle
+    hicon = windll.user32.LoadImageW(0, ICON_PATH, win32con.IMAGE_ICON, 0, 0, win32con.LR_LOADFROMFILE)
+    if hicon:
+        win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_BIG, hicon)
+        win32gui.SendMessage(hwnd, win32con.WM_SETICON, win32con.ICON_SMALL, hicon)
+
+# Initialize the taskbar icon
 taskbar_icon = set_taskbar_icon()
 
 # Ensure the icon is removed when the application exits
 import atexit
-atexit.register(taskbar_icon.stop)
+if taskbar_icon:
+    atexit.register(lambda: taskbar_icon.stop() if hasattr(taskbar_icon, 'stop') else None)
 
 # Define color variables
 BACKGROUND_COLOR = "#ECE9FD"  # Very light lavender, soft background
@@ -236,7 +246,7 @@ def open_initial_tab(driver):
 # Define the monitor_browser function first
 def monitor_browser(driver):
     """
-    Monitor the browser and exit the program if the browser is closed.
+    Monitor the browser and exit the program if the browser is closed or an error occurs.
     """
     while True:
         try:
@@ -245,12 +255,13 @@ def monitor_browser(driver):
                 print("No tabs open. Exiting program...")
                 notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
                 time.sleep(1)  # Wait a bit before retrying
+                driver.quit()  # Close the browser
                 os._exit(0)  # Exit the program
             time.sleep(1)  # Check periodically
         except Exception as e:
             print(f"Error in monitor_browser: {e}")
-            notifier.send("O PJE Automático foi encerrado")  # Notify the user before exiting
-            time.sleep(1)  # Wait a bit before retrying
+            notifier.send("O PJE Automático foi encerrado.")  # Notify the user
+            driver.quit()  # Close the browser
             os._exit(0)  # Exit the program
 
 def remove_cdk_overlay(driver):
@@ -261,16 +272,16 @@ def remove_cdk_overlay(driver):
     while True:
         try:
             driver.execute_script("""
-                const overlay = document.querySelector('.cdk-overlay-container');
-                if (overlay) {
-                    const containsText = Array.from(overlay.querySelectorAll('*')).some(el => 
-                        el.textContent.includes('A página será fechada')
-                    );
-                    if (containsText) {
-                        overlay.remove();
-                        console.log('Removed cdk-overlay-container from DOM.');
-                    }
-                }
+//                const overlay = document.querySelector('.cdk-overlay-container');
+//                if (overlay) {
+//                    const containsText = Array.from(overlay.querySelectorAll('*')).some(el => 
+//                        el.textContent.includes('A página será fechada')
+//                    );
+//                    if (containsText) {
+//                        overlay.remove();
+//                        console.log('Removed cdk-overlay-container from DOM.');
+//                    }
+//                }
             """)
             time.sleep(1)  # Check periodically
         except Exception as e:
