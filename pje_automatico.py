@@ -752,6 +752,17 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         password_astrea = password_astrea_entry.get()
         selected_login_method = login_method.get()
 
+        # Check required fields based on login method
+        required_fields = []
+        if selected_login_method in ["1", "3"]:
+            if not username_pje or not password_pje:
+                messagebox.showerror("Erro", "Preencha o CPF e a senha do PDPJ.")
+                return
+        if selected_login_method in ["3", "4", "5"]:
+            if not username_astrea or not password_astrea:
+                messagebox.showerror("Erro", "Preencha o e-mail e a senha do Astrea.")
+                return
+
         credentials = {
             "USERNAMEPJE": username_pje,
             "PASSWORDPJE": password_pje,
