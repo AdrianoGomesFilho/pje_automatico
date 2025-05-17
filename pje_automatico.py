@@ -390,7 +390,13 @@ def run_script(credentials):
             process_id_element = soup.find('pre')
             if not process_id_element:
                 raise ValueError("Process ID not found")
-            process_id = json.loads(process_id_element.text.strip())[0]['id']
+            # Try to parse the JSON
+            data = json.loads(process_id_element.text.strip())
+            # If the data is a dict and contains 'codigoErro', treat as error
+            if isinstance(data, dict) and "codigoErro" in data:
+                raise ValueError(f"Erro do PJE: {data.get('mensagem', 'Erro desconhecido')}")
+            # If the data is a list, get the id as before
+            process_id = data[0]['id']
             return process_id
         finally:
             driver.close()
@@ -838,7 +844,7 @@ def prompt_reopen_pje(paste):
     title_font_style = ("Montserrat", 14, "bold")
 
     tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
-    tk.Label(reopen_window, text=f"{paste}\nHouve algum erro ou o processo não está cadastrado nessa instância.\nDeseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+    tk.Label(reopen_window, text=f"{paste}\nHouve algum erro, ou o processo não está cadastrado nessa instância. Certifique se o número copiado realmente existe!\nDeseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
 
     def select_reopen(choice):
         nonlocal reopen_choice
