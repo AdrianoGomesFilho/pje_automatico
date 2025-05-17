@@ -1,0 +1,154 @@
+import psutil
+import os
+import sys 
+import time
+import threading
+import requests  # Add this import for HTTP requests
+from pystray import Icon, Menu, MenuItem
+from PIL import Image, ImageDraw
+from tkinter import PhotoImage
+import tkinter as tk  # Ensure tkinter is imported as tk
+from cryptography.fernet import Fernet
+import pyperclip  # Ensure pyperclip is imported
+import tkinter.messagebox as messagebox  # Import messagebox for alerts
+from plyer import notification
+from selenium.common.exceptions import NoSuchElementException
+from win10toast import ToastNotifier  # Add this import for Windows notifications
+
+CURRENT_VERSION = "1.1.0"
+
+UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
+
+SITE_PJE_AUTOMATICO = "https://pje-automatico.vercel.app/"
+
+if getattr(sys, 'frozen', False): #diferencia se o programa está rodando como .exe ou não
+    BASE_PATH = sys._MEIPASS #meipass é o diretório temporário onde o PyInstaller extrai os arquivos
+    print(f"Running in frozen mode (executable). Base path: {BASE_PATH}")
+else:
+    BASE_PATH = os.path.dirname(__file__) #o próprio diretório do script
+    print(f"Running in normal mode (script). Base path: {BASE_PATH}") 
+
+ICON_PATH = os.path.join(BASE_PATH, "icon.ico")
+LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
+
+TKINTER_ICON_PATH = ICON_PATH
+PYSTRAY_ICON_PATH = ICON_PATH
+
+def check_for_updates():
+	try:
+		response = requests.get(UPDATE_URL, timeout=10)
+		response.raise_for_status()
+		try:
+			update_info = response.json()
+		except ValueError:
+			return
+		latest_version = update_info.get("version")
+		releases_page_url = update_info.get("download_url")
+		print(f"Latest version: {latest_version}, Current version: {CURRENT_VERSION}")
+
+		if latest_version and latest_version != CURRENT_VERSION
+			print("New version available. Prompting user...")
+			alert_window = tk.Tk()
+			alert_window.title("Atualização disponível")
+			alert_window.attributes('-topmost', True)
+			alert_window.configure(bg="#ECE9FD")
+
+			alert_window.iconbitmap(TKINTER_ICON_PATH)
+
+			screen_width = alert_window.winfo_screenwidth()
+			screen_height = alert_window.winfo_screenheight()
+			window_width = 400
+			window_height = 250
+			position_right = int(screen_width/2-window_width/2)
+			position_down = int(screen_height/2-window_height/2)
+			alert_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+
+			font_style = ("Montserrat", 12)
+
+			tk.Label(alert_window, text="Nova versão disponível!", bg="#ECE9FD", fg= "3F3D56", font=("Montserrat", 14, "bold")).pack(pady=10)
+
+			tk.Label(alert_window, text=f"Versão: {latest_version}", bg="ECE9FD", fg="3F3D56, font=font_style).pack(pady=5)
+
+			def open_pje_automatico_site():
+				import webbrowser
+				webbrower.open(SITE_PJE_AUTOMATICO)
+				alert_window.destroy()
+				sys.exit(0)
+
+			tk.Button(alert_window, text="Ir para download", command=open_pje_automatico_site, bg"A084E8", fg="FFFFFF", font=font_style, width=25).pack(pady=5)
+
+			def close_window():
+				alert_window.destroy()
+
+			tk.Button(alert_window, text="Continuar com a versão atual", coomand=close_window, bg=#CFCB37", fg="3F3D56", font=font_style, width=25).pack(pady=5)
+
+			def close_program():
+				alert_window.destroy()
+				sys.exit(0)
+
+			alert_window.protocol("WM_DELETE_WINDOW", close_program)
+
+			tk.Button(alert_window, text="Fechar", command=close_program, bg="CFCBE7", fg="3F3D56", font=font_style, width=20).pack(pady=5)
+
+			alert_window.mainloop()
+		else:
+			print("Nenhuma atualização disponível.")
+	except Exception as e:
+		print(f"Falha ao verificar atualizações: {e}")
+
+check_for_updates()		
+
+PROCESS_NAME = os.path.basename(sys.executable) if getattr(sys, 'frozen', False) else "pje_automatico.py"
+
+for proc in psutil.process_iter(['pid', 'name']):
+	if proc.info['name'] == PROCESS_NAME and proc.pid != os.getpid():
+		print(f"Closing old instance (PID: {proc.pid})...")
+		proc.terminate()
+		time.sleep(1)
+		if proc.is_running():
+			proc.kill()
+		print("Old instance closed.")
+
+print("Starting new instance...")
+
+import time
+import re
+import pyperclip
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+import os
+import json
+import tkinter as tk
+from tkinter import simpledialog, messagebox, ttk
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from bs4 import BeautifulSoup
+
+def create_image():
+	image = Image.open(PYSTRAY_ICON_PATH)
+	return image
+
+recent_processes = []
+
+def add_to_recent(process):
+	global recent_processes, tray_icon
+	if process in recent_processes:
+		recent_processes.remove(process)
+	recent_processes.insert(0, process)
+	if len(recent_processes) > 20:
+		recent_process.pop()
+	tray_icon.manu = create_menu()
+
+def set_bypass_repeated_content():
+	global bypass_repeated_content
+	bypass_repeated_content = True
+
+def create_menu():
+	global bypass_repeated_content
+	
+
+
+
+		

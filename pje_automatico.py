@@ -603,6 +603,13 @@ def run_script(credentials):
                             # Open the final_url in a new tab
                             driver.execute_script(f"window.open('{final_url}', '_blank');")
                             driver.switch_to.window(driver.window_handles[-1])
+                            # Wait for the page to load (adjust the wait as needed)
+                            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".conteudo-historico")))
+
+                            # Change the gridTemplateColumns style
+                            driver.execute_script(
+                                "document.querySelector('.conteudo-historico').style.gridTemplateColumns = '1fr 2fr 0%';"
+                            )                            
                             continue  # Continue monitoring clipboard content
                     else:
                         continue            
