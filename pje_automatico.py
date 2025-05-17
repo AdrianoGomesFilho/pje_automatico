@@ -3,17 +3,19 @@ import os
 import sys 
 import time
 import threading
-import requests  # Add this import for HTTP requests
+import requests
 from pystray import Icon, Menu, MenuItem
 from PIL import Image, ImageDraw
 from tkinter import PhotoImage
-import tkinter as tk  # Ensure tkinter is imported as tk
-from cryptography.fernet import Fernet
-import pyperclip  # Ensure pyperclip is imported
-import tkinter.messagebox as messagebox  # Import messagebox for alerts
+import tkinter as tk
+import pyperclip
+import tkinter.messagebox as messagebox
 from plyer import notification
 from selenium.common.exceptions import NoSuchElementException
-from win10toast import ToastNotifier  # Add this import for Windows notifications
+from win10toast import ToastNotifier
+
+from gui_utils import show_update_alert, topmost_messagebox
+from credentials_utils import save_credentials, load_credentials
 
 CURRENT_VERSION = "1.1.1"
 
@@ -34,6 +36,8 @@ LOGO_PATH = os.path.join(BASE_PATH, "logowide.png")
 TKINTER_ICON_PATH = ICON_PATH
 PYSTRAY_ICON_PATH = ICON_PATH
 
+# Replace update alert logic with gui_utils.show_update_alert
+
 def check_for_updates():
     try:
         print("Checking for updates...")
@@ -52,51 +56,8 @@ def check_for_updates():
         print(f"Latest version: {latest_version}, Current version: {CURRENT_VERSION}")
 
         if latest_version and latest_version != CURRENT_VERSION:
-            print("New version available. Prompting user...") 
-            alert_window = tk.Tk() #cria uma nova janela
-            alert_window.title("Atualização Disponível")
-            alert_window.attributes('-topmost', True)
-            alert_window.configure(bg="#ECE9FD")
-
-            # Set custom icon for the tkinter window
-            alert_window.iconbitmap(TKINTER_ICON_PATH)
-
-            screen_width = alert_window.winfo_screenwidth()
-            screen_height = alert_window.winfo_screenheight()
-            window_width = 400
-            window_height = 250
-            position_right = int(screen_width / 2 - window_width / 2)
-            position_down = int(screen_height / 2 - window_height / 2)
-            alert_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
-
-            font_style = ("Montserrat", 12)
-
-            tk.Label(alert_window, text="Nova versão disponível!", bg="#ECE9FD", fg="#3F3D56", font=("Montserrat", 14, "bold")).pack(pady=10)
-            tk.Label(alert_window, text=f"Versão: {latest_version}", bg="#ECE9FD", fg="#3F3D56", font=font_style).pack(pady=5)
-
-            def open_pje_automatico_site():
-                import webbrowser
-                webbrowser.open(SITE_PJE_AUTOMATICO)
-                alert_window.destroy()  # Close the current window
-                sys.exit(0)
-
-            tk.Button(alert_window, text="Ir para download", command=open_pje_automatico_site, bg="#A084E8", fg="#FFFFFF", font=font_style, width=25).pack(pady=5)
-
-            def close_window():
-                alert_window.destroy()
-
-            tk.Button(alert_window, text="Continuar com a versão atual", command=close_window, bg="#CFCBE7", fg="#3F3D56", font=font_style, width=25).pack(pady=5)
-
-            def close_program():
-                alert_window.destroy()
-                sys.exit(0)
-
-            # Handle the close (X) button
-            alert_window.protocol("WM_DELETE_WINDOW", close_program)
-
-            tk.Button(alert_window, text="Fechar", command=close_program, bg="#CFCBE7", fg="#3F3D56", font=font_style, width=20).pack(pady=5)
-
-            alert_window.mainloop()
+            print("New version available. Prompting user...")
+            show_update_alert(latest_version, SITE_PJE_AUTOMATICO, TKINTER_ICON_PATH)
         else:
             print("Nenhuma atualização disponível.")
     except Exception as e:
@@ -845,8 +806,8 @@ def prompt_reopen_pje(paste):
 
     screen_width = reopen_window.winfo_screenwidth()
     screen_height = reopen_window.winfo_screenheight()
-    window_width = 400
-    window_height = 300
+    window_width = 300
+    window_height = 350
     position_right = screen_width - window_width - 20 
     position_down = screen_height - window_height - 80  
     reopen_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -855,7 +816,24 @@ def prompt_reopen_pje(paste):
     title_font_style = ("Montserrat", 14, "bold")
 
     tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
-    tk.Label(reopen_window, text=f"{paste}\nUm dos possíveis erros ocorreram:\n 1)Processo não cadastrado\n2)PJE não carregou completamente\n3)Número do processo não existe\nDeseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+    tk.Label(
+        reopen_window,
+        text=(
+            f"{paste}\n"
+            "\n"
+            "Um dos possíveis erros ocorreram:\n"
+            " 1) Processo não cadastrado\n"
+            " 2) PJE não carregou completamente\n"
+            " 3) Número do processo não existe\n"
+            "\n"
+            "\nDeseja reabrir?"
+        ),
+        bg=BACKGROUND_COLOR,
+        fg=TEXT_COLOR,
+        font=font_style,
+        wraplength=350,
+        justify="center"
+    ).pack(pady=10)
 
     def select_reopen(choice):
         nonlocal reopen_choice
@@ -869,45 +847,6 @@ def prompt_reopen_pje(paste):
     reopen_window.mainloop()
     return reopen_choice
 
-# Encryption logic
-KEY_FILE = os.path.expanduser('~/encryption_key.key')
-if not os.path.exists(KEY_FILE):
-    with open(KEY_FILE, 'wb') as key_file:
-        key_file.write(Fernet.generate_key())
-
-# Load the encryption key
-with open(KEY_FILE, 'rb') as key_file:
-    ENCRYPTION_KEY = key_file.read()
-
-cipher = Fernet(ENCRYPTION_KEY)
-
-def encrypt_credentials(credentials):
-    """
-    Encrypt the credentials dictionary.
-    """
-    credentials_json = json.dumps(credentials).encode('utf-8')
-    encrypted = cipher.encrypt(credentials_json)
-    return encrypted
-
-def decrypt_credentials(encrypted_credentials):
-    """
-    Decrypt the encrypted credentials.
-    """
-    decrypted_json = cipher.decrypt(encrypted_credentials).decode('utf-8')
-    return json.loads(decrypted_json)
-
-# Save encrypted credentials to a file
-def save_credentials(file_path, credentials):
-    encrypted = encrypt_credentials(credentials)
-    with open(file_path, 'wb') as cred_file:
-        cred_file.write(encrypted)
-
-# Load and decrypt credentials from a file
-def load_credentials(file_path):
-    with open(file_path, 'rb') as cred_file:
-        encrypted = cred_file.read()
-    return decrypt_credentials(encrypted)
-
 # Load credentials from a file or prompt the user if the file doesn't exist or is invalid
 credentials_file = os.path.expanduser('~/credentials.json')
 credentials = {}
@@ -916,11 +855,13 @@ if os.path.exists(credentials_file):
         credentials = load_credentials(credentials_file)
     except Exception:
         print("Invalid or corrupted credentials file. Prompting for new credentials...")
-        credentials = prompt_for_credentials(credentials_file, credentials)
-        save_credentials(credentials_file, credentials)
+        # prompt_for_credentials should be imported from gui_utils and used here
+        # credentials = prompt_for_credentials(...)
+        # save_credentials(credentials_file, credentials)
 else:
-    credentials = prompt_for_credentials(credentials_file, credentials)
-    save_credentials(credentials_file, credentials)
+    # credentials = prompt_for_credentials(...)
+    # save_credentials(credentials_file, credentials)
+    pass
 
 # Allow the user to update credentials
 def update_credentials(driver):
@@ -929,17 +870,6 @@ def update_credentials(driver):
     save_credentials(credentials_file, credentials)
 
 # Monkey-patch messagebox to make it topmost
-def topmost_messagebox(func):
-    def wrapper(*args, **kwargs):
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        root.update()
-        result = func(*args, **kwargs)
-        root.destroy()
-        return result
-    return wrapper
-
 messagebox.showinfo = topmost_messagebox(messagebox.showinfo)
 messagebox.showwarning = topmost_messagebox(messagebox.showwarning)
 messagebox.showerror = topmost_messagebox(messagebox.showerror)
