@@ -405,7 +405,7 @@ def run_script(credentials):
     try:
         while True:
             try:
-                paste = pyperclip.paste().strip()  # Remove leading and trailing spaces
+                paste = pyperclip.paste().replace(" ", "").strip()  # Remove all spaces and leading/trailing whitespace
                 pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
 
                 # Check if the clipboard content is new or bypassing is enabled
