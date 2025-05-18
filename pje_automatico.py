@@ -845,8 +845,8 @@ def prompt_reopen_pje(paste):
 
     screen_width = reopen_window.winfo_screenwidth()
     screen_height = reopen_window.winfo_screenheight()
-    window_width = 400
-    window_height = 300
+    window_width = 300
+    window_height = 350
     position_right = screen_width - window_width - 20 
     position_down = screen_height - window_height - 80  
     reopen_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -855,7 +855,24 @@ def prompt_reopen_pje(paste):
     title_font_style = ("Montserrat", 14, "bold")
 
     tk.Label(reopen_window, text="Reabrir PJE", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=title_font_style).pack(pady=10)
-    tk.Label(reopen_window, text=f"{paste}\nUm dos possíveis erros ocorreram:\n 1)Processo não cadastrado\n2)PJE não carregou completamente\n3)Número do processo não existe\nDeseja reabrir?", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style, wraplength=350, justify="center").pack(pady=10)
+    tk.Label(
+        reopen_window,
+        text=(
+            f"{paste}\n"
+            "\n"
+            "Um dos possíveis erros ocorreram:\n"
+            " 1) Processo não cadastrado\n"
+            " 2) PJE não carregou completamente\n"
+            " 3) Número do processo não existe\n"
+            "\n"
+            "\nDeseja reabrir?"
+        ),
+        bg=BACKGROUND_COLOR,
+        fg=TEXT_COLOR,
+        font=font_style,
+        wraplength=350,
+        justify="center"
+    ).pack(pady=10)
 
     def select_reopen(choice):
         nonlocal reopen_choice
