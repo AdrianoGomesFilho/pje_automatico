@@ -58,29 +58,40 @@ class JfpeHandler(BaseTribunalHandler):
             driver.switch_to.window(driver.window_handles[-1])
             time.sleep(3)  # Give more time for page to load
 
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "ssoFrame"))
+            # Check if already logged in or need to login - wait for both simultaneously
+            login_element = WebDriverWait(driver, 10).until(
+                EC.any_of(
+                    EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
+                    EC.presence_of_element_located((By.ID, "ssoFrame"))
+                )
             )
-                    
-            sso_iframe = driver.find_element(By.ID, "ssoFrame")
-            driver.switch_to.frame(sso_iframe)
             
-            time.sleep(3)
-            
-            # Check what's in the iframe
-            iframe_source = driver.page_source
-            
-            certificate_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "kc-pje-office"))
-            )
+            # Check which element was found
+            try:
+                avatar = driver.find_element(By.CLASS_NAME, "avatar")
+                print("[DEBUG] Already logged in - avatar found")
+            except:
+                print("[DEBUG] Not logged in - proceeding with login")
+                # Need to login - use the iframe
+                sso_iframe = driver.find_element(By.ID, "ssoFrame")
+                driver.switch_to.frame(sso_iframe)
+                
+                time.sleep(3)
+                
+                # Check what's in the iframe
+                iframe_source = driver.page_source
+                
+                certificate_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "kc-pje-office"))
+                )
 
-            certificate_button.click()
-    
-            driver.switch_to.default_content()
-            
-            WebDriverWait(driver, 15).until( 
-                EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
-            )
+                certificate_button.click()
+        
+                driver.switch_to.default_content()
+                
+                WebDriverWait(driver, 15).until( 
+                    EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
+                )
             
             driver.get(search_url)
             
@@ -137,6 +148,18 @@ class JfpeHandler(BaseTribunalHandler):
                     alert = driver.switch_to.alert
                     alert.accept()  # Click OK button
                     print("[DEBUG] Alert confirmed successfully")
+                    
+                    # Close the previous tab (search tab) after confirming alert
+                    if len(driver.window_handles) > 1:
+                        # Wait a moment for navigation to complete
+                        time.sleep(2)
+                        # Switch to the previous tab and close it
+                        driver.switch_to.window(driver.window_handles[-2])
+                        driver.close()
+                        # Switch back to the current process tab
+                        driver.switch_to.window(driver.window_handles[-1])
+                        print("[DEBUG] Previous tab closed successfully")
+                        
                 except TimeoutException:
                     print("[DEBUG] No alert appeared or alert timeout")
                 except Exception as alert_error:
