@@ -14,6 +14,17 @@ import tkinter.messagebox as messagebox  # Import messagebox for alerts
 from plyer import notification
 from selenium.common.exceptions import NoSuchElementException
 from win10toast import ToastNotifier  # Add this import for Windows notifications
+from tribunal_handlers import (
+    prompt_for_pje_level_trabalhista,
+    prompt_for_pje_level_tjpe, 
+    prompt_for_pje_level_jfpe,
+    handle_trabalhista_login,
+    handle_tjpe_login,
+    handle_jfpe_login,
+    perform_pje_login,
+    build_final_url,
+    fetch_process_id
+)
 
 CURRENT_VERSION = "1.1.1"
 
@@ -510,96 +521,39 @@ def run_script(credentials):
 
             
                     while True:
-                        
-                        trt_number = paste[18:20]
-                        trt_number = trt_number.lstrip('0')
-
-                        # Prompt user to choose the PJE level
-                        pje_level = prompt_for_pje_level(paste)
+                        # Prompt user to choose the PJE level based on tribunal type
+                        if tribunal_type == 'trabalhista':
+                            pje_level = prompt_for_pje_level_trabalhista(paste)
+                        elif tribunal_type == 'tjpe':
+                            pje_level = prompt_for_pje_level_tjpe(paste)
+                        elif tribunal_type == 'jfpe':
+                            pje_level = prompt_for_pje_level_jfpe(paste)
+                        else:
+                            # Fallback to original method for unknown tribunal types
+                            pje_level = prompt_for_pje_level(paste)
 
                         if pje_level == "Ignore":
                             print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
                             break  # Exit the loop and wait for new clipboard content
 
-                        if pje_level == "Primeiro grau PJE":
-                            base_url = f"https://pje.trt{trt_number}.jus.br/primeirograu/login.seam"
-                            id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                        elif pje_level == "Segundo grau PJE":
-                            base_url = f"https://pje.trt{trt_number}.jus.br/segundograu/login.seam"
-                            id_url = f"https://pje.trt{trt_number}.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-                        elif pje_level == "TST PJE":
-                            base_url = "https://pje.tst.jus.br/tst/login.seam"
-                            id_url = f"https://pje.tst.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}" 
-                        elif pje_level == "TST Antigo":
-                            paste_parts = paste.split('-')
-                            numeroTst = paste_parts[0]
-                            remaining_parts = paste_parts[1].split('.')
-                            digitoTst = remaining_parts[0]
-                            anoTst = remaining_parts[1]
-                            orgaoTst = remaining_parts[2]
-                            tribunalTst = remaining_parts[3]
-                            varaTst = remaining_parts[4]
-
-                            base_url = f"https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?conscsjt=&numeroTst={numeroTst}&digitoTst={digitoTst}&anoTst={anoTst}&orgaoTst={orgaoTst}&tribunalTst={tribunalTst}&varaTst={varaTst}&consulta=Consultar"
-
-                        
-                        if pje_level == "TST Antigo":
-                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                            driver.execute_script(f"window.open('{base_url}', '_blank');")
-                            time.sleep(3)
-                            notifier.send("TST Antigo - Caso esteja em consulta de terceiros, tente reabrir com a opcão 'TST PJE'")
-                            break
+                        # Get base_url and id_url based on tribunal type
+                        if tribunal_type == 'trabalhista':
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                        elif tribunal_type == 'tjpe':
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_tjpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                        elif tribunal_type == 'jfpe':
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         else:
-                            driver.execute_script(f"window.open('{base_url}', '_blank');")
-                            driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                            try:
-                                botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))
-                                botao_pdpj.click()
-                                # Custom function to wait for either of two elements to be present
-                                def wait_for_any_element(driver, locators, timeout=10):
-                                    for _ in range(timeout * 10):  # Check every 0.1 seconds
-                                        for locator in locators:
-                                            try:
-                                                element = driver.find_element(*locator)
-                                                if element.is_displayed():
-                                                    return element
-                                            except:
-                                                continue
-                                        time.sleep(0.1)
-                                    raise TimeoutException("Neither element was found within the timeout period.")
-
-                                # Wait for either "botao-certificado-titulo" or "brasao-republica" to be present
-                                elemento_login = wait_for_any_element(driver, [
-                                    (By.ID, "kc-login"),
-                                    (By.ID, "brasao-republica"),
-                                    (By.ID, "formPesquisa")
-                                ])
-
-                                if elemento_login.get_attribute("ID") == "kc-login":
-                                    if login_method in ["4", "2"]:
-                                        driver.find_element(By.CLASS_NAME, "botao-certificado-titulo").click()
-                                        elemento_login = WebDriverWait(driver, 30).until(
-                                            EC.presence_of_element_located((By.ID, "brasao-republica")) or
-                                            EC.presence_of_element_located((By.ID, "formPesquisa"))
-                                        )
-                                        process_id = fetch_process_id(driver, id_url)
-                                    else:
-                                        driver.find_element(By.ID, "username").send_keys(usuario_pje)
-                                        driver.find_element(By.ID, "password").send_keys(senha_pje)
-                                        driver.find_element(By.ID, "kc-login").click()
-                                        elemento_login = WebDriverWait(driver, 30).until(
-                                            EC.presence_of_element_located((By.ID, "brasao-republica")) or ##intencional debugging
-                                            EC.presence_of_element_located((By.ID, "formPesquisa")) ##intencional debugging
-                                        )
-                                        process_id = fetch_process_id(driver, id_url)
-                                elif elemento_login.get_attribute("id") in ["brasao-republica", "formPesquisa"]:
-                                    process_id = fetch_process_id(driver, id_url)
-                            except (ValueError, TimeoutException):
-                                bypass_repeated_content = True  # Enable bypass for repeated content
-                                processo_nao_cadastrado = True
-                                break  # Exit the loop and reopen the PJE level prompt
-                            else:
-                                break  # Exit the loop if process_id is successfully fetched
+                            # Fallback for unknown tribunal types - use trabalhista logic
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                        
+                        if should_break:
+                            break  # For TST Antigo case
+                        
+                        if not success:
+                            break  # Exit the loop and reopen the PJE level prompt
+                        else:
+                            break  # Exit the loop if process_id is successfully fetched
                     if pje_level != "TST Antigo":
                         if processo_nao_cadastrado:
                             reopen_choice = prompt_reopen_pje(paste)
@@ -611,15 +565,11 @@ def run_script(credentials):
                                 bypass_repeated_content = False
                                 continue  # Continue monitoring clipboard content
                         else:
-                                # Construct the final_url using the fetched id
+                            # Use the final_url from the handler
                             if pje_level == "Ignore":
                                 print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
                                 continue  # Skip processing and wait for new clipboard content
-                            elif pje_level == "TST PJE":
-                                final_url = f"https://pje.tst.jus.br/pjekz/processo/{process_id}/detalhe"
-                            else:
-                                final_url = f"https://pje.trt{trt_number}.jus.br/pjekz/processo/{process_id}/detalhe"
-
+                            
                             print(f"final_url: {final_url}")  # Print final_url
                             # Close the id_url tab
                             driver.close()
