@@ -487,7 +487,7 @@ def run_script(credentials):
                     else:
                         print("Já logado Astrea ou ignorando login Astrea (método).")
 
-            
+                    ##################PJE########################################
                     while True:
                         # Prompt user to choose the PJE level based on tribunal type
                         if tribunal_type == 'trabalhista':

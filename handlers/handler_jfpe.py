@@ -76,6 +76,8 @@ class JfpeHandler(BaseTribunalHandler):
 
             certificate_button.click()
     
+            driver.switch_to.default_content()
+            
             WebDriverWait(driver, 15).until( 
                 EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
             )
@@ -127,6 +129,18 @@ class JfpeHandler(BaseTribunalHandler):
                 # Get the first result link
                 first_result = driver.find_element(By.CSS_SELECTOR, ".btn-link.btn-condensed")
                 first_result.click()
+
+                # Handle the confirmation alert that appears
+                try:
+                    # Wait for the alert to appear and accept it
+                    WebDriverWait(driver, 5).until(EC.alert_is_present())
+                    alert = driver.switch_to.alert
+                    alert.accept()  # Click OK button
+                    print("[DEBUG] Alert confirmed successfully")
+                except TimeoutException:
+                    print("[DEBUG] No alert appeared or alert timeout")
+                except Exception as alert_error:
+                    print(f"[DEBUG] Error handling alert: {alert_error}")
                     
             except Exception as parse_error:
                 print(f"[DEBUG] Error parsing process number: {parse_error}")
@@ -139,4 +153,4 @@ class JfpeHandler(BaseTribunalHandler):
             print(f"[DEBUG] JFPE login error: {e}")
             notifier.show_toast("JFPE Login", f"Erro no login JFPE: {str(e)}")
             return False, None, None, True, False, False
-        
+
