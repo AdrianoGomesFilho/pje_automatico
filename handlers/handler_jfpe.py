@@ -56,15 +56,28 @@ class JfpeHandler(BaseTribunalHandler):
             # Open the PJE URL in a new tab
             driver.execute_script(f"window.open('{base_url}', '_blank');")
             driver.switch_to.window(driver.window_handles[-1])
-            time.sleep(1)
+            time.sleep(3)  # Give more time for page to load
+
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, "ssoFrame"))
+            )
+                    
+            sso_iframe = driver.find_element(By.ID, "ssoFrame")
+            driver.switch_to.frame(sso_iframe)
+            
+            time.sleep(3)
+            
+            # Check what's in the iframe
+            iframe_source = driver.page_source
             
             certificate_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.ID, "kc-pje-office"))
             )
+
             certificate_button.click()
-            
+    
             WebDriverWait(driver, 15).until( 
-                EC.presence_of_element_located((By.CLASS_NAME, "navbar-collapse"))
+                EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
             )
             
             driver.get(search_url)
@@ -109,20 +122,11 @@ class JfpeHandler(BaseTribunalHandler):
                 
                 # Wait for search results
                 WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "btn-link"))
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".btn-link.btn-condensed"))
                 )
-                
-                # Find and click the first btn-link btn-condensed element
-                try:
-                    first_result = driver.find_element(By.CSS_SELECTOR, ".btn-link.btn-condensed")
-                    final_url = first_result.get_attribute("href") or driver.current_url
-                    first_result.click()
-                    
-                    return True, "found", final_url, False, False, False
-                    
-                except:
-                    # No results found - notify user to reopen PJE level
-                    return False, None, None, False, True, True
+                # Get the first result link
+                first_result = driver.find_element(By.CSS_SELECTOR, ".btn-link.btn-condensed")
+                first_result.click()
                     
             except Exception as parse_error:
                 print(f"[DEBUG] Error parsing process number: {parse_error}")
