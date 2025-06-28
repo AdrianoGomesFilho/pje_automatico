@@ -406,11 +406,31 @@ def run_script(credentials):
         while True:
             try:
                 paste = pyperclip.paste().replace(" ", "").strip()  # Remove all spaces and leading/trailing whitespace
-                pattern = re.compile(r'\d{7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}')
 
-                # Check if the clipboard content is new or bypassing is enabled
-                if bypass_repeated_content or (paste != last_clipboard_content and pattern.fullmatch(paste)):
-                    print(f"Processo identificado: {paste}")
+
+                # Tribunal type detection by splitting the number and checking the .0.00 part
+                tribunal_type = None
+                try:
+                    # Remove spaces and split by '-' and '.'
+                    parts = paste.split('-')
+                    if len(parts) == 2:
+                        main, rest = parts
+                        rest_parts = rest.split('.')
+                        if len(rest_parts) == 5:
+                            orgao = rest_parts[2]  # the .0.00 part: rest_parts[2] and rest_parts[3]
+                            tribunal = rest_parts[3]
+                            if orgao == '5':
+                                tribunal_type = 'trabalhista'
+                            elif orgao == '8' and tribunal == '17':
+                                tribunal_type = 'tjpe'
+                            elif orgao == '4' and tribunal == '05':
+                                tribunal_type = 'jfpe'
+                except Exception as e:
+                    print(f"[DEBUG] Tribunal detection error: {e}")
+
+                # Check if the clipboard content is new or bypassing is enabled and matches any known pattern
+                if bypass_repeated_content or (paste != last_clipboard_content and tribunal_type is not None):
+                    print(f"Processo identificado: {paste} (tribunal: {tribunal_type})")
                     add_to_recent(paste)  # Add the detected process to the recent list
 
                     # Debugging: Log the current state of window handles
@@ -490,6 +510,7 @@ def run_script(credentials):
 
             
                     while True:
+                        
                         trt_number = paste[18:20]
                         trt_number = trt_number.lstrip('0')
 
