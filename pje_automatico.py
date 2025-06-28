@@ -644,7 +644,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     # Login method options
     tk.Label(main_window, text="Método de login:", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=font_style).grid(row=2, column=0, padx=10, pady=5, sticky="e")
-    login_method = tk.StringVar(value="1")  # Default to the first option
+    login_method = tk.StringVar(value="")  # No default - user must select
 
     methods = [
         ("1 Somente PJE (login PDPJ CPF e senha)", "1"),
@@ -714,6 +714,11 @@ def prompt_for_credentials(file_path, credentials, driver=None):
             password_pje_entry.config(state="disabled")
             username_astrea_entry.config(state="normal")
             password_astrea_entry.config(state="normal")
+        else:  # No method selected - disable all fields
+            username_pje_entry.config(state="disabled")
+            password_pje_entry.config(state="disabled")
+            username_astrea_entry.config(state="disabled")
+            password_astrea_entry.config(state="disabled")
 
     login_method.trace("w", update_input_states)
     update_input_states()
@@ -724,6 +729,11 @@ def prompt_for_credentials(file_path, credentials, driver=None):
         username_astrea = username_astrea_entry.get()
         password_astrea = password_astrea_entry.get()
         selected_login_method = login_method.get()
+
+        # Check if login method is selected
+        if not selected_login_method:
+            messagebox.showerror("Erro", "Por favor, selecione um método de login.")
+            return
 
         # Check required fields based on login method
         required_fields = []
