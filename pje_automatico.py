@@ -529,14 +529,15 @@ def run_script(credentials):
                         elif tribunal_type == 'jfpe':
                             pje_level = prompt_for_pje_level_jfpe(paste)
                         else:
-                            # Fallback to original method for unknown tribunal types
-                            pje_level = prompt_for_pje_level(paste)
+                            # Unknown tribunal type - skip processing
+                            print(f"Tribunal type '{tribunal_type}' not recognized. Skipping...")
+                            break
 
                         if pje_level == "Ignore":
                             print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
                             break  # Exit the loop and wait for new clipboard content
 
-                        # Get base_url and id_url based on tribunal type
+                        # Handle login based on tribunal type
                         if tribunal_type == 'trabalhista':
                             success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         elif tribunal_type == 'tjpe':
@@ -544,8 +545,9 @@ def run_script(credentials):
                         elif tribunal_type == 'jfpe':
                             success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         else:
-                            # Fallback for unknown tribunal types - use trabalhista logic
-                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                            # Unknown tribunal type - this shouldn't happen due to earlier check
+                            print(f"Unexpected tribunal type '{tribunal_type}' in handler section")
+                            break
                         
                         if should_break:
                             break  # For TST Antigo case
@@ -757,49 +759,6 @@ def prompt_for_credentials(file_path, credentials, driver=None):
 
     main_window.mainloop()
     return credentials
-
-def prompt_for_pje_level(paste):
-    pje_level_window = tk.Tk()
-    pje_level_window.title("Escolha o Grau")
-    pje_level_window.attributes('-topmost', True)
-    pje_level_window.configure(bg="#D9CDFF")
-
-    # Set custom icon for the tkinter window
-    pje_level_window.iconbitmap(TKINTER_ICON_PATH)
-
-    screen_width = pje_level_window.winfo_screenwidth()
-    screen_height = pje_level_window.winfo_screenheight()
-    window_width = 300
-    window_height = 300
-    position_right = screen_width - window_width - 20  # 20px margin from the right
-    position_down = screen_height - window_height - 80  # 50px margin from the bottom
-    pje_level_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
-
-    font_style = ("Montserrat", 12)
-
-    tk.Label(pje_level_window, text=f"Detectado o processo\n{paste}", bg="#D9CDFF", fg="#484554", font=(font_style[0], font_style[1], "bold")).pack(pady=10)
-
-    pje_level = tk.StringVar(value="Ignore")  # Default to "Ignore"
-
-    def select_level(level):
-        pje_level.set(level)
-        pje_level_window.destroy()
-
-    tk.Button(pje_level_window, text="Primeiro Grau PJE", command=lambda: select_level("Primeiro grau PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="Segundo Grau PJE", command=lambda: select_level("Segundo grau PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="TST PJE", command=lambda: select_level("TST PJE"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="TST Antigo", command=lambda: select_level("TST Antigo"), bg=BUTTON_BG_COLOR, fg=BUTTON_FG_COLOR, width=20, font=font_style).pack(pady=5)
-    tk.Button(pje_level_window, text="Ignorar e aguardar", command=lambda: select_level("Ignore"), bg=DISABLED_BUTTON_BG_COLOR, fg=TEXT_COLOR, width=20, font=font_style).pack(pady=5)
-
-    # Handle window close event
-    def on_close():
-        pje_level.set("Ignore")
-        pje_level_window.destroy()
-
-    pje_level_window.protocol("WM_DELETE_WINDOW", on_close)
-
-    pje_level_window.mainloop()
-    return pje_level.get()
 
 def prompt_reopen_pje(paste):
     """
