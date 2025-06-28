@@ -2,8 +2,11 @@
 JFPE (Justiça Federal de Pernambuco) tribunal handler
 """
 import tkinter as tk
+import time
 from selenium.common.exceptions import TimeoutException
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from .base_handler import BaseTribunalHandler
 
 
@@ -19,7 +22,7 @@ class JfpeHandler(BaseTribunalHandler):
         """
         Prompt user to choose PJE level for JFPE processes.
         """
-        pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 250)
+        pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 300)
         
         pje_level = tk.StringVar(value="Ignore")
 
@@ -28,8 +31,8 @@ class JfpeHandler(BaseTribunalHandler):
             pje_level_window.destroy()
 
         # Add tribunal-specific buttons
-        self.add_button(pje_level_window, "Juizado", lambda: select_level("Juizado"), font_style)
-        self.add_button(pje_level_window, "Justiça comum", lambda: select_level("Justiça comum"), font_style)
+        self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
+        self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
         
         # Add ignore button
         self.add_ignore_button(pje_level_window, pje_level, font_style)
@@ -38,29 +41,98 @@ class JfpeHandler(BaseTribunalHandler):
         return pje_level.get()
     
     def handle_login(self, driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
-        """
-        Handle complete JFPE login process including process ID fetching.
-        Returns: (success, process_id, final_url, should_continue, bypass_repeated_content, processo_nao_cadastrado)
-        """
-        if pje_level == "Juizado":
-            base_url = "https://pje.jfpe.jus.br/pje/login.seam"
-            id_url = f"https://pje.jfpe.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
-        elif pje_level == "Justiça comum":
-            base_url = "https://pje.trf5.jus.br/pje/login.seam"
-            id_url = f"https://pje.trf5.jus.br/pje-consulta-api/api/processos/dadosbasicos/{paste}"
+        if pje_level == "Juizado Primeiro grau":
+            base_url = "https://pje1g.trf5.jus.br/pje/login.seam"
+            search_url = "https://pje1g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        # Perform login and fetch process ID
-        success = self.perform_pje_login(driver, base_url, usuario_pje, senha_pje, login_method)
+        elif pje_level == "Juizado Turma Recursal":
+            base_url = "https://pje2g.trf5.jus.br/pje/login.seam"
+            search_url = "https://pje2g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        if not success:
-            return False, None, None, False, True, True  # failed, enable bypass, processo_nao_cadastrado
+        else:
+            return False, None, None, True, False, False
         
         try:
-            process_id = self.fetch_process_id(driver, id_url)
-            if pje_level == "Juizado":
-                final_url = f"https://pje.jfpe.jus.br/pjekz/processo/{process_id}/detalhe"
-            else:  # Justiça comum
-                final_url = f"https://pje.trf5.jus.br/pjekz/processo/{process_id}/detalhe"
-            return True, process_id, final_url, False, False, False  # success
-        except (ValueError, TimeoutException):
-            return False, None, None, False, True, True  # failed, enable bypass, processo_nao_cadastrado
+            # Open the PJE URL in a new tab
+            driver.execute_script(f"window.open('{base_url}', '_blank');")
+            driver.switch_to.window(driver.window_handles[-1])
+            time.sleep(1)
+            
+            certificate_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "kc-pje-office"))
+            )
+            certificate_button.click()
+            
+            WebDriverWait(driver, 15).until( 
+                EC.presence_of_element_located((By.CLASS_NAME, "navbar-collapse"))
+            )
+            
+            driver.get(search_url)
+            
+            # Parse the process number (format: NNNNNNN-DD.AAAA.J.TR.OOOO)
+            # Example: 0800001-23.2023.4.05.8105
+            try:
+                # Remove any spaces and split the process number
+                clean_paste = paste.replace(" ", "").strip()
+                parts = clean_paste.split('-')
+                main_number = parts[0]  # NNNNNNN
+                rest_parts = parts[1].split('.')
+                
+                numero_sequencial = main_number  # 0800001
+                digito_verificador = rest_parts[0]  # 23
+                ano = rest_parts[1]  # 2023
+                ramo_justica = rest_parts[2]  # 4 (already filled)
+                tribunal = rest_parts[3]  # 05 (already filled)
+                orgao_justica = rest_parts[4]  # 8105
+                
+                # Wait for the form to load and fill the fields
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "fPP:numeroProcesso:numeroSequencial"))
+                )
+                
+                # Fill each field
+                driver.find_element(By.ID, "fPP:numeroProcesso:numeroSequencial").clear()
+                driver.find_element(By.ID, "fPP:numeroProcesso:numeroSequencial").send_keys(numero_sequencial)
+                
+                driver.find_element(By.ID, "fPP:numeroProcesso:numeroDigitoVerificador").clear()
+                driver.find_element(By.ID, "fPP:numeroProcesso:numeroDigitoVerificador").send_keys(digito_verificador)
+                
+                driver.find_element(By.ID, "fPP:numeroProcesso:Ano").clear()
+                driver.find_element(By.ID, "fPP:numeroProcesso:Ano").send_keys(ano)
+                
+                driver.find_element(By.ID, "fPP:numeroProcesso:NumeroOrgaoJustica").clear()
+                driver.find_element(By.ID, "fPP:numeroProcesso:NumeroOrgaoJustica").send_keys(orgao_justica)
+                
+                # Click the search button
+                search_button = driver.find_element(By.ID, "fPP:searchProcessos")
+                search_button.click()
+                
+                # Wait for search results
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "btn-link"))
+                )
+                
+                # Find and click the first btn-link btn-condensed element
+                try:
+                    first_result = driver.find_element(By.CSS_SELECTOR, ".btn-link.btn-condensed")
+                    final_url = first_result.get_attribute("href") or driver.current_url
+                    first_result.click()
+                    
+                    return True, "found", final_url, False, False, False
+                    
+                except:
+                    # No results found - notify user to reopen PJE level
+                    return False, None, None, False, True, True
+                    
+            except Exception as parse_error:
+                print(f"[DEBUG] Error parsing process number: {parse_error}")
+                return False, None, None, False, True, True
+            
+        except TimeoutException:
+            notifier.show_toast("JFPE Login", "Timeout durante o login JFPE")
+            return False, None, None, True, False, False
+        except Exception as e:
+            print(f"[DEBUG] JFPE login error: {e}")
+            notifier.show_toast("JFPE Login", f"Erro no login JFPE: {str(e)}")
+            return False, None, None, True, False, False
+        
