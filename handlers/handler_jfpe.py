@@ -33,6 +33,8 @@ class JfpeHandler(BaseTribunalHandler):
         # Add tribunal-specific buttons
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
+        self.add_button(pje_level_window, "Justiça Federal Comum", lambda: select_level("Justiça Federal Comum"), font_style)
+        self.add_button(pje_level_window, "Ignore - just wait for clipboard", lambda: select_level("Ignore - just wait for clipboard"), font_style)
         
         # Add ignore button
         self.add_ignore_button(pje_level_window, pje_level, font_style)
@@ -49,6 +51,13 @@ class JfpeHandler(BaseTribunalHandler):
             base_url = "https://pje2g.trf5.jus.br/pje/login.seam"
             search_url = "https://pje2g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
+        elif pje_level == "Justiça Federal Comum":
+            base_url = "https://pje.trf5.jus.br/pje/login.seam"
+            search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+        
+        elif pje_level == "Ignore - just wait for clipboard":
+            return True, None, None, True, False, False  # Just wait for clipboard 
+
         else:
             return False, None, None, True, False, False
         
