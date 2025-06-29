@@ -147,13 +147,32 @@ class JfpeHandler(BaseTribunalHandler):
                     
                     # Fill the process number field
                     process_field = driver.find_element(By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso")
+                    
+                    print(f"[DEBUG] Sending keys to process field: '{paste}'")
+                    
+                    # Clear and position cursor at the very beginning of the field
                     process_field.clear()
+                    process_field.click()
+                    time.sleep(0.2)
+                    
+                    # Move cursor to the very beginning of the field
+                    driver.execute_script("arguments[0].setSelectionRange(0, 0);", process_field)
+                    driver.execute_script("arguments[0].focus();", process_field)
+                    
+                    # Send the original paste data (with dashes and dots)
+                    print(f"[DEBUG] Sending original paste data: '{paste}'")
                     process_field.send_keys(paste)
-                    time.sleep(2)
+                    
+                    # Verify the field was filled correctly
+                    field_value = process_field.get_attribute("value")
+                    print(f"[DEBUG] Field value after input: '{field_value}'")
+                    
+                    # Add a small delay before clicking search to ensure the value is registered
+                    time.sleep(1)
+                    
                     # Click the search button
                     search_button = driver.find_element(By.ID, "consultarProcessoForm:searchButton")
                     search_button.click()
-                    time.sleep(2)
 
                     # Wait for search results and extract the process details URL
                     try:
