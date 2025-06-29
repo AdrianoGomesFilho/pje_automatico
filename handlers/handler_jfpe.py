@@ -24,7 +24,7 @@ class JfpeHandler(BaseTribunalHandler):
         """
         pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 300)
         
-        pje_level = tk.StringVar(value="Ignore")
+        pje_level = tk.StringVar(value="")
 
         def select_level(level):
             pje_level.set(level)
@@ -34,9 +34,8 @@ class JfpeHandler(BaseTribunalHandler):
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
         self.add_button(pje_level_window, "Justiça Federal Comum", lambda: select_level("Justiça Federal Comum"), font_style)
-        self.add_button(pje_level_window, "Ignore - just wait for clipboard", lambda: select_level("Ignore - just wait for clipboard"), font_style)
         
-        # Add ignore button
+        # Add ignore button (no need for duplicate "Ignorar" button)
         self.add_ignore_button(pje_level_window, pje_level, font_style)
 
         pje_level_window.mainloop()
@@ -55,57 +54,154 @@ class JfpeHandler(BaseTribunalHandler):
             base_url = "https://pje.trf5.jus.br/pje/login.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "Ignore - just wait for clipboard":
+        elif pje_level == "Ignore":
             return True, None, None, True, False, False  # Just wait for clipboard 
 
-        else:
-            return False, None, None, True, False, False
         
         try:
             # Open the PJE URL in a new tab
             driver.execute_script(f"window.open('{base_url}', '_blank');")
             driver.switch_to.window(driver.window_handles[-1])
-            time.sleep(3)  # Give more time for page to load
 
-            # Check if already logged in or need to login - wait for both simultaneously
-            try:
-                login_element = WebDriverWait(driver, 10).until(
-                    EC.any_of(
-                        EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
-                        EC.presence_of_element_located((By.ID, "ssoFrame"))
+            # Different login flow for Justiça Federal Comum
+            if pje_level == "Justiça Federal Comum":
+                try:
+                    login_element = WebDriverWait(driver, 10).until(
+                        EC.any_of(
+                            EC.presence_of_element_located((By.ID, "nomeUsuario")),
+                            EC.presence_of_element_located((By.ID, "loginAplicacaoButton"))
+                        )
                     )
-                )
-            except TimeoutException:
-                print("[DEBUG] Page took too long to load - showing reopen interface")
-                notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
-                return True, None, None, True, False, False  # Show reopen interface
-            
-            # Check which element was found
-            try:
-                avatar = driver.find_element(By.CLASS_NAME, "avatar")
-                print("[DEBUG] Already logged in - avatar found")
-            except:
-                print("[DEBUG] Not logged in - proceeding with login")
-                # Need to login - use the iframe
-                sso_iframe = driver.find_element(By.ID, "ssoFrame")
-                driver.switch_to.frame(sso_iframe)
+                except TimeoutException:
+                    print("[DEBUG] Page took too long to load - showing reopen interface")
+                    notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
+                    return True, None, None, True, False, False  # Show reopen interface
                 
-                time.sleep(3)
+                # Check which element was found
+                try:
+                    nome_usuario = driver.find_element(By.ID, "nomeUsuario")
+                    print("[DEBUG] Already logged in - nomeUsuario found")
+                except:
+                    print("[DEBUG] Not logged in - proceeding with login")
+                    # Need to login - click the loginAplicacaoButton
+                    try:
+                        # Handle BOTH popups that appear sequentially before login button becomes clickable
+                        
+                        # First popup - signature mode selection (Java/PJeOffice)
+                        try:
+                            # Wait for and handle the signature mode popup
+                            WebDriverWait(driver, 10).until(
+                                EC.presence_of_element_located((By.ID, "btnUtilizarApplet"))
+                            )
+                            utilizar_applet_btn = driver.find_element(By.ID, "btnUtilizarApplet")
+                            utilizar_applet_btn.click()
+                            print("[DEBUG] Clicked btnUtilizarApplet (first popup)")
+                            time.sleep(2)  # Wait for popup to close
+                        except:
+                            print("[DEBUG] First popup (btnUtilizarApplet) not found or already handled")
+                        
+                        # Second popup - just remove the blocking container
+                        try:
+                            panel_container = driver.find_element(By.ID, "panelAmbienteContainer")
+                            driver.execute_script("arguments[0].remove();", panel_container)
+                            print("[DEBUG] Removed panelAmbienteContainer")
+                        except:
+                            print("[DEBUG] panelAmbienteContainer not found or already removed")
+                        
+                        # Now the login button should be clickable
+                        try:
+                            login_button = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
+                            )
+                            login_button.click()
+                            print("[DEBUG] Clicked loginAplicacaoButton after handling both popups")
+                        except TimeoutException:
+                            # Fallback to JavaScript click if still not clickable
+                            try:
+                                login_button = driver.find_element(By.ID, "loginAplicacaoButton")
+                                driver.execute_script("arguments[0].click();", login_button)
+                                print("[DEBUG] Used JavaScript click as fallback after popups")
+                            except Exception as js_error:
+                                print(f"[DEBUG] JavaScript fallback click failed: {js_error}")
+                                raise
+                        
+                        # Wait for password field (nomeUsuario) to appear after login
+                        WebDriverWait(driver, 15).until(
+                            EC.presence_of_element_located((By.ID, "nomeUsuario"))
+                        )
+                        print("[DEBUG] Login form loaded - password field (nomeUsuario) found")
+                        
+                    except TimeoutException:
+                        print("[DEBUG] Timeout waiting for login elements in Justiça Federal Comum")
+                        notifier.send("JFPE - Timeout ao carregar login da Justiça Federal Comum")
+                        return True, None, None, True, False, False
                 
-                # Check what's in the iframe
-                iframe_source = driver.page_source
+                # Navigate to search URL and fill the form for Justiça Federal Comum
+                driver.get(search_url)
                 
-                certificate_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.ID, "kc-pje-office"))
-                )
+                try:
+                    # Wait for the search form to load
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso"))
+                    )
+                    
+                    # Fill the process number field
+                    process_field = driver.find_element(By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso")
+                    process_field.clear()
+                    process_field.send_keys(paste)
+                    
+                    # Click the search button
+                    search_button = driver.find_element(By.ID, "consultarProcessoForm:searchButton")
+                    search_button.click()
+                    
+                except Exception as search_error:
+                    print(f"[DEBUG] Error searching process in Justiça Federal Comum: {search_error}")
+                    return False, None, None, False, True, True
+                
+                # Return success for Justiça Federal Comum (no further processing needed)
+                return True, None, None, False, False, False
+                
+            else:
+                # Original login flow for Juizado (certificate login)
+                # Check if already logged in or need to login - wait for both simultaneously
+                try:
+                    login_element = WebDriverWait(driver, 10).until(
+                        EC.any_of(
+                            EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
+                            EC.presence_of_element_located((By.ID, "ssoFrame"))
+                        )
+                    )
+                except TimeoutException:
+                    print("[DEBUG] Page took too long to load - showing reopen interface")
+                    notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
+                    return True, None, None, True, False, False  # Show reopen interface
+                
+                # Check which element was found
+                try:
+                    avatar = driver.find_element(By.CLASS_NAME, "avatar")
+                    print("[DEBUG] Already logged in - avatar found")
+                except:
+                    print("[DEBUG] Not logged in - proceeding with login")
+                    # Need to login - use the iframe
+                    sso_iframe = driver.find_element(By.ID, "ssoFrame")
+                    driver.switch_to.frame(sso_iframe)
+                    
+                    time.sleep(3)
+                    
+                    # Check what's in the iframe
+                    iframe_source = driver.page_source
+                    
+                    certificate_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "kc-pje-office"))
+                    )
 
-                certificate_button.click()
-        
-                driver.switch_to.default_content()
-                
-                WebDriverWait(driver, 15).until( 
-                    EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
-                )
+                    certificate_button.click()
+            
+                    driver.switch_to.default_content()
+                    
+                    WebDriverWait(driver, 15).until( 
+                        EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
+                    )
             
             driver.get(search_url)
             
