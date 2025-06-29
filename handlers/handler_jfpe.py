@@ -59,12 +59,17 @@ class JfpeHandler(BaseTribunalHandler):
             time.sleep(3)  # Give more time for page to load
 
             # Check if already logged in or need to login - wait for both simultaneously
-            login_element = WebDriverWait(driver, 10).until(
-                EC.any_of(
-                    EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
-                    EC.presence_of_element_located((By.ID, "ssoFrame"))
+            try:
+                login_element = WebDriverWait(driver, 10).until(
+                    EC.any_of(
+                        EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
+                        EC.presence_of_element_located((By.ID, "ssoFrame"))
+                    )
                 )
-            )
+            except TimeoutException:
+                print("[DEBUG] Page took too long to load - showing reopen interface")
+                notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
+                return True, None, None, True, False, False  # Show reopen interface
             
             # Check which element was found
             try:
@@ -131,7 +136,8 @@ class JfpeHandler(BaseTribunalHandler):
                 
                 # Click the search button
                 search_button = driver.find_element(By.ID, "fPP:searchProcessos")
-                search_button.click()
+                # Use JavaScript click to avoid scrolling
+                driver.execute_script("arguments[0].click();", search_button)
                 
                 # Wait for search results
                 WebDriverWait(driver, 10).until(
