@@ -149,11 +149,47 @@ class JfpeHandler(BaseTribunalHandler):
                     process_field = driver.find_element(By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso")
                     process_field.clear()
                     process_field.send_keys(paste)
-                    
+                    time.sleep(2)
                     # Click the search button
                     search_button = driver.find_element(By.ID, "consultarProcessoForm:searchButton")
                     search_button.click()
-                    
+                    time.sleep(2)
+
+                    # Wait for search results and extract the process details URL
+                    try:
+                        print("[DEBUG] Waiting for search results...")
+                        time.sleep(3)
+                        # Wait for the first row to appear
+                        WebDriverWait(driver, 15).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
+                        )
+                        
+                        # Find the "Ver Detalhes" image in the first row
+                        ver_detalhes_img = driver.find_element(By.CSS_SELECTOR, "img[title='Ver Detalhes']")
+                        
+                        # Get the onclick attribute which contains the URL
+                        onclick_attr = ver_detalhes_img.get_attribute("onclick")
+                        
+                        # Extract the URL from the onclick attribute
+                        # onclick looks like: openPopUp('13101popUpDetalhesProcessoTrf', '/pje/Processo/ConsultaProcesso/Detalhe/listProcessoCompletoAdvogado.seam?idProcessoTrf=13101');
+                        import re
+                        url_match = re.search(r"'(/pje/Processo/ConsultaProcesso/Detalhe/listProcessoCompletoAdvogado\.seam\?idProcessoTrf=\d+)'", onclick_attr)
+                        
+                        if url_match:
+                            relative_url = url_match.group(1)
+                            # Form the complete URL
+                            complete_url = f"https://pje.trf5.jus.br{relative_url}"
+                            
+                            # Navigate to the process details page
+                            driver.get(complete_url)
+                            print(f"[DEBUG] Navigated to process details: {complete_url}")
+                        else:
+                            print("[DEBUG] Could not extract process details URL from onclick attribute")
+                            return False, None, None, False, True, True
+                            
+                    except Exception as extract_error:
+                        print(f"[DEBUG] Error extracting process details URL: {extract_error}")
+                        return False, None, None, False, True, True
                 except Exception as search_error:
                     print(f"[DEBUG] Error searching process in Justiça Federal Comum: {search_error}")
                     return False, None, None, False, True, True
