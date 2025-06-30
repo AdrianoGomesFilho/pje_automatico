@@ -49,10 +49,10 @@ class BaseTribunalHandler:
         Fetch process ID from the PJE API.
         Common implementation shared by all tribunals.
         """
-        driver.execute_script(f"window.open('{id_url}', '_blank');")
-        id_url_handle = driver.window_handles[-1]
-        driver.switch_to.window(id_url_handle)
         try:
+            driver.execute_script(f"window.open('{id_url}', '_blank');")
+            driver.switch_to.window(driver.window_handles[-1])
+            
             # Wait for the page to load and fetch the process ID from the HTML
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
             page_source = driver.page_source
@@ -69,16 +69,25 @@ class BaseTribunalHandler:
             process_id = data[0]['id']
             return process_id
         finally:
-            driver.close()
-            driver.switch_to.window(driver.window_handles[-1])
+            try:
+                driver.close()
+                if driver.window_handles:
+                    driver.switch_to.window(driver.window_handles[-1])
+            except Exception:
+                # Don't crash if tab management fails
+                pass
     
     def perform_pje_login(self, driver, base_url, usuario_pje, senha_pje, login_method):
         """
         Perform the actual PJE login process.
         Common implementation that can be customized per tribunal if needed.
         """
-        driver.execute_script(f"window.open('{base_url}', '_blank');")
-        driver.switch_to.window(driver.window_handles[-1])
+        try:
+            driver.execute_script(f"window.open('{base_url}', '_blank');")
+            driver.switch_to.window(driver.window_handles[-1])
+        except Exception:
+            # If tab management fails, just try to continue
+            pass
         
         try:
             botao_pdpj = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "btnSsoPdpj")))

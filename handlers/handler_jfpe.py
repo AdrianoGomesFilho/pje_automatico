@@ -177,7 +177,6 @@ class JfpeHandler(BaseTribunalHandler):
                     # Wait for search results and extract the process details URL
                     try:
                         print("[DEBUG] Waiting for search results...")
-                        time.sleep(3)
                         # Wait for the first row to appear
                         WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
@@ -199,9 +198,16 @@ class JfpeHandler(BaseTribunalHandler):
                             # Form the complete URL
                             complete_url = f"https://pje.trf5.jus.br{relative_url}"
                             
-                            # Navigate to the process details page
-                            driver.get(complete_url)
-                            print(f"[DEBUG] Navigated to process details: {complete_url}")
+                            # Open the process details page in a new tab
+                            driver.execute_script(f"window.open('{complete_url}', '_blank');")
+                            print(f"[DEBUG] Opened process details in new tab: {complete_url}")
+                            
+                            # Close the current search results tab
+                            driver.close()
+                            
+                            # Switch to the new process details tab
+                            driver.switch_to.window(driver.window_handles[-1])
+                            print("[DEBUG] Switched to process details tab")
                         else:
                             print("[DEBUG] Could not extract process details URL from onclick attribute")
                             return False, None, None, False, True, True
@@ -215,10 +221,9 @@ class JfpeHandler(BaseTribunalHandler):
                 
                 # Return success for Justiça Federal Comum (no further processing needed)
                 return True, None, None, False, False, False
-                
+
+            ######JUIZADO PRIMEIRO GRAU OR TURMA RECUSAL########   
             else:
-                # Original login flow for Juizado (certificate login)
-                # Check if already logged in or need to login - wait for both simultaneously
                 try:
                     login_element = WebDriverWait(driver, 10).until(
                         EC.any_of(
@@ -260,8 +265,6 @@ class JfpeHandler(BaseTribunalHandler):
             
             driver.get(search_url)
             
-            # Parse the process number (format: NNNNNNN-DD.AAAA.J.TR.OOOO)
-            # Example: 0800001-23.2023.4.05.8105
             try:
                 # Remove any spaces and split the process number
                 clean_paste = paste.replace(" ", "").strip()
@@ -300,7 +303,7 @@ class JfpeHandler(BaseTribunalHandler):
                 driver.execute_script("arguments[0].click();", search_button)
                 
                 # Wait for search results
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".btn-link.btn-condensed"))
                 )
                 # Get the first result link
@@ -337,9 +340,9 @@ class JfpeHandler(BaseTribunalHandler):
             
         except TimeoutException:
             notifier.show_toast("JFPE Login", "Timeout durante o login JFPE")
-            return False, None, None, True, False, False
+            return False, None, None, True, False, False #this is to show the reopen interface
         except Exception as e:
             print(f"[DEBUG] JFPE login error: {e}")
             notifier.show_toast("JFPE Login", f"Erro no login JFPE: {str(e)}")
-            return False, None, None, True, False, False
+            return False, None, None, True, False, False #this is to show the reopen interface
 

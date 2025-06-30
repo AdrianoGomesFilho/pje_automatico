@@ -144,8 +144,6 @@ import os
 import json
 import tkinter as tk
 from tkinter import simpledialog, messagebox, ttk
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from bs4 import BeautifulSoup
 
 # Function to create a custom icon for the system tray
 def create_image():
@@ -357,30 +355,6 @@ def run_script(credentials):
     # Store the last clipboard content
     last_clipboard_content = ""
 
-    def fetch_process_id(driver, id_url):
-        driver.execute_script(f"window.open('{id_url}', '_blank');")
-        id_url_handle = driver.window_handles[-1]
-        driver.switch_to.window(id_url_handle)
-        try:
-            # Wait for the page to load and fetch the process ID from the HTML
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            page_source = driver.page_source
-            soup = BeautifulSoup(page_source, 'html.parser')
-            process_id_element = soup.find('pre')
-            if not process_id_element:
-                raise ValueError("Process ID not found")
-            # Try to parse the JSON
-            data = json.loads(process_id_element.text.strip())
-            # If the data is a dict and contains 'codigoErro', treat as error
-            if isinstance(data, dict) and "codigoErro" in data:
-                raise ValueError(f"Erro do PJE: {data.get('mensagem', 'Erro desconhecido')}")
-            # If the data is a list, get the id as before
-            process_id = data[0]['id']
-            return process_id
-        finally:
-            driver.close()
-            driver.switch_to.window(driver.window_handles[-1])
-
     try:
         while True:
             try:
@@ -410,52 +384,33 @@ def run_script(credentials):
                 # Check if the clipboard content is new or bypassing is enabled and matches any known pattern
                 if bypass_repeated_content or (paste != last_clipboard_content and tribunal_type is not None):
                     print(f"Processo identificado: {paste} (tribunal: {tribunal_type})")
-                    add_to_recent(paste)  # Add the detected process to the recent list
+                    add_to_recent(paste)
 
-                    # Debugging: Log the current state of window handles
-                    print(f"[DEBUG] Current window handles: {driver.window_handles}")
-
-                    # Reset the state if tabs are closed or WebDriver loses connection
-                    if not driver.window_handles:  # Check if the list is empty
-                        print("[DEBUG] No tabs detected (driver.window_handles is empty). Resetting state...")
-                        last_clipboard_content = ""  # Clear the last clipboard content
-                        bypass_repeated_content = False  # Reset bypass flag
-                        try:
-                            # Attempt to open a new tab to recover
-                            driver.execute_script("window.open('about:blank', '_blank');")
-                            driver.switch_to.window(driver.window_handles[-1])
-                            print("[DEBUG] Recovered by opening a new tab.")
-                        except Exception as recovery_error:
-                            print(f"[ERROR] Failed to recover WebDriver state: {recovery_error}")
-                            break  # Exit the loop if recovery fails
-                        continue  # Wait for new clipboard content
-
-                    # Ensure the current tab is valid
+                    # Ensure we have at least one tab open
                     try:
-                        driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                        driver.current_url  # Validate the current tab
-                    except Exception as e:
-                        print(f"[DEBUG] Current tab is invalid: {e}. Opening a new tab...")
-                        driver.execute_script("window.open('about:blank', '_blank');")
+                        if not driver.window_handles:
+                            driver.execute_script("window.open('about:blank', '_blank');")
                         driver.switch_to.window(driver.window_handles[-1])
+                    except Exception:
+                        # If all else fails, just continue - don't crash
+                        print("[INFO] Tab management issue - continuing anyway")
+                        continue
 
                     # Process the new clipboard content
-                    last_clipboard_content = paste  # Update the last clipboard content
-                    bypass_repeated_content = False  # Reset bypass flag after processing
+                    last_clipboard_content = paste
+                    bypass_repeated_content = False
                     processo_nao_cadastrado = False
 
                     #########################ASTREA######################################
 
-                    if login_method in ["Astrea + PJE (login PDPJ CPF e Senha)", "Astrea", "Astrea + PJE (Token)"]:
-                        # Perform Astrea login and other actions
-                        astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
-                        driver.switch_to.window(driver.window_handles[-1])  # Switch to the last tab
-                        driver.execute_script(f"window.open('{astrea_url}', '_blank');")
-                        astrea_handle = driver.window_handles[-1]
-                        driver.switch_to.window(astrea_handle)
-
+                    if login_method in ["3", "4", "5"]:  # Only methods that use Astrea
                         try:
-                            # Wait for either the 'search' element or the 'submit' button to appear
+                            # Perform Astrea login
+                            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+                            driver.execute_script(f"window.open('{astrea_url}', '_blank');")
+                            driver.switch_to.window(driver.window_handles[-1])
+
+                            # Wait for either login form or search element
                             element_present = WebDriverWait(driver, 25).until(
                                 EC.any_of(
                                     EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Digite seu email']")),
@@ -463,29 +418,17 @@ def run_script(credentials):
                                 )
                             )
 
-                            if element_present.get_attribute("id") == "search":
-                                print("Element with ID 'search' is present. Proceeding to open PJE.")
-                                # Proceed to open PJE
-                                # ...existing code to open PJE...
-                            else:
-                                print("Login form is present. Performing login.")
-                                # Credentials
+                            if element_present.get_attribute("id") != "search":
+                                # Login required
                                 username_field = driver.find_element(By.NAME, "username")
                                 password_field = driver.find_element(By.NAME, "password")
-
                                 username_field.send_keys(usuario_astrea)
                                 password_field.send_keys(senha_astrea)
-
-                                # Submit the login form
                                 login_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
                                 login_button.click()
-                                print("Login realizado. Proceeding to open PJE.")
-                                # Proceed to open PJE after login
-                                # ...existing code to open PJE...
-                        except TimeoutException:
-                            print("Neither 'search' element nor 'submit' button found. Unable to proceed.")
-                    else:
-                        print("Já logado Astrea ou ignorando login Astrea (método).")
+                                print("Astrea login realizado.")
+                        except Exception as e:
+                            print(f"Astrea error (continuing anyway): {e}")
 
                     ##################PJE########################################
                     while True:
@@ -497,13 +440,12 @@ def run_script(credentials):
                         elif tribunal_type == 'jfpe':
                             pje_level = prompt_for_pje_level_jfpe(paste)
                         else:
-                            # Unknown tribunal type - skip processing
                             print(f"Tribunal type '{tribunal_type}' not recognized. Skipping...")
                             break
 
                         if pje_level == "Ignore":
                             print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
-                            break  # Exit the loop and wait for new clipboard content
+                            break
 
                         # Handle login based on tribunal type
                         if tribunal_type == 'trabalhista':
@@ -513,68 +455,78 @@ def run_script(credentials):
                         elif tribunal_type == 'jfpe':
                             success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         else:
-                            # Unknown tribunal type - this shouldn't happen due to earlier check
                             print(f"Unexpected tribunal type '{tribunal_type}' in handler section")
                             break
                         
                         if should_break:
-                            break  # For TST Antigo case
+                            break  # For special cases like TST Antigo
                         
                         if not success:
                             break  # Exit the loop and reopen the PJE level prompt
                         else:
                             break  # Exit the loop if process_id is successfully fetched
-                    if pje_level != "TST Antigo":
-                        if processo_nao_cadastrado:
-                            reopen_choice = prompt_reopen_pje(paste)
-                            if reopen_choice:
-                                bypass_repeated_content = True  # Enable bypass for repeated content
-                                continue  # Reopen the PJE level prompt
-                            else:
-                                print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
-                                bypass_repeated_content = False
-                                continue  # Continue monitoring clipboard content
+                    # Handle final URL processing and errors
+                    if processo_nao_cadastrado:
+                        reopen_choice = prompt_reopen_pje(paste)
+                        if reopen_choice:
+                            bypass_repeated_content = True
+                            continue
                         else:
-                            # Use the final_url from the handler
-                            if pje_level == "Ignore":
-                                print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
-                                continue  # Skip processing and wait for new clipboard content
-                            
-                            print(f"final_url: {final_url}")  # Print final_url
-                            # Close the id_url tab
+                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                            bypass_repeated_content = False
+                            continue
+                    
+                    # Only process final URL if we have one
+                    if final_url is not None:
+                        if pje_level == "Ignore":
+                            print("Opção ignorada. Aguardando novo conteúdo na área de transferência.")
+                            continue
+                        
+                        print(f"final_url: {final_url}")
+                        # Safely close current tab and open final URL
+                        try:
                             driver.close()
-
-                            # Switch to the last tab before opening the final_url
-                            driver.switch_to.window(driver.window_handles[-1])
-
-                            # Open the final_url in a new tab
+                        except Exception:
+                            pass  # Don't care if close fails
+                        
+                        try:
+                            # Get available windows and switch to last one
+                            if driver.window_handles:
+                                driver.switch_to.window(driver.window_handles[-1])
+                            else:
+                                # No windows left, create one
+                                driver.execute_script("window.open('about:blank', '_blank');")
+                                driver.switch_to.window(driver.window_handles[-1])
+                            
                             driver.execute_script(f"window.open('{final_url}', '_blank');")
                             driver.switch_to.window(driver.window_handles[-1])
-                            # Wait for the page to load (adjust the wait as needed)
-                            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".conteudo-historico")))
-
-                            # Change the gridTemplateColumns style
-                            driver.execute_script(
-                                "document.querySelector('.conteudo-historico').style.gridTemplateColumns = '1fr 2fr 0%';"
-                            )                            
-                            continue  # Continue monitoring clipboard content
-                    else:
-                        continue            
+                            
+                            # Try to apply styling, but don't crash if it fails
+                            try:
+                                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".conteudo-historico")))
+                                driver.execute_script(
+                                    "document.querySelector('.conteudo-historico').style.gridTemplateColumns = '1fr 2fr 0%';"
+                                )
+                            except Exception:
+                                pass  # Don't care if styling fails
+                                
+                        except Exception as e:
+                            print(f"Tab management error (continuing): {e}")
+                    
+                    continue            
             except Exception as e:
-                if "no such window" in str(e).lower():
-                    print("[DEBUG] Detected 'no such window' error. Checking if a new tab is needed...")
-                    try:
-                        if len(driver.window_handles) == 0:
-                            driver.execute_script("window.open('about:blank', '_blank');")
-                            driver.switch_to.window(driver.window_handles[-1])
-                        else:
-                            print("[DEBUG] Tabs are still available. Switching to the last tab...")
-                            driver.switch_to.window(driver.window_handles[-1])
-                            print("[DEBUG] Successfully switched to the last tab.")
-                    except Exception as tab_error:
-                        print(f"[ERROR] Failed to handle 'no such window' scenario: {tab_error}")
+                # Don't crash on any error - just log and continue
+                print(f"Error (continuing): {e}")
+                try:
+                    # Ensure we have at least one window
+                    if not driver.window_handles:
+                        driver.execute_script("window.open('about:blank', '_blank');")
+                    driver.switch_to.window(driver.window_handles[-1])
+                except Exception:
+                    # If even this fails, just continue the loop
+                    pass
             finally:
-                time.sleep(1)  # Wait before checking the clipboard again
+                time.sleep(1)
 
     except Exception as e:
         print(f"An error occurred in the main loop: {e}")

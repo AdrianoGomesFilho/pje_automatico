@@ -65,6 +65,7 @@ class TrabalhistaHandler(BaseTribunalHandler):
             
             driver.switch_to.window(driver.window_handles[-1])
             driver.execute_script(f"window.open('{base_url}', '_blank');")
+            driver.switch_to.window(driver.window_handles[-1])
             time.sleep(3)
             notifier.send("TST Antigo - Caso esteja em consulta de terceiros, tente reabrir com a opcão 'TST PJE'")
             return True, None, None, True, False, False  # success, no process_id needed, break from loop
