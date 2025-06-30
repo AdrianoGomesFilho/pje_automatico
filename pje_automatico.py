@@ -382,13 +382,13 @@ def run_script(credentials):
                             elif orgao == '4' and tribunal == '05':
                                 tribunal_type = 'trf5'
                             
-                            print(f"[DEBUG] Clean paste: {clean_paste}, Original: {paste}, Tribunal: {tribunal_type}")
                 except Exception as e:
                     print(f"[DEBUG] Tribunal detection error: {e}")
 
                 # Check if the clipboard content is new or bypassing is enabled and matches any known pattern
                 # Use clean_paste for processing but keep original paste for display
                 if bypass_repeated_content or (clean_paste != last_clipboard_content and tribunal_type is not None):
+                    print(f"[DEBUG] Clean paste: {clean_paste}, Original: {paste}, Tribunal: {tribunal_type}")
                     print(f"Processo identificado: {clean_paste} (tribunal: {tribunal_type})")
                     add_to_recent(clean_paste)
 

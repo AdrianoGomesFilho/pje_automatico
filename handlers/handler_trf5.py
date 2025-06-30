@@ -19,28 +19,31 @@ class Trf5Handler(BaseTribunalHandler):
         """
         Prompt user to choose PJE level for TRF5 processes.
         """
-        # Extract the final 4 digits to determine the specific tribunal
+        # Extract the first 2 digits of the final 4 digits to determine the specific tribunal
         try:
             parts = paste.split('-')[1].split('.')
             final_digits = parts[4] if len(parts) >= 5 else None
-            print(f"[DEBUG] Final digits for UI: {final_digits}")
+            # Get first 2 digits for tribunal determination (e.g., "80" from "8000", "82" from "8200")
+            first_two_digits = final_digits[:2] if final_digits and len(final_digits) >= 2 else None
+            print(f"[DEBUG] Final digits for UI: {final_digits}, First 2: {first_two_digits}")
         except:
             final_digits = None
+            first_two_digits = None
             print("[DEBUG] Could not extract final digits for UI")
 
         # Determine tribunal name and create appropriate window title
         tribunal_name = "TRF5"
-        if final_digits == "8000":
+        if first_two_digits == "80":
             tribunal_name = "JFAL"
-        elif final_digits == "8100":
+        elif first_two_digits == "81":
             tribunal_name = "JFCE"
-        elif final_digits == "8200":
+        elif first_two_digits == "82":
             tribunal_name = "JFPB"
-        elif final_digits == "8300":
+        elif first_two_digits == "83":
             tribunal_name = "JFPE"
-        elif final_digits == "8400":
+        elif first_two_digits == "84":
             tribunal_name = "JFRN"
-        elif final_digits == "8500":
+        elif first_two_digits == "85":
             tribunal_name = "JFSE"
 
         window_title = f"Escolha o Grau - {tribunal_name}"
@@ -56,30 +59,30 @@ class Trf5Handler(BaseTribunalHandler):
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
         
-        # Add specific tribunal buttons based on final digits
-        if final_digits:
-            if final_digits == "8000":  # JFAL
-                self.add_button(pje_level_window, "JFAL - Advogado", lambda: select_level("JFAL - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFAL - Terceiros", lambda: select_level("JFAL - Terceiros"), font_style)
-            elif final_digits == "8100":  # JFCE
-                self.add_button(pje_level_window, "JFCE - Advogado", lambda: select_level("JFCE - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFCE - Terceiros", lambda: select_level("JFCE - Terceiros"), font_style)
-            elif final_digits == "8200":  # JFPB
-                self.add_button(pje_level_window, "JFPB - Advogado", lambda: select_level("JFPB - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFPB - Terceiros", lambda: select_level("JFPB - Terceiros"), font_style)
-            elif final_digits == "8300":  # JFPE
-                self.add_button(pje_level_window, "JFPE - Advogado", lambda: select_level("JFPE - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFPE - Terceiros", lambda: select_level("JFPE - Terceiros"), font_style)
-            elif final_digits == "8400":  # JFRN
-                self.add_button(pje_level_window, "JFRN - Advogado", lambda: select_level("JFRN - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFRN - Terceiros", lambda: select_level("JFRN - Terceiros"), font_style)
-            elif final_digits == "8500":  # JFSE
-                self.add_button(pje_level_window, "JFSE - Advogado", lambda: select_level("JFSE - Advogado"), font_style)
-                self.add_button(pje_level_window, "JFSE - Terceiros", lambda: select_level("JFSE - Terceiros"), font_style)
+        # Add specific tribunal buttons based on first 2 digits
+        if first_two_digits:
+            if first_two_digits == "80":  # JFAL
+                self.add_button(pje_level_window, "JFAL - Advogado 1G", lambda: select_level("JFAL - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFAL - Terceiros 1G", lambda: select_level("JFAL - Terceiros"), font_style)
+            elif first_two_digits == "81":  # JFCE
+                self.add_button(pje_level_window, "JFCE - Advogado 1G", lambda: select_level("JFCE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFCE - Terceiros 1G", lambda: select_level("JFCE - Terceiros"), font_style)
+            elif first_two_digits == "82":  # JFPB
+                self.add_button(pje_level_window, "JFPB - Advogado 1G", lambda: select_level("JFPB - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFPB - Terceiros 1G", lambda: select_level("JFPB - Terceiros"), font_style)
+            elif first_two_digits == "83":  # JFPE
+                self.add_button(pje_level_window, "JFPE - Advogado 1G", lambda: select_level("JFPE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFPE - Terceiros 1G", lambda: select_level("JFPE - Terceiros"), font_style)
+            elif first_two_digits == "84":  # JFRN
+                self.add_button(pje_level_window, "JFRN - Advogado 1G", lambda: select_level("JFRN - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFRN - Terceiros 1G", lambda: select_level("JFRN - Terceiros"), font_style)
+            elif first_two_digits == "85":  # JFSE
+                self.add_button(pje_level_window, "JFSE - Advogado 1G", lambda: select_level("JFSE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFSE - Terceiros 1G", lambda: select_level("JFSE - Terceiros"), font_style)
         else:
             # Fallback: show generic options if we can't determine the tribunal
-            self.add_button(pje_level_window, "JF - Advogado", lambda: select_level("JF - Advogado"), font_style)
-            self.add_button(pje_level_window, "JF - Terceiros", lambda: select_level("JF - Terceiros"), font_style)
+            self.add_button(pje_level_window, "JF - Advogado 1G", lambda: select_level("JF - Advogado"), font_style)
+            self.add_button(pje_level_window, "JF - Terceiros 1G", lambda: select_level("JF - Terceiros"), font_style)
 
         # Add TRF5 2G common options (always available)
         self.add_button(pje_level_window, "TRF5 - Advogado 2G", lambda: select_level("TRF5 - Advogado"), font_style)
@@ -92,14 +95,17 @@ class Trf5Handler(BaseTribunalHandler):
         return pje_level.get()
     
     def handle_login(self, driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
-        # Extract the final 4 digits to determine the specific tribunal
+        # Extract the first 2 digits of the final 4 digits to determine the specific tribunal
         try:
             # Get the final 4 digits from the process number
             parts = paste.split('-')[1].split('.')
             final_digits = parts[4] if len(parts) >= 5 else None
-            print(f"[DEBUG] Final digits: {final_digits}")
+            # Get first 2 digits for tribunal determination (e.g., "80" from "8000", "82" from "8200")
+            first_two_digits = final_digits[:2] if final_digits and len(final_digits) >= 2 else None
+            print(f"[DEBUG] Final digits: {final_digits}, First 2: {first_two_digits}")
         except:
             final_digits = None
+            first_two_digits = None
             print("[DEBUG] Could not extract final digits")
 
         # Determine URLs based on PJE level
@@ -120,42 +126,42 @@ class Trf5Handler(BaseTribunalHandler):
             base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
         
-        # Individual tribunal URLs based on final digits
+        # Individual tribunal URLs based on first 2 digits
         elif pje_level in ["JFAL - Advogado", "JFCE - Advogado", "JFPB - Advogado", "JFPE - Advogado", "JFRN - Advogado", "JFSE - Advogado", "JF - Advogado"]:
-            # Determine the specific domain based on final digits
-            if final_digits == "8000":  # JFAL
+            # Determine the specific domain based on first 2 digits
+            if first_two_digits == "80":  # JFAL
                 base_url = "https://pje.jfal.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            elif final_digits == "8100":  # JFCE
+            elif first_two_digits == "81":  # JFCE
                 base_url = "https://pje.jfce.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            elif final_digits == "8200":  # JFPB
+            elif first_two_digits == "82":  # JFPB
                 base_url = "https://pje.jfpb.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            elif final_digits == "8300":  # JFPE
+            elif first_two_digits == "83":  # JFPE
                 base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            elif final_digits == "8400":  # JFRN
+            elif first_two_digits == "84":  # JFRN
                 base_url = "https://pje.jfrn.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            elif final_digits == "8500":  # JFSE
+            elif first_two_digits == "85":  # JFSE
                 base_url = "https://pje.jfse.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
             else:
-                # Fallback to TRF5 if final digits don't match
+                # Fallback to TRF5 if first 2 digits don't match
                 base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
             search_url = base_url
         
         elif pje_level in ["JFAL - Terceiros", "JFCE - Terceiros", "JFPB - Terceiros", "JFPE - Terceiros", "JFRN - Terceiros", "JFSE - Terceiros", "JF - Terceiros"]:
-            # Determine the specific domain based on final digits
-            if final_digits == "8000":  # JFAL
+            # Determine the specific domain based on first 2 digits
+            if first_two_digits == "80":  # JFAL
                 base_url = "https://pje.jfal.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            elif final_digits == "8100":  # JFCE
+            elif first_two_digits == "81":  # JFCE
                 base_url = "https://pje.jfce.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            elif final_digits == "8200":  # JFPB
+            elif first_two_digits == "82":  # JFPB
                 base_url = "https://pje.jfpb.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            elif final_digits == "8300":  # JFPE
+            elif first_two_digits == "83":  # JFPE
                 base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            elif final_digits == "8400":  # JFRN
+            elif first_two_digits == "84":  # JFRN
                 base_url = "https://pje.jfrn.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            elif final_digits == "8500":  # JFSE
+            elif first_two_digits == "85":  # JFSE
                 base_url = "https://pje.jfse.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
             else:
-                # Fallback to TRF5 if final digits don't match
+                # Fallback to TRF5 if first 2 digits don't match
                 base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
             search_url = base_url
         
@@ -187,8 +193,7 @@ class Trf5Handler(BaseTribunalHandler):
                     )
                 except TimeoutException:
                     print("[DEBUG] Page took too long to load - showing reopen interface")
-                    notifier.send("TRF5 - Página demorou para carregar. Tente reabrir.")
-                    return True, None, None, True, False, False  # Show reopen interface
+                    return True, None, None, True, False, True  # Show reopen interface
                 
                 # Check which element was found
                 try:
@@ -402,8 +407,7 @@ class Trf5Handler(BaseTribunalHandler):
                     )
                 except TimeoutException:
                     print("[DEBUG] Page took too long to load - showing reopen interface")
-                    notifier.send("TRF5 - Página demorou para carregar. Tente reabrir.")
-                    return True, None, None, True, False, False  # Show reopen interface
+                    return True, None, None, True, False, True  # Show reopen interface
                 
                 # Check which element was found
                 try:
