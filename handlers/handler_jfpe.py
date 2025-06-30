@@ -22,7 +22,7 @@ class JfpeHandler(BaseTribunalHandler):
         """
         Prompt user to choose PJE level for JFPE processes.
         """
-        pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 300)
+        pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 400)
         
         pje_level = tk.StringVar(value="")
 
