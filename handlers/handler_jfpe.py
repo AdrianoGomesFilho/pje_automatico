@@ -33,7 +33,8 @@ class JfpeHandler(BaseTribunalHandler):
         # Add tribunal-specific buttons
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
-        self.add_button(pje_level_window, "Justiça Federal Comum", lambda: select_level("Justiça Federal Comum"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Advogado", lambda: select_level("JF Comum - Advogado"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Terceiros", lambda: select_level("JF Comum - Terceiros"), font_style)
         
         # Add ignore button (no need for duplicate "Ignorar" button)
         self.add_ignore_button(pje_level_window, pje_level, font_style)
@@ -50,9 +51,13 @@ class JfpeHandler(BaseTribunalHandler):
             base_url = "https://pje2g.trf5.jus.br/pje/login.seam"
             search_url = "https://pje2g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "Justiça Federal Comum":
-            base_url = "https://pje.trf5.jus.br/pje/login.seam"
+        elif pje_level == "JF Comum - Advogado":
+            base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+        
+        elif pje_level == "JF Comum - Terceiros":
+            base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
         
         elif pje_level == "Ignore":
             return True, None, None, True, False, False  # Just wait for clipboard 
@@ -69,7 +74,7 @@ class JfpeHandler(BaseTribunalHandler):
                 driver.get(base_url)
 
             # Different login flow for Justiça Federal Comum
-            if pje_level == "Justiça Federal Comum":
+            if pje_level in ["JF Comum - Advogado", "JF Comum - Terceiros"]:
                 try:
                     login_element = WebDriverWait(driver, 10).until(
                         EC.any_of(
@@ -145,94 +150,158 @@ class JfpeHandler(BaseTribunalHandler):
                         notifier.send("JFPE - Timeout ao carregar login da Justiça Federal Comum")
                         return True, None, None, True, False, False
                 
-                # Navigate to search URL and fill the form for Justiça Federal Comum
+                # Navigate to search URL and fill the form
                 driver.get(search_url)
                 
-                try:
-                    # Wait for the search form to load
-                    WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso"))
-                    )
-                    
-                    # Fill the process number field
-                    process_field = driver.find_element(By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso")
-                    
-                    print(f"[DEBUG] Sending keys to process field: '{paste}'")
-                    
-                    # Clear and position cursor at the very beginning of the field
-                    process_field.clear()
-                    process_field.click()
-                    time.sleep(0.2)
-                    
-                    # Move cursor to the very beginning of the field
-                    driver.execute_script("arguments[0].setSelectionRange(0, 0);", process_field)
-                    driver.execute_script("arguments[0].focus();", process_field)
-                    
-                    # Send the original paste data (with dashes and dots)
-                    print(f"[DEBUG] Sending original paste data: '{paste}'")
-                    process_field.send_keys(paste)
-                    
-                    # Verify the field was filled correctly
-                    field_value = process_field.get_attribute("value")
-                    print(f"[DEBUG] Field value after input: '{field_value}'")
-                    
-                    # Add a small delay before clicking search to ensure the value is registered
-                    time.sleep(1)
-                    
-                    # Click the search button
-                    search_button = driver.find_element(By.ID, "consultarProcessoForm:searchButton")
-                    search_button.click()
-
-                    # Wait for search results and extract the process details URL
+                if pje_level == "JF Comum - Advogado":
+                    # Normal consultation for lawyers/registered users
                     try:
-                        print("[DEBUG] Waiting for search results...")
-                        # Wait for the first row to appear
+                        # Wait for the search form to load
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso"))
+                        )
+                        
+                        # Fill the process number field
+                        process_field = driver.find_element(By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso")
+                        
+                        print(f"[DEBUG] Sending keys to normal consultation field: '{paste}'")
+                        
+                        # Clear and fill the field
+                        process_field.clear()
+                        process_field.click()
+                        time.sleep(0.2)
+                        driver.execute_script("arguments[0].setSelectionRange(0, 0);", process_field)
+                        driver.execute_script("arguments[0].focus();", process_field)
+                        process_field.send_keys(paste)
+                        time.sleep(1)
+                        
+                        # Click the search button
+                        search_button = driver.find_element(By.ID, "consultarProcessoForm:searchButton")
+                        search_button.click()
+
+                        # Wait for search results and extract the process details URL
+                        print("[DEBUG] Waiting for normal consultation results...")
                         WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
                         )
                         
                         # Find the "Ver Detalhes" image in the first row
                         ver_detalhes_img = driver.find_element(By.CSS_SELECTOR, "img[title='Ver Detalhes']")
-                        
-                        # Get the onclick attribute which contains the URL
                         onclick_attr = ver_detalhes_img.get_attribute("onclick")
                         
-                        # Extract the URL from the onclick attribute
-                        # onclick looks like: openPopUp('13101popUpDetalhesProcessoTrf', '/pje/Processo/ConsultaProcesso/Detalhe/listProcessoCompletoAdvogado.seam?idProcessoTrf=13101');
                         import re
                         url_match = re.search(r"'(/pje/Processo/ConsultaProcesso/Detalhe/listProcessoCompletoAdvogado\.seam\?idProcessoTrf=\d+)'", onclick_attr)
                         
                         if url_match:
                             relative_url = url_match.group(1)
-                            # Form the complete URL
                             complete_url = f"https://pje.trf5.jus.br{relative_url}"
                             
                             # Open the process details page in a new tab
                             try:
                                 driver.execute_script(f"window.open('{complete_url}', '_blank');")
-                                print(f"[DEBUG] Opened process details in new tab: {complete_url}")
+                                print(f"[DEBUG] Normal consultation successful - opened: {complete_url}")
                                 
-                                # Close the current search results tab
                                 if len(driver.window_handles) > 1:
                                     self.safe_close_tab(driver)
-                                
-                                # Switch to the new process details tab
                                 self.safe_switch_to_last_window(driver)
-                                print("[DEBUG] Switched to process details tab")
                             except Exception as tab_error:
                                 print(f"[DEBUG] Tab management failed: {tab_error}")
-                                # Fallback to navigate in current tab
                                 driver.get(complete_url)
                         else:
                             print("[DEBUG] Could not extract process details URL from onclick attribute")
                             return False, None, None, False, True, True
                             
-                    except Exception as extract_error:
-                        print(f"[DEBUG] Error extracting process details URL: {extract_error}")
+                    except Exception as normal_error:
+                        print(f"[DEBUG] Normal consultation failed: {normal_error}")
                         return False, None, None, False, True, True
-                except Exception as search_error:
-                    print(f"[DEBUG] Error searching process in Justiça Federal Comum: {search_error}")
-                    return False, None, None, False, True, True
+                
+                elif pje_level == "JF Comum - Terceiros":
+                    # Third-party consultation for non-registered users
+                    try:
+                        # Wait for the third-party search form to load
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.ID, "pesquisarProcessoTerceiroForm:nrProcessoDecoration:nrProcesso"))
+                        )
+                        
+                        # Fill the process number field for third-party consultation
+                        terceiros_field = driver.find_element(By.ID, "pesquisarProcessoTerceiroForm:nrProcessoDecoration:nrProcesso")
+                        
+                        print(f"[DEBUG] Sending keys to third-party consultation field: '{paste}'")
+                        
+                        terceiros_field.clear()
+                        terceiros_field.click()
+                        time.sleep(0.2)
+                        driver.execute_script("arguments[0].setSelectionRange(0, 0);", terceiros_field)
+                        driver.execute_script("arguments[0].focus();", terceiros_field)
+                        terceiros_field.send_keys(paste)
+                        time.sleep(1)
+                        
+                        # Click the third-party search button
+                        terceiros_search_button = driver.find_element(By.ID, "pesquisarProcessoTerceiroForm:searchButton")
+                        terceiros_search_button.click()
+                        
+                        # Wait for search results
+                        print("[DEBUG] Waiting for third-party consultation results...")
+                        WebDriverWait(driver, 5).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, "img[title='Ver Detalhe']"))
+                        )
+                        
+                        # Click the "Ver Detalhe" link to open popup
+                        ver_detalhe_img = driver.find_element(By.CSS_SELECTOR, "img[title='Ver Detalhe']")
+                        ver_detalhe_img.click()
+                        
+                        print("[DEBUG] Clicked 'Ver Detalhe' - popup should open")
+                        
+                        # Wait for the popup to appear
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.ID, "modal:motivacaoDecoration:motivacao"))
+                        )
+                        
+                        print("[DEBUG] Motivation popup appeared")
+                        
+                        # Fill the motivation field with "Consulta"
+                        try:
+                            # Wait for the textarea to be visible and interactable
+                            motivation_field = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.ID, "modal:motivacaoDecoration:motivacao"))
+                            )
+                            
+                            # Focus on the field first
+                            driver.execute_script("arguments[0].focus();", motivation_field)
+                            time.sleep(0.5)
+                            
+                            # Clear and fill with JavaScript to ensure it works
+                            driver.execute_script("arguments[0].value = '';", motivation_field)
+                            driver.execute_script("arguments[0].value = 'Consulta';", motivation_field)
+                            
+                            # Trigger events to ensure validation passes
+                            driver.execute_script("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", motivation_field)
+                            driver.execute_script("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", motivation_field)
+                            
+                            print("[DEBUG] Motivation field filled with 'Consulta' using JavaScript")
+                            
+                            # Wait a moment for any validation
+                            time.sleep(1)
+                            
+                            # Click the Gravar button with JavaScript to avoid interaction issues
+                            gravar_button = driver.find_element(By.ID, "modal:btnGravar")
+                            driver.execute_script("arguments[0].click();", gravar_button)
+                            print("[DEBUG] Clicked Gravar button using JavaScript")
+                            
+                            # Wait for the popup to close and process page to load
+                            time.sleep(5)
+                            print("[DEBUG] Third-party consultation completed successfully")
+                            
+                        except Exception as motivation_error:
+                            print(f"[DEBUG] Error filling motivation or clicking Gravar: {motivation_error}")
+                            return False, None, None, False, True, True
+                        except Exception as button_error:
+                            print(f"[DEBUG] Error accessing Gravar button: {button_error}")
+                            return False, None, None, False, True, True
+                            
+                    except Exception as terceiros_error:
+                        print(f"[DEBUG] Third-party consultation failed: {terceiros_error}")
+                        return False, None, None, False, True, True
                 
                 # Return success for Justiça Federal Comum (no further processing needed)
                 return True, None, None, False, False, False
