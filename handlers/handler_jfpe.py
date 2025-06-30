@@ -110,7 +110,7 @@ class JfpeHandler(BaseTribunalHandler):
                         
                         # Now the login button should be clickable
                         try:
-                            login_button = WebDriverWait(driver, 10).until(
+                            login_button = WebDriverWait(driver, 15).until(
                                 EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
                             )
                             login_button.click()
@@ -308,8 +308,10 @@ class JfpeHandler(BaseTribunalHandler):
                 )
                 # Get the first result link
                 first_result = driver.find_element(By.CSS_SELECTOR, ".btn-link.btn-condensed")
+                
+                # Click the result link to open the process page
                 first_result.click()
-
+                
                 # Handle the confirmation alert that appears
                 try:
                     # Wait for the alert to appear and accept it
@@ -338,6 +340,8 @@ class JfpeHandler(BaseTribunalHandler):
                 print(f"[DEBUG] Error parsing process number: {parse_error}")
                 return False, None, None, False, True, True
             
+            # Return success for Juizado (no further processing needed)
+            return True, None, None, False, False, False
         except TimeoutException:
             notifier.show_toast("JFPE Login", "Timeout durante o login JFPE")
             return False, None, None, True, False, False #this is to show the reopen interface
