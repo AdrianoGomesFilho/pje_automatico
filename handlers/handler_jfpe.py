@@ -187,29 +187,9 @@ class JfpeHandler(BaseTribunalHandler):
                         
                         # Find the "Ver Detalhes" image in the first row
                         ver_detalhes_img = driver.find_element(By.CSS_SELECTOR, "img[title='Ver Detalhes']")
-                        onclick_attr = ver_detalhes_img.get_attribute("onclick")
+                        ver_detalhes_img.click()
                         
-                        import re
-                        url_match = re.search(r"'(/pje/Processo/ConsultaProcesso/Detalhe/listProcessoCompletoAdvogado\.seam\?idProcessoTrf=\d+)'", onclick_attr)
-                        
-                        if url_match:
-                            relative_url = url_match.group(1)
-                            complete_url = f"https://pje.trf5.jus.br{relative_url}"
-                            
-                            # Open the process details page in a new tab
-                            try:
-                                driver.execute_script(f"window.open('{complete_url}', '_blank');")
-                                print(f"[DEBUG] Normal consultation successful - opened: {complete_url}")
-                                
-                                if len(driver.window_handles) > 1:
-                                    self.safe_close_tab(driver)
-                                self.safe_switch_to_last_window(driver)
-                            except Exception as tab_error:
-                                print(f"[DEBUG] Tab management failed: {tab_error}")
-                                driver.get(complete_url)
-                        else:
-                            print("[DEBUG] Could not extract process details URL from onclick attribute")
-                            return False, None, None, False, True, True
+                    
                             
                     except Exception as normal_error:
                         print(f"[DEBUG] Normal consultation failed: {normal_error}")
