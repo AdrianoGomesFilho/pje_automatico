@@ -90,45 +90,49 @@ class JfpeHandler(BaseTribunalHandler):
                     print("[DEBUG] Not logged in - proceeding with login")
                     # Need to login - click the loginAplicacaoButton
                     try:
-                        # Handle BOTH popups that appear sequentially before login button becomes clickable
+                        # Handle popups dynamically
+                        print("[DEBUG] Checking for popups...")
                         
-                        # First popup - signature mode selection (Java/PJeOffice)
+                        # Check if first popup exists (may not appear on subsequent attempts)
                         try:
-                            # Wait for and handle the signature mode popup
-                            WebDriverWait(driver, 10).until(
-                                EC.presence_of_element_located((By.ID, "btnUtilizarApplet"))
+                            utilizar_btn = WebDriverWait(driver, 3).until(
+                                EC.element_to_be_clickable((By.ID, "btnUtilizarApplet"))
                             )
-                            utilizar_applet_btn = driver.find_element(By.ID, "btnUtilizarApplet")
-                            utilizar_applet_btn.click()
-                            print("[DEBUG] Clicked btnUtilizarApplet (first popup)")
-                            time.sleep(2)  # Wait for popup to close
+                            utilizar_btn.click()
+                            print("[DEBUG] First popup found and clicked (btnUtilizarApplet)")
                         except:
-                            print("[DEBUG] First popup (btnUtilizarApplet) not found or already handled")
+                            print("[DEBUG] First popup not present, skipping (this is normal on subsequent attempts)")
                         
-                        # Second popup - just remove the blocking container
+                        time.sleep(2)
+                        
+                        # Remove blocking container if present
                         try:
                             panel_container = driver.find_element(By.ID, "panelAmbienteContainer")
                             driver.execute_script("arguments[0].remove();", panel_container)
-                            print("[DEBUG] Removed panelAmbienteContainer")
+                            print("[DEBUG] Removed blocking overlay (panelAmbienteContainer)")
                         except:
-                            print("[DEBUG] panelAmbienteContainer not found or already removed")
+                            print("[DEBUG] No blocking overlay to remove")
                         
-                        # Now the login button should be clickable
-                        try:
-                            login_button = WebDriverWait(driver, 15).until(
-                                EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
-                            )
-                            login_button.click()
-                            print("[DEBUG] Clicked loginAplicacaoButton after handling both popups")
-                        except TimeoutException:
-                            # Fallback to JavaScript click if still not clickable
+                        # Click login button - try 3 times
+                        for attempt in range(3):
                             try:
-                                login_button = driver.find_element(By.ID, "loginAplicacaoButton")
-                                driver.execute_script("arguments[0].click();", login_button)
-                                print("[DEBUG] Used JavaScript click as fallback after popups")
-                            except Exception as js_error:
-                                print(f"[DEBUG] JavaScript fallback click failed: {js_error}")
-                                raise
+                                login_button = WebDriverWait(driver, 10).until(
+                                    EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
+                                )
+                                login_button.click()
+                                print("[DEBUG] Clicked loginAplicacaoButton")
+                                break
+                            except:
+                                # Try JavaScript click as fallback
+                                try:
+                                    login_button = driver.find_element(By.ID, "loginAplicacaoButton")
+                                    driver.execute_script("arguments[0].click();", login_button)
+                                    print("[DEBUG] Used JavaScript click")
+                                    break
+                                except:
+                                    if attempt == 2:
+                                        raise Exception("Could not click login button")
+                                    time.sleep(2)
                         
                         # Wait for password field (nomeUsuario) to appear after login
                         WebDriverWait(driver, 15).until(
@@ -183,7 +187,7 @@ class JfpeHandler(BaseTribunalHandler):
                     try:
                         print("[DEBUG] Waiting for search results...")
                         # Wait for the first row to appear
-                        WebDriverWait(driver, 15).until(
+                        WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
                         )
                         
