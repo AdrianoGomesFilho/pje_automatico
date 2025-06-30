@@ -33,8 +33,10 @@ class JfpeHandler(BaseTribunalHandler):
         # Add tribunal-specific buttons
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Advogado", lambda: select_level("JF Comum - Advogado"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Terceiros", lambda: select_level("JF Comum - Terceiros"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Advogado 1G", lambda: select_level("JF Comum - Advogado 1G"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Advogado 2G", lambda: select_level("JF Comum - Advogado 2G"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Terceiros 1G", lambda: select_level("JF Comum - Terceiros 1G"), font_style)
+        self.add_button(pje_level_window, "JF Comum - Terceiros 2G", lambda: select_level("JF Comum - Terceiros 2G"), font_style)
         
         # Add ignore button (no need for duplicate "Ignorar" button)
         self.add_ignore_button(pje_level_window, pje_level, font_style)
@@ -51,11 +53,19 @@ class JfpeHandler(BaseTribunalHandler):
             base_url = "https://pje2g.trf5.jus.br/pje/login.seam"
             search_url = "https://pje2g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "JF Comum - Advogado":
+        elif pje_level == "JF Comum - Advogado 1G":
+            base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            search_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+        
+        elif pje_level == "JF Comum - Advogado 2G":
             base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "JF Comum - Terceiros":
+        elif pje_level == "JF Comum - Terceiros 1G":
+            base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            search_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+        
+        elif pje_level == "JF Comum - Terceiros 2G":
             base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
         
@@ -74,7 +84,7 @@ class JfpeHandler(BaseTribunalHandler):
                 driver.get(base_url)
 
             # Different login flow for Justiça Federal Comum
-            if pje_level in ["JF Comum - Advogado", "JF Comum - Terceiros"]:
+            if pje_level in ["JF Comum - Advogado 1G", "JF Comum - Advogado 2G", "JF Comum - Terceiros 1G", "JF Comum - Terceiros 2G"]:
                 try:
                     login_element = WebDriverWait(driver, 10).until(
                         EC.any_of(
@@ -153,7 +163,7 @@ class JfpeHandler(BaseTribunalHandler):
                 # Navigate to search URL and fill the form
                 driver.get(search_url)
                 
-                if pje_level == "JF Comum - Advogado":
+                if pje_level in ["JF Comum - Advogado 1G", "JF Comum - Advogado 2G"]:
                     # Normal consultation for lawyers/registered users
                     try:
                         # Wait for the search form to load
@@ -195,7 +205,7 @@ class JfpeHandler(BaseTribunalHandler):
                         print(f"[DEBUG] Normal consultation failed: {normal_error}")
                         return False, None, None, False, True, True
                 
-                elif pje_level == "JF Comum - Terceiros":
+                elif pje_level in ["JF Comum - Terceiros 1G", "JF Comum - Terceiros 2G"]:
                     # Third-party consultation for non-registered users
                     try:
                         # Wait for the third-party search form to load

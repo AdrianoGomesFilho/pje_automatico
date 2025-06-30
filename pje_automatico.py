@@ -360,12 +360,15 @@ def run_script(credentials):
             try:
                 paste = pyperclip.paste().replace(" ", "").strip()  # Remove all spaces and leading/trailing whitespace
 
+                # Clean the process number by removing any non-numeric characters except hyphens and dots
+                import re
+                clean_paste = re.sub(r'[^0-9.-]', '', paste)
 
                 # Tribunal type detection by splitting the number and checking the .0.00 part
                 tribunal_type = None
                 try:
                     # Remove spaces and split by '-' and '.'
-                    parts = paste.split('-')
+                    parts = clean_paste.split('-')
                     if len(parts) == 2:
                         main, rest = parts
                         rest_parts = rest.split('.')
@@ -378,13 +381,16 @@ def run_script(credentials):
                                 tribunal_type = 'tjpe'
                             elif orgao == '4' and tribunal == '05':
                                 tribunal_type = 'jfpe'
+                            
+                            print(f"[DEBUG] Clean paste: {clean_paste}, Original: {paste}, Tribunal: {tribunal_type}")
                 except Exception as e:
                     print(f"[DEBUG] Tribunal detection error: {e}")
 
                 # Check if the clipboard content is new or bypassing is enabled and matches any known pattern
-                if bypass_repeated_content or (paste != last_clipboard_content and tribunal_type is not None):
-                    print(f"Processo identificado: {paste} (tribunal: {tribunal_type})")
-                    add_to_recent(paste)
+                # Use clean_paste for processing but keep original paste for display
+                if bypass_repeated_content or (clean_paste != last_clipboard_content and tribunal_type is not None):
+                    print(f"Processo identificado: {clean_paste} (tribunal: {tribunal_type})")
+                    add_to_recent(clean_paste)
 
                     # Ensure we have at least one tab open
                     try:
@@ -397,7 +403,7 @@ def run_script(credentials):
                         continue
 
                     # Process the new clipboard content
-                    last_clipboard_content = paste
+                    last_clipboard_content = clean_paste
                     bypass_repeated_content = False
                     processo_nao_cadastrado = False
 
@@ -406,7 +412,7 @@ def run_script(credentials):
                     if login_method in ["3", "4", "5"]:  # Only methods that use Astrea
                         try:
                             # Perform Astrea login
-                            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{paste}"
+                            astrea_url = f"https://app.astrea.net.br/#/main/search-result/{clean_paste}"
                             driver.execute_script(f"window.open('{astrea_url}', '_blank');")
                             driver.switch_to.window(driver.window_handles[-1])
 
@@ -434,11 +440,11 @@ def run_script(credentials):
                     while True:
                         # Prompt user to choose the PJE level based on tribunal type
                         if tribunal_type == 'trabalhista':
-                            pje_level = prompt_for_pje_level_trabalhista(paste)
+                            pje_level = prompt_for_pje_level_trabalhista(clean_paste)
                         elif tribunal_type == 'tjpe':
-                            pje_level = prompt_for_pje_level_tjpe(paste)
+                            pje_level = prompt_for_pje_level_tjpe(clean_paste)
                         elif tribunal_type == 'jfpe':
-                            pje_level = prompt_for_pje_level_jfpe(paste)
+                            pje_level = prompt_for_pje_level_jfpe(clean_paste)
                         else:
                             print(f"Tribunal type '{tribunal_type}' not recognized. Skipping...")
                             break
@@ -449,11 +455,11 @@ def run_script(credentials):
 
                         # Handle login based on tribunal type
                         if tribunal_type == 'trabalhista':
-                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         elif tribunal_type == 'tjpe':
-                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_tjpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_tjpe_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         elif tribunal_type == 'jfpe':
-                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         else:
                             print(f"Unexpected tribunal type '{tribunal_type}' in handler section")
                             break
@@ -467,12 +473,12 @@ def run_script(credentials):
                             break  # Exit the loop if process_id is successfully fetched
                     # Handle final URL processing and errors
                     if processo_nao_cadastrado:
-                        reopen_choice = prompt_reopen_pje(paste)
+                        reopen_choice = prompt_reopen_pje(clean_paste)
                         if reopen_choice:
                             bypass_repeated_content = True
                             continue
                         else:
-                            print(f"Opção ignorada para o processo {paste}. Aguardando novo conteúdo na área de transferência.")
+                            print(f"Opção ignorada para o processo {clean_paste}. Aguardando novo conteúdo na área de transferência.")
                             bypass_repeated_content = False
                             continue
                     
