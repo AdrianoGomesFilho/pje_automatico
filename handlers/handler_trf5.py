@@ -1,5 +1,5 @@
 """
-JFPE (Justiça Federal de Pernambuco) tribunal handler
+TRF5 (Tribunal Regional Federal da 5ª Região) tribunal handler
 """
 import tkinter as tk
 import time
@@ -10,19 +10,41 @@ from selenium.webdriver.support import expected_conditions as EC
 from .base_handler import BaseTribunalHandler
 
 
-class JfpeHandler(BaseTribunalHandler):
-    """
-    Handler for JFPE (Justiça Federal de Pernambuco) processes.
-    """
+class Trf5Handler(BaseTribunalHandler):
     
     def __init__(self):
-        super().__init__("JFPE")
+        super().__init__("TRF5")
     
     def prompt_for_pje_level(self, paste):
         """
-        Prompt user to choose PJE level for JFPE processes.
+        Prompt user to choose PJE level for TRF5 processes.
         """
-        pje_level_window, font_style = self.create_prompt_window("Escolha o Grau - JFPE", paste, 400)
+        # Extract the final 4 digits to determine the specific tribunal
+        try:
+            parts = paste.split('-')[1].split('.')
+            final_digits = parts[4] if len(parts) >= 5 else None
+            print(f"[DEBUG] Final digits for UI: {final_digits}")
+        except:
+            final_digits = None
+            print("[DEBUG] Could not extract final digits for UI")
+
+        # Determine tribunal name and create appropriate window title
+        tribunal_name = "TRF5"
+        if final_digits == "8000":
+            tribunal_name = "JFAL"
+        elif final_digits == "8100":
+            tribunal_name = "JFCE"
+        elif final_digits == "8200":
+            tribunal_name = "JFPB"
+        elif final_digits == "8300":
+            tribunal_name = "JFPE"
+        elif final_digits == "8400":
+            tribunal_name = "JFRN"
+        elif final_digits == "8500":
+            tribunal_name = "JFSE"
+
+        window_title = f"Escolha o Grau - {tribunal_name}"
+        pje_level_window, font_style = self.create_prompt_window(window_title, paste, 400)
         
         pje_level = tk.StringVar(value="")
 
@@ -30,21 +52,57 @@ class JfpeHandler(BaseTribunalHandler):
             pje_level.set(level)
             pje_level_window.destroy()
 
-        # Add tribunal-specific buttons
+        # Add common buttons (always shown)
         self.add_button(pje_level_window, "Juizado Primeiro grau", lambda: select_level("Juizado Primeiro grau"), font_style)
         self.add_button(pje_level_window, "Juizado Turma Recursal", lambda: select_level("Juizado Turma Recursal"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Advogado 1G", lambda: select_level("JF Comum - Advogado 1G"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Advogado 2G", lambda: select_level("JF Comum - Advogado 2G"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Terceiros 1G", lambda: select_level("JF Comum - Terceiros 1G"), font_style)
-        self.add_button(pje_level_window, "JF Comum - Terceiros 2G", lambda: select_level("JF Comum - Terceiros 2G"), font_style)
         
-        # Add ignore button (no need for duplicate "Ignorar" button)
+        # Add specific tribunal buttons based on final digits
+        if final_digits:
+            if final_digits == "8000":  # JFAL
+                self.add_button(pje_level_window, "JFAL - Advogado", lambda: select_level("JFAL - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFAL - Terceiros", lambda: select_level("JFAL - Terceiros"), font_style)
+            elif final_digits == "8100":  # JFCE
+                self.add_button(pje_level_window, "JFCE - Advogado", lambda: select_level("JFCE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFCE - Terceiros", lambda: select_level("JFCE - Terceiros"), font_style)
+            elif final_digits == "8200":  # JFPB
+                self.add_button(pje_level_window, "JFPB - Advogado", lambda: select_level("JFPB - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFPB - Terceiros", lambda: select_level("JFPB - Terceiros"), font_style)
+            elif final_digits == "8300":  # JFPE
+                self.add_button(pje_level_window, "JFPE - Advogado", lambda: select_level("JFPE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFPE - Terceiros", lambda: select_level("JFPE - Terceiros"), font_style)
+            elif final_digits == "8400":  # JFRN
+                self.add_button(pje_level_window, "JFRN - Advogado", lambda: select_level("JFRN - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFRN - Terceiros", lambda: select_level("JFRN - Terceiros"), font_style)
+            elif final_digits == "8500":  # JFSE
+                self.add_button(pje_level_window, "JFSE - Advogado", lambda: select_level("JFSE - Advogado"), font_style)
+                self.add_button(pje_level_window, "JFSE - Terceiros", lambda: select_level("JFSE - Terceiros"), font_style)
+        else:
+            # Fallback: show generic options if we can't determine the tribunal
+            self.add_button(pje_level_window, "JF - Advogado", lambda: select_level("JF - Advogado"), font_style)
+            self.add_button(pje_level_window, "JF - Terceiros", lambda: select_level("JF - Terceiros"), font_style)
+
+        # Add TRF5 2G common options (always available)
+        self.add_button(pje_level_window, "TRF5 - Advogado 2G", lambda: select_level("TRF5 - Advogado"), font_style)
+        self.add_button(pje_level_window, "TRF5 - Terceiros 2G", lambda: select_level("TRF5 - Terceiros"), font_style)
+        
+        # Add ignore button
         self.add_ignore_button(pje_level_window, pje_level, font_style)
 
         pje_level_window.mainloop()
         return pje_level.get()
     
     def handle_login(self, driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
+        # Extract the final 4 digits to determine the specific tribunal
+        try:
+            # Get the final 4 digits from the process number
+            parts = paste.split('-')[1].split('.')
+            final_digits = parts[4] if len(parts) >= 5 else None
+            print(f"[DEBUG] Final digits: {final_digits}")
+        except:
+            final_digits = None
+            print("[DEBUG] Could not extract final digits")
+
+        # Determine URLs based on PJE level
         if pje_level == "Juizado Primeiro grau":
             base_url = "https://pje1g.trf5.jus.br/pje/login.seam"
             search_url = "https://pje1g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
@@ -53,21 +111,53 @@ class JfpeHandler(BaseTribunalHandler):
             base_url = "https://pje2g.trf5.jus.br/pje/login.seam"
             search_url = "https://pje2g.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "JF Comum - Advogado 1G":
-            base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-            search_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
-        
-        elif pje_level == "JF Comum - Advogado 2G":
+        # TRF5 2G (Common for all tribunals)
+        elif pje_level == "TRF5 - Advogado":
             base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
         
-        elif pje_level == "JF Comum - Terceiros 1G":
-            base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-            search_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
-        
-        elif pje_level == "JF Comum - Terceiros 2G":
+        elif pje_level == "TRF5 - Terceiros":
             base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
             search_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+        
+        # Individual tribunal URLs based on final digits
+        elif pje_level in ["JFAL - Advogado", "JFCE - Advogado", "JFPB - Advogado", "JFPE - Advogado", "JFRN - Advogado", "JFSE - Advogado", "JF - Advogado"]:
+            # Determine the specific domain based on final digits
+            if final_digits == "8000":  # JFAL
+                base_url = "https://pje.jfal.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            elif final_digits == "8100":  # JFCE
+                base_url = "https://pje.jfce.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            elif final_digits == "8200":  # JFPB
+                base_url = "https://pje.jfpb.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            elif final_digits == "8300":  # JFPE
+                base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            elif final_digits == "8400":  # JFRN
+                base_url = "https://pje.jfrn.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            elif final_digits == "8500":  # JFSE
+                base_url = "https://pje.jfse.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            else:
+                # Fallback to TRF5 if final digits don't match
+                base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcesso/listView.seam"
+            search_url = base_url
+        
+        elif pje_level in ["JFAL - Terceiros", "JFCE - Terceiros", "JFPB - Terceiros", "JFPE - Terceiros", "JFRN - Terceiros", "JFSE - Terceiros", "JF - Terceiros"]:
+            # Determine the specific domain based on final digits
+            if final_digits == "8000":  # JFAL
+                base_url = "https://pje.jfal.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            elif final_digits == "8100":  # JFCE
+                base_url = "https://pje.jfce.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            elif final_digits == "8200":  # JFPB
+                base_url = "https://pje.jfpb.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            elif final_digits == "8300":  # JFPE
+                base_url = "https://pje.jfpe.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            elif final_digits == "8400":  # JFRN
+                base_url = "https://pje.jfrn.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            elif final_digits == "8500":  # JFSE
+                base_url = "https://pje.jfse.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            else:
+                # Fallback to TRF5 if final digits don't match
+                base_url = "https://pje.trf5.jus.br/pje/Processo/ConsultaProcessoTerceiros/listView.seam"
+            search_url = base_url
         
         elif pje_level == "Ignore":
             return True, None, None, True, False, False  # Just wait for clipboard 
@@ -83,8 +173,11 @@ class JfpeHandler(BaseTribunalHandler):
                 print(f"[DEBUG] Tab management failed, using current tab: {tab_error}")
                 driver.get(base_url)
 
-            # Different login flow for Justiça Federal Comum
-            if pje_level in ["JF Comum - Advogado 1G", "JF Comum - Advogado 2G", "JF Comum - Terceiros 1G", "JF Comum - Terceiros 2G"]:
+            # Different login flow for Justiça Federal (all individual tribunals and TRF5)
+            if pje_level in ["JFAL - Advogado", "JFAL - Terceiros", "JFCE - Advogado", "JFCE - Terceiros", 
+                           "JFPB - Advogado", "JFPB - Terceiros", "JFPE - Advogado", "JFPE - Terceiros",
+                           "JFRN - Advogado", "JFRN - Terceiros", "JFSE - Advogado", "JFSE - Terceiros",
+                           "TRF5 - Advogado", "TRF5 - Terceiros", "JF - Advogado", "JF - Terceiros"]:
                 try:
                     login_element = WebDriverWait(driver, 10).until(
                         EC.any_of(
@@ -94,7 +187,7 @@ class JfpeHandler(BaseTribunalHandler):
                     )
                 except TimeoutException:
                     print("[DEBUG] Page took too long to load - showing reopen interface")
-                    notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
+                    notifier.send("TRF5 - Página demorou para carregar. Tente reabrir.")
                     return True, None, None, True, False, False  # Show reopen interface
                 
                 # Check which element was found
@@ -157,13 +250,14 @@ class JfpeHandler(BaseTribunalHandler):
                         
                     except TimeoutException:
                         print("[DEBUG] Timeout waiting for login elements in Justiça Federal Comum")
-                        notifier.send("JFPE - Timeout ao carregar login da Justiça Federal Comum")
+                        notifier.send("TRF5 - Timeout ao carregar login da Justiça Federal Comum")
                         return True, None, None, True, False, False
                 
                 # Navigate to search URL and fill the form
                 driver.get(search_url)
                 
-                if pje_level in ["JF Comum - Advogado 1G", "JF Comum - Advogado 2G"]:
+                if pje_level in ["JFAL - Advogado", "JFCE - Advogado", "JFPB - Advogado", "JFPE - Advogado", 
+                               "JFRN - Advogado", "JFSE - Advogado", "TRF5 - Advogado", "JF - Advogado"]:
                     # Normal consultation for lawyers/registered users
                     try:
                         # Wait for the search form to load
@@ -205,7 +299,8 @@ class JfpeHandler(BaseTribunalHandler):
                         print(f"[DEBUG] Normal consultation failed: {normal_error}")
                         return False, None, None, False, True, True
                 
-                elif pje_level in ["JF Comum - Terceiros 1G", "JF Comum - Terceiros 2G"]:
+                elif pje_level in ["JFAL - Terceiros", "JFCE - Terceiros", "JFPB - Terceiros", "JFPE - Terceiros",
+                                 "JFRN - Terceiros", "JFSE - Terceiros", "TRF5 - Terceiros", "JF - Terceiros"]:
                     # Third-party consultation for non-registered users
                     try:
                         # Wait for the third-party search form to load
@@ -307,7 +402,7 @@ class JfpeHandler(BaseTribunalHandler):
                     )
                 except TimeoutException:
                     print("[DEBUG] Page took too long to load - showing reopen interface")
-                    notifier.send("JFPE - Página demorou para carregar. Tente reabrir.")
+                    notifier.send("TRF5 - Página demorou para carregar. Tente reabrir.")
                     return True, None, None, True, False, False  # Show reopen interface
                 
                 # Check which element was found
@@ -421,10 +516,9 @@ class JfpeHandler(BaseTribunalHandler):
             # Return success for Juizado (no further processing needed)
             return True, None, None, False, False, False
         except TimeoutException:
-            notifier.show_toast("JFPE Login", "Timeout durante o login JFPE")
+            notifier.show_toast("TRF5 Login", "Timeout durante o login TRF5")
             return False, None, None, True, False, False #this is to show the reopen interface
         except Exception as e:
-            print(f"[DEBUG] JFPE login error: {e}")
-            notifier.show_toast("JFPE Login", f"Erro no login JFPE: {str(e)}")
+            print(f"[DEBUG] TRF5 login error: {e}")
+            notifier.show_toast("TRF5 Login", f"Erro no login TRF5: {str(e)}")
             return False, None, None, True, False, False #this is to show the reopen interface
-

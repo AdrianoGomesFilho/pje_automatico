@@ -1,18 +1,18 @@
 """
 Tribunal handlers dispatcher - imports and provides access to individual tribunal handlers
 """
-from handlers import TrabalhistaHandler, TjpeHandler, JfpeHandler
+from handlers import TrabalhistaHandler, TjpeHandler, Trf5Handler
 
 # Initialize handlers
 _trabalhista_handler = TrabalhistaHandler()
 _tjpe_handler = TjpeHandler()
-_jfpe_handler = JfpeHandler()
+_trf5_handler = Trf5Handler()
 
 # Mapping of tribunal types to their handlers
 TRIBUNAL_HANDLERS = {
     'trabalhista': _trabalhista_handler,
     'tjpe': _tjpe_handler,
-    'jfpe': _jfpe_handler,
+    'trf5': _trf5_handler,
 }
 
 
@@ -21,7 +21,7 @@ def get_handler(tribunal_type):
     Get the handler for a specific tribunal type.
     
     Args:
-        tribunal_type (str): The type of tribunal ('trabalhista', 'tjpe', 'jfpe')
+        tribunal_type (str): The type of tribunal ('trabalhista', 'tjpe', 'trf5')
     
     Returns:
         BaseTribunalHandler: The handler instance for the tribunal
@@ -46,9 +46,9 @@ def prompt_for_pje_level_tjpe(paste):
     return _tjpe_handler.prompt_for_pje_level(paste)
 
 
-def prompt_for_pje_level_jfpe(paste):
-    """Legacy wrapper for JFPE prompt."""
-    return _jfpe_handler.prompt_for_pje_level(paste)
+def prompt_for_pje_level_trf5(paste):
+    """Legacy wrapper for TRF5 prompt."""
+    return _trf5_handler.prompt_for_pje_level(paste)
 
 
 def handle_trabalhista_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
@@ -61,9 +61,9 @@ def handle_tjpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_me
     return _tjpe_handler.handle_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
 
 
-def handle_jfpe_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
-    """Legacy wrapper for JFPE login."""
-    return _jfpe_handler.handle_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+def handle_trf5_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier):
+    """Legacy wrapper for TRF5 login."""
+    return _trf5_handler.handle_login(driver, paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
 
 
 # Additional legacy wrappers for backward compatibility
@@ -95,7 +95,7 @@ def build_final_url(tribunal_type, pje_level, process_id, paste):
     elif tribunal_type == 'tjpe':
         return f"https://pje.tjpe.jus.br/pjekz/processo/{process_id}/detalhe"
     
-    elif tribunal_type == 'jfpe':
+    elif tribunal_type == 'trf5':
         if pje_level == "Juizado":
             return f"https://pje.jfpe.jus.br/pjekz/processo/{process_id}/detalhe"
         elif pje_level == "Justiça comum":

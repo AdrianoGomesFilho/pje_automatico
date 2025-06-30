@@ -17,10 +17,10 @@ from win10toast import ToastNotifier  # Add this import for Windows notification
 from tribunal_handlers import (
     prompt_for_pje_level_trabalhista,
     prompt_for_pje_level_tjpe, 
-    prompt_for_pje_level_jfpe,
+    prompt_for_pje_level_trf5,
     handle_trabalhista_login,
     handle_tjpe_login,
-    handle_jfpe_login,
+    handle_trf5_login,
     perform_pje_login,
     build_final_url,
     fetch_process_id
@@ -380,7 +380,7 @@ def run_script(credentials):
                             elif orgao == '8' and tribunal == '17':
                                 tribunal_type = 'tjpe'
                             elif orgao == '4' and tribunal == '05':
-                                tribunal_type = 'jfpe'
+                                tribunal_type = 'trf5'
                             
                             print(f"[DEBUG] Clean paste: {clean_paste}, Original: {paste}, Tribunal: {tribunal_type}")
                 except Exception as e:
@@ -443,8 +443,8 @@ def run_script(credentials):
                             pje_level = prompt_for_pje_level_trabalhista(clean_paste)
                         elif tribunal_type == 'tjpe':
                             pje_level = prompt_for_pje_level_tjpe(clean_paste)
-                        elif tribunal_type == 'jfpe':
-                            pje_level = prompt_for_pje_level_jfpe(clean_paste)
+                        elif tribunal_type == 'trf5':
+                            pje_level = prompt_for_pje_level_trf5(clean_paste)
                         else:
                             print(f"Tribunal type '{tribunal_type}' not recognized. Skipping...")
                             break
@@ -458,8 +458,8 @@ def run_script(credentials):
                             success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trabalhista_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         elif tribunal_type == 'tjpe':
                             success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_tjpe_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
-                        elif tribunal_type == 'jfpe':
-                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_jfpe_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
+                        elif tribunal_type == 'trf5':
+                            success, process_id, final_url, should_break, bypass_repeated_content, processo_nao_cadastrado = handle_trf5_login(driver, clean_paste, pje_level, usuario_pje, senha_pje, login_method, notifier)
                         else:
                             print(f"Unexpected tribunal type '{tribunal_type}' in handler section")
                             break
