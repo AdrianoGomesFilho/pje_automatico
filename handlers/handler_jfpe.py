@@ -60,8 +60,13 @@ class JfpeHandler(BaseTribunalHandler):
         
         try:
             # Open the PJE URL in a new tab
-            driver.execute_script(f"window.open('{base_url}', '_blank');")
-            driver.switch_to.window(driver.window_handles[-1])
+            try:
+                driver.execute_script(f"window.open('{base_url}', '_blank');")
+                driver.switch_to.window(driver.window_handles[-1])
+            except Exception as tab_error:
+                # If tab management fails, navigate in current tab
+                print(f"[DEBUG] Tab management failed, using current tab: {tab_error}")
+                driver.get(base_url)
 
             # Different login flow for Justiça Federal Comum
             if pje_level == "Justiça Federal Comum":
@@ -199,15 +204,21 @@ class JfpeHandler(BaseTribunalHandler):
                             complete_url = f"https://pje.trf5.jus.br{relative_url}"
                             
                             # Open the process details page in a new tab
-                            driver.execute_script(f"window.open('{complete_url}', '_blank');")
-                            print(f"[DEBUG] Opened process details in new tab: {complete_url}")
-                            
-                            # Close the current search results tab
-                            driver.close()
-                            
-                            # Switch to the new process details tab
-                            driver.switch_to.window(driver.window_handles[-1])
-                            print("[DEBUG] Switched to process details tab")
+                            try:
+                                driver.execute_script(f"window.open('{complete_url}', '_blank');")
+                                print(f"[DEBUG] Opened process details in new tab: {complete_url}")
+                                
+                                # Close the current search results tab
+                                if len(driver.window_handles) > 1:
+                                    self.safe_close_tab(driver)
+                                
+                                # Switch to the new process details tab
+                                self.safe_switch_to_last_window(driver)
+                                print("[DEBUG] Switched to process details tab")
+                            except Exception as tab_error:
+                                print(f"[DEBUG] Tab management failed: {tab_error}")
+                                # Fallback to navigate in current tab
+                                driver.get(complete_url)
                         else:
                             print("[DEBUG] Could not extract process details URL from onclick attribute")
                             return False, None, None, False, True, True
@@ -324,12 +335,16 @@ class JfpeHandler(BaseTribunalHandler):
                     if len(driver.window_handles) > 1:
                         # Wait a moment for navigation to complete
                         time.sleep(2)
-                        # Switch to the previous tab and close it
-                        driver.switch_to.window(driver.window_handles[-2])
-                        driver.close()
-                        # Switch back to the current process tab
-                        driver.switch_to.window(driver.window_handles[-1])
-                        print("[DEBUG] Previous tab closed successfully")
+                        # Switch to the previous tab and close it safely
+                        try:
+                            previous_handle = driver.window_handles[-2] if len(driver.window_handles) > 1 else None
+                            if previous_handle and self.safe_switch_to_window(driver, previous_handle):
+                                self.safe_close_tab(driver)
+                                # Switch back to the current process tab
+                                self.safe_switch_to_last_window(driver)
+                                print("[DEBUG] Previous tab closed successfully")
+                        except Exception as tab_error:
+                            print(f"[DEBUG] Error during tab cleanup: {tab_error}")
                         
                 except TimeoutException:
                     print("[DEBUG] No alert appeared or alert timeout")
