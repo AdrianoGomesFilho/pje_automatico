@@ -582,7 +582,7 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     screen_width = main_window.winfo_screenwidth()
     screen_height = main_window.winfo_screenheight()
     window_width = 500
-    window_height = 550
+    window_height = 600
     position_right = int(screen_width / 2 - window_width / 2)
     position_down = int(screen_height / 2 - window_height / 2)
     main_window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
@@ -718,6 +718,17 @@ def prompt_for_credentials(file_path, credentials, driver=None):
     # Add the current version label at the bottom
     tk.Label(main_window, text=f"Versão: {CURRENT_VERSION}", fg=TEXT_COLOR, bg=BACKGROUND_COLOR, font=("Montserrat", 10)).grid(row=13, column=0, columnspan=2, pady=(5, 10))
 
+    # Add developer info with GitHub link
+    def open_github():
+        import webbrowser
+        webbrowser.open("https://github.com/AdrianoGomesFilho")
+
+    github_label = tk.Label(main_window, text="Desenvolvido por Adriano Gomes", 
+                           fg=LINK_COLOR, bg=BACKGROUND_COLOR, font=("Montserrat", 9), 
+                           cursor="hand2")
+    github_label.grid(row=14, column=0, columnspan=2, pady=(0, 10))
+    github_label.bind("<Button-1>", lambda e: open_github())
+
     main_window.mainloop()
     return credentials
 
@@ -751,8 +762,8 @@ def prompt_reopen_pje(paste):
         text=(
             f"{paste}\n"
             "\n"
-            "Um dos possíveis causas ocorreram:\n"
-            " 1) Processo não cadastrado\n"
+            "Um dos possíveis problemas ocorreram:\n"
+            " 1) Processo não cadastrado na instância\n"
             " 2) PJE não carregou completamente\n"
             " 3) Número do processo não existe\n"
             "\n"
