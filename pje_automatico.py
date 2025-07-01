@@ -295,6 +295,14 @@ def run_script(credentials):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
     chrome_options.add_argument("--start-maximized")  # Open browser in fullscreen
+    
+    # Add network throttling for 4G simulation (for testing purposes)
+    chrome_options.add_argument("--force-effective-connection-type=4g")
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    
+    # Enable DevTools for network throttling
+    chrome_options.add_argument("--remote-debugging-port=9222")
 
     # Declare browser_process_id as a global variable and initialize it
     global browser_process_id
@@ -342,6 +350,23 @@ def run_script(credentials):
 
         # Store the browser process ID
         browser_process_id = driver.service.process.pid
+
+        # Enable network throttling for 4G simulation
+        try:
+            # Enable Network domain
+            driver.execute_cdp_cmd('Network.enable', {})
+            
+            # Set network conditions to simulate 4G
+            # Download: 4 Mbps, Upload: 3 Mbps, Latency: 20ms
+            driver.execute_cdp_cmd('Network.emulateNetworkConditions', {
+                'offline': False,
+                'downloadThroughput': 4 * 1024 * 1024 / 8,  # 4 Mbps in bytes per second
+                'uploadThroughput': 3 * 1024 * 1024 / 8,    # 3 Mbps in bytes per second
+                'latency': 20  # 20ms latency
+            })
+            print("Network throttling enabled: 4G simulation (4Mbps down, 3Mbps up, 20ms latency)")
+        except Exception as e:
+            print(f"Warning: Could not enable network throttling: {e}")
 
         # Open the initial tab
         open_initial_tab(driver)
@@ -726,7 +751,7 @@ def prompt_reopen_pje(paste):
         text=(
             f"{paste}\n"
             "\n"
-            "Um dos possíveis erros ocorreram:\n"
+            "Um dos possíveis causas ocorreram:\n"
             " 1) Processo não cadastrado\n"
             " 2) PJE não carregou completamente\n"
             " 3) Número do processo não existe\n"

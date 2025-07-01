@@ -185,7 +185,7 @@ class Trf5Handler(BaseTribunalHandler):
                            "JFRN - Advogado", "JFRN - Terceiros", "JFSE - Advogado", "JFSE - Terceiros",
                            "TRF5 - Advogado", "TRF5 - Terceiros", "JF - Advogado", "JF - Terceiros"]:
                 try:
-                    login_element = WebDriverWait(driver, 10).until(
+                    login_element = WebDriverWait(driver, 20).until(
                         EC.any_of(
                             EC.presence_of_element_located((By.ID, "nomeUsuario")),
                             EC.presence_of_element_located((By.ID, "loginAplicacaoButton"))
@@ -208,7 +208,7 @@ class Trf5Handler(BaseTribunalHandler):
                         
                         # Check if first popup exists (may not appear on subsequent attempts)
                         try:
-                            utilizar_btn = WebDriverWait(driver, 3).until(
+                            utilizar_btn = WebDriverWait(driver, 10).until(
                                 EC.element_to_be_clickable((By.ID, "btnUtilizarApplet"))
                             )
                             utilizar_btn.click()
@@ -229,7 +229,7 @@ class Trf5Handler(BaseTribunalHandler):
                         # Click login button - try 3 times
                         for attempt in range(3):
                             try:
-                                login_button = WebDriverWait(driver, 10).until(
+                                login_button = WebDriverWait(driver, 20).until(
                                     EC.element_to_be_clickable((By.ID, "loginAplicacaoButton"))
                                 )
                                 login_button.click()
@@ -248,7 +248,7 @@ class Trf5Handler(BaseTribunalHandler):
                                     time.sleep(2)
                         
                         # Wait for password field (nomeUsuario) to appear after login
-                        WebDriverWait(driver, 15).until(
+                        WebDriverWait(driver, 30).until(
                             EC.presence_of_element_located((By.ID, "nomeUsuario"))
                         )
                         print("[DEBUG] Login form loaded - password field (nomeUsuario) found")
@@ -266,7 +266,7 @@ class Trf5Handler(BaseTribunalHandler):
                     # Normal consultation for lawyers/registered users
                     try:
                         # Wait for the search form to load
-                        WebDriverWait(driver, 10).until(
+                        WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.ID, "consultarProcessoForm:numeroProcessoDecoration:numeroProcesso"))
                         )
                         
@@ -290,7 +290,7 @@ class Trf5Handler(BaseTribunalHandler):
 
                         # Wait for search results and extract the process details URL
                         print("[DEBUG] Waiting for normal consultation results...")
-                        WebDriverWait(driver, 10).until(
+                        WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
                         )
                         
@@ -309,7 +309,7 @@ class Trf5Handler(BaseTribunalHandler):
                     # Third-party consultation for non-registered users
                     try:
                         # Wait for the third-party search form to load
-                        WebDriverWait(driver, 10).until(
+                        WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.ID, "pesquisarProcessoTerceiroForm:nrProcessoDecoration:nrProcesso"))
                         )
                         
@@ -332,7 +332,7 @@ class Trf5Handler(BaseTribunalHandler):
                         
                         # Wait for search results
                         print("[DEBUG] Waiting for third-party consultation results...")
-                        WebDriverWait(driver, 5).until(
+                        WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, "img[title='Ver Detalhe']"))
                         )
                         
@@ -343,7 +343,7 @@ class Trf5Handler(BaseTribunalHandler):
                         print("[DEBUG] Clicked 'Ver Detalhe' - popup should open")
                         
                         # Wait for the popup to appear
-                        WebDriverWait(driver, 10).until(
+                        WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.ID, "modal:motivacaoDecoration:motivacao"))
                         )
                         
@@ -352,7 +352,7 @@ class Trf5Handler(BaseTribunalHandler):
                         # Fill the motivation field with "Consulta"
                         try:
                             # Wait for the textarea to be visible and interactable
-                            motivation_field = WebDriverWait(driver, 10).until(
+                            motivation_field = WebDriverWait(driver, 20).until(
                                 EC.element_to_be_clickable((By.ID, "modal:motivacaoDecoration:motivacao"))
                             )
                             
@@ -399,7 +399,7 @@ class Trf5Handler(BaseTribunalHandler):
             ######JUIZADO PRIMEIRO GRAU OR TURMA RECUSAL########   
             else:
                 try:
-                    login_element = WebDriverWait(driver, 10).until(
+                    login_element = WebDriverWait(driver, 20).until(
                         EC.any_of(
                             EC.presence_of_element_located((By.CLASS_NAME, "avatar")),
                             EC.presence_of_element_located((By.ID, "ssoFrame"))
@@ -424,7 +424,7 @@ class Trf5Handler(BaseTribunalHandler):
                     # Check what's in the iframe
                     iframe_source = driver.page_source
                     
-                    certificate_button = WebDriverWait(driver, 10).until(
+                    certificate_button = WebDriverWait(driver, 20).until(
                         EC.element_to_be_clickable((By.ID, "kc-pje-office"))
                     )
 
@@ -432,7 +432,7 @@ class Trf5Handler(BaseTribunalHandler):
             
                     driver.switch_to.default_content()
                     
-                    WebDriverWait(driver, 15).until( 
+                    WebDriverWait(driver, 20).until( 
                         EC.presence_of_element_located((By.CLASS_NAME, "avatar"))
                     )
             
@@ -488,7 +488,7 @@ class Trf5Handler(BaseTribunalHandler):
                 # Handle the confirmation alert that appears
                 try:
                     # Wait for the alert to appear and accept it
-                    WebDriverWait(driver, 5).until(EC.alert_is_present())
+                    WebDriverWait(driver, 10).until(EC.alert_is_present())
                     alert = driver.switch_to.alert
                     alert.accept()  # Click OK button
                     print("[DEBUG] Alert confirmed successfully")
