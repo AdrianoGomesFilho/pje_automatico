@@ -290,7 +290,7 @@ class Trf5Handler(BaseTribunalHandler):
 
                         # Wait for search results and extract the process details URL
                         print("[DEBUG] Waiting for normal consultation results...")
-                        WebDriverWait(driver, 20).until(
+                        WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, ".rich-table-row.rich-table-firstrow"))
                         )
                         
@@ -332,7 +332,7 @@ class Trf5Handler(BaseTribunalHandler):
                         
                         # Wait for search results
                         print("[DEBUG] Waiting for third-party consultation results...")
-                        WebDriverWait(driver, 20).until(
+                        WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, "img[title='Ver Detalhe']"))
                         )
                         
@@ -343,7 +343,7 @@ class Trf5Handler(BaseTribunalHandler):
                         print("[DEBUG] Clicked 'Ver Detalhe' - popup should open")
                         
                         # Wait for the popup to appear
-                        WebDriverWait(driver, 20).until(
+                        WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.ID, "modal:motivacaoDecoration:motivacao"))
                         )
                         
@@ -352,7 +352,7 @@ class Trf5Handler(BaseTribunalHandler):
                         # Fill the motivation field with "Consulta"
                         try:
                             # Wait for the textarea to be visible and interactable
-                            motivation_field = WebDriverWait(driver, 20).until(
+                            motivation_field = WebDriverWait(driver, 10).until(
                                 EC.element_to_be_clickable((By.ID, "modal:motivacaoDecoration:motivacao"))
                             )
                             
