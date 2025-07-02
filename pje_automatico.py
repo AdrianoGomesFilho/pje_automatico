@@ -389,30 +389,38 @@ def run_script(credentials):
                 import re
                 clean_paste = re.sub(r'[^0-9.-]', '', paste)
 
-                # Tribunal type detection by splitting the number and checking the .0.00 part
+                # Tribunal type detection with strict pattern validation
                 tribunal_type = None
                 try:
-                    # Remove spaces and split by '-' and '.'
-                    parts = clean_paste.split('-')
-                    if len(parts) == 2:
-                        main, rest = parts
-                        rest_parts = rest.split('.')
-                        if len(rest_parts) == 5:
-                            orgao = rest_parts[2]  # the .0.00 part: rest_parts[2] and rest_parts[3]
-                            tribunal = rest_parts[3]
-                            if orgao == '5':
-                                tribunal_type = 'trabalhista'
-                            elif orgao == '8' and tribunal == '17':
-                                tribunal_type = 'tjpe'
-                            elif orgao == '4' and tribunal == '05':
-                                tribunal_type = 'trf5'
+                    # Remove spaces and validate the exact pattern first
+                    clean_paste = clean_paste.strip()
+                    
+                    # Check if it matches the exact CNJ pattern: NNNNNNN-DD.AAAA.J.TR.OOOO
+                    # Where N=sequential, D=verification digits, A=year, J=judicial segment, TR=court, O=origin
+                    cnj_pattern = r'^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$'
+                    
+                    if not re.match(cnj_pattern, clean_paste):
+                        tribunal_type = None  # Invalid format, don't process
+                    else:
+                        # Split by '-' and '.'
+                        parts = clean_paste.split('-')
+                        if len(parts) == 2:
+                            main, rest = parts
+                            rest_parts = rest.split('.')
+                            if len(rest_parts) == 5:
+                                orgao = rest_parts[2]  # the judicial segment part
+                                tribunal = rest_parts[3]  # the court part
+                                if orgao == '5':
+                                    tribunal_type = 'trabalhista'
+                                elif orgao == '4' and tribunal == '05':
+                                    tribunal_type = 'trf5'
                             
                 except Exception as e:
                     print(f"[DEBUG] Tribunal detection error: {e}")
+                    tribunal_type = None
 
-                # Check if the clipboard content is new or bypassing is enabled and matches any known pattern
-                # Use clean_paste for processing but keep original paste for display
-                if bypass_repeated_content or (clean_paste != last_clipboard_content and tribunal_type is not None):
+                # Check if the clipboard content is new or bypassing is enabled and matches the strict pattern
+                if bypass_repeated_content or (clean_paste != last_clipboard_content and tribunal_type is not None and re.match(r'^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$', clean_paste)):
                     print(f"[DEBUG] Clean paste: {clean_paste}, Original: {paste}, Tribunal: {tribunal_type}")
                     print(f"Processo identificado: {clean_paste} (tribunal: {tribunal_type})")
                     add_to_recent(clean_paste)
