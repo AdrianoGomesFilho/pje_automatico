@@ -1,14 +1,12 @@
 ![Logo](logowide.png)
 # OBJETIVO DO PROJETO
-Automação que, ao detectar a cópia de um número de processo, abre automaticamente a página correspondente do PJE e, se desejado, também o sistema utilizado no escritório (atualmente configurado para o Astrea). Voltado no presente momento para PJE trabalhista. Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS. O acesso ao processo é mantido sigiloso (ou seja, se você acessar processos de outros advogados o sistema não registra).
+Automação que, ao detectar a cópia de um número de processo, abre automaticamente a página correspondente do PJE e, se desejado, também o sistema utilizado no escritório (atualmente configurado para o Astrea). Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
 
 Vídeo de apresentação do projeto no Instagram https://www.instagram.com/p/DIv3eyoOURq/
 
 # O QUE ELE FAZ?
 
 Ao copiar o número do processo (formato xxxxxxx-xx.xxxx.5.xx.xxxx) o programa dispara, abrindo o PJE e o sistema (site) que o escritório utiliza (ex: Astrea). O usuário pode optar para usar exclusivamente o PJE, Astrea ou ambos.
-
-Melhoria recente: a automação agora permite abrir processos de outros advogados com a mesma visualização dos processos pessoais (tudo isso sem deixar rastros de acesso de terceiros).
 
 # COMO USO O PROGRAMA?
 Disponibilizo um site de apresentação onde deixo as instruções e link para baixar o programa: https://pje-automatico.vercel.app/
