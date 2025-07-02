@@ -26,7 +26,7 @@ from tribunal_handlers import (
     fetch_process_id
 )
 
-CURRENT_VERSION = "1.1.1"
+CURRENT_VERSION = "1.2.0"
 
 UPDATE_URL = "https://raw.githubusercontent.com/AdrianoGomesFilho/pje_automatico/main/latest_version.json"
 
