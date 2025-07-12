@@ -1,8 +1,8 @@
 ![Logo](logowide.png)
 # OBJETIVO DO PROJETO
-Automação que, ao detectar a cópia de um número de processo, abre automaticamente a página correspondente do PJE e, se desejado, também o sistema utilizado no escritório (atualmente configurado para o Astrea). Especialmente focado para escritórios que usam vários tokens de vários advogados e possui processos em vários TRTS.
+Automação que, ao detectar a cópia de um número de processo, abre automaticamente a página correspondente do PJE e, se desejado, também o sistema utilizado no escritório (atualmente configurado para o Astrea).
 
-Vídeo de apresentação do projeto no Instagram https://www.instagram.com/p/DIv3eyoOURq/
+Atualmente funcional para o Chrome e para todos os tribunais trabalhistas e federais da 5a região (TRF5).
 
 # O QUE ELE FAZ?
 
@@ -12,8 +12,6 @@ Ao copiar o número do processo (formato xxxxxxx-xx.xxxx.5.xx.xxxx) o programa d
 Disponibilizo um site de apresentação onde deixo as instruções e link para baixar o programa: https://pje-automatico.vercel.app/
 
 É necessário ter o Google Chrome instalado previamente.
-
-Qualquer dificuldade pode entrar em contato comigo 81992811496📲
 
 # LINGUAGEM USADA
 Python e suas bibliotecas, automação via chromedriver
