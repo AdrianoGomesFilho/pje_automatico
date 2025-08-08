@@ -16,8 +16,7 @@ Disponibilizo um site de apresentação onde deixo as instruções e link para b
 # LINGUAGEM USADA
 Python e suas bibliotecas, automação via chromedriver
 
-# MOTIVAÇÃO
-Criei a automação para me auxiliar (e auxiliar a equipe do escritório) na hora de abrir os processos. Atualmente a justiça usa muitos sistemas (trabalhistas são 24 regionais no total, cada um possuindo 2 graus, o que totaliza 48, somado ao TST que possui 2 - o PJE e o sistema mais antigo). Ao total, um advogado que possua processos espalhados por todo o Brasil precisa fazer malabarismos diariamente para acessar seus processos. Isso é ainda mais agravado quando existem processos de outros advogados associados.
+
 
 
 
